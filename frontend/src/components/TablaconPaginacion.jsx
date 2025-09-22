@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 function TablaConPaginacion({
   columnas,
   datos,
-  porPagina = 7,
+  porPagina = 5,
   titulo,
   placeholderBusqueda = "Buscar...",
   textoBoton = "Nuevo registro",
@@ -43,17 +43,18 @@ function TablaConPaginacion({
       >
         {titulo && (
           <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-2xl font-bold mb-4 text-left text-gray-800"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="text-2xl md:text-3xl font-bold mb-4 text-gray-800"
           >
             {titulo}
           </motion.h1>
         )}
 
         {/*  Barra  búsqueda + filtros + botón */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          {/* Input de búsqueda con icono */}
           <div className="relative w-full sm:w-1/3">
             <input
               type="text"
@@ -63,44 +64,55 @@ function TablaConPaginacion({
                 setBusquedaInput(e.target.value);
                 if (onBuscar) onBuscar(e.target.value);
               }}
-              className="px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
             />
-
             <button
               onClick={HandleBuscar}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-800"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-800 transition"
             >
-              <Search />
+              <Search size={20} />
             </button>
           </div>
 
-          {/* 📅 Filtros de fecha */}
-          <div className="flex gap-4">
+          {/* Filtros de fecha */}
+          <div className="flex gap-4 flex-wrap">
             <div className="flex flex-col">
-              <label className="text-sm text-gray-500 mb-1">Desde:</label>
+              <label className="text-sm font-medium text-gray-500 mb-1">
+                Desde
+              </label>
               <input
                 disabled={deshabilitarFechas}
                 type="date"
-                className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className={`px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition ${
+                  deshabilitarFechas
+                    ? "bg-gray-100 cursor-not-allowed opacity-60"
+                    : ""
+                }`}
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="text-sm text-gray-500 mb-1">Hasta:</label>
+              <label className="text-sm font-medium text-gray-500 mb-1">
+                Hasta
+              </label>
               <input
                 disabled={deshabilitarFechas}
                 type="date"
-                className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                className={`px-3 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition ${
+                  deshabilitarFechas
+                    ? "bg-gray-100 cursor-not-allowed opacity-60"
+                    : ""
+                }`}
               />
             </div>
           </div>
 
-          {/* ➕ Botón */}
+          {/* Botón Nuevo */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onNuevo}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700"
+            className="px-5 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition font-semibold"
           >
             {textoBoton}
           </motion.button>
@@ -116,18 +128,21 @@ function TablaConPaginacion({
           Mostrando {datosPagina.length} de {datos.length} registros
         </motion.p>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100">
+        <div className="overflow-x-auto shadow-lg rounded-lg border border-gray-200">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
                 {columnas.map((col, idx) => (
-                  <th key={idx} className="px-4 py-2 text-left text-gray-600">
+                  <th
+                    key={idx}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
+                  >
                     {col}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               <AnimatePresence mode="sync">
                 {datosPagina.map((fila, idx) => (
                   <motion.tr
@@ -136,10 +151,13 @@ function TablaConPaginacion({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="border-t"
+                    className="hover:bg-gray-50 cursor-pointer"
                   >
                     {Object.values(fila).map((valor, i) => (
-                      <td key={i} className="px-4 py-2">
+                      <td
+                        key={i}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
+                      >
                         {valor}
                       </td>
                     ))}
@@ -154,7 +172,7 @@ function TablaConPaginacion({
                   >
                     <td
                       colSpan={columnas.length}
-                      className="text-center py-4 text-gray-500"
+                      className="text-center py-6 text-gray-400 italic"
                     >
                       No hay registros
                     </td>

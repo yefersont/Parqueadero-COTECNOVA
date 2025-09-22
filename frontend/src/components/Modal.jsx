@@ -13,7 +13,7 @@ export default function Modal({ isOpen, onClose, children }) {
         >
           {/* Contenedor del modal */}
           <motion.div
-            className="bg-white rounded-xl shadow-lg w-11/12 sm:w-1/2 p-6 relative"
+            className="bg-white rounded-2xl shadow-xl w-11/12 sm:w-1/2 p-6 relative"
             initial={{ scale: 0.8, opacity: 0, y: -50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: -50 }}
@@ -22,13 +22,13 @@ export default function Modal({ isOpen, onClose, children }) {
             {/* Botón de cerrar */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition text-2xl font-bold"
             >
               &times;
             </button>
 
             {/* Contenido dinámico */}
-            {children}
+            <div className="space-y-4">{children}</div>
           </motion.div>
         </motion.div>
       )}

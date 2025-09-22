@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { createPropietario } from "../api/propietarios";
+import { motion } from "framer-motion";
+import { User, Phone, CreditCard } from "lucide-react";
 import Swal from "sweetalert2";
 
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
@@ -82,88 +84,95 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 p-4 md:p-6">
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6 p-4 md:p-6"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Cédula */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Cédula
-          </label>
+        <div className="relative">
+          <CreditCard
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="text"
             name="Cedula_propietario"
             value={form.Cedula_propietario}
             onChange={handleChange}
-            placeholder="Número de cédula"
-            className="block w-full px-4 py-2 border rounded-lg shadow-sm 
-                       focus:outline-none focus:ring-2 focus:ring-green-500 
-                       focus:border-green-500 transition"
+            placeholder="Cédula"
+            className="pl-10 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 
+                       transition duration-300 placeholder-gray-400"
           />
         </div>
 
         {/* Nombre */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Nombre
-          </label>
+        <div className="relative">
+          <User
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="text"
             name="Nombre_propietario"
             value={form.Nombre_propietario}
             onChange={handleChange}
-            placeholder="Nombre del propietario"
-            className="block w-full px-4 py-2 border rounded-lg shadow-sm 
-                       focus:outline-none focus:ring-2 focus:ring-green-500 
-                       focus:border-green-500 transition"
+            placeholder="Nombre"
+            className="pl-10 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 
+                       transition duration-300 placeholder-gray-400"
           />
         </div>
 
         {/* Apellido */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Apellido
-          </label>
+        <div className="relative">
+          <User
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="text"
             name="Apellido_propietario"
             value={form.Apellido_propietario}
             onChange={handleChange}
-            placeholder="Apellido del propietario"
-            className="block w-full px-4 py-2 border rounded-lg shadow-sm 
-                       focus:outline-none focus:ring-2 focus:ring-green-500 
-                       focus:border-green-500 transition"
+            placeholder="Apellido"
+            className="pl-10 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 
+                       transition duration-300 placeholder-gray-400"
           />
         </div>
 
         {/* Teléfono */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Teléfono
-          </label>
+        <div className="relative">
+          <Phone
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="tel"
             name="Telefono_propietario"
             value={form.Telefono_propietario}
             onChange={handleChange}
-            placeholder="Número de teléfono"
-            className="block w-full px-4 py-2 border rounded-lg shadow-sm 
-                       focus:outline-none focus:ring-2 focus:ring-green-500 
-                       focus:border-green-500 transition"
+            placeholder="Teléfono"
+            className="pl-10 w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 
+                       transition duration-300 placeholder-gray-400"
           />
         </div>
 
         {/* Rol */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Rol
-          </label>
           <select
             name="Rol"
             value={form.Rol}
             onChange={handleChange}
-            className="block w-full px-4 py-2 border rounded-lg shadow-sm 
-                       bg-white focus:outline-none focus:ring-2 
-                       focus:ring-green-500 focus:border-green-500 transition"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm bg-white 
+                       focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 
+                       transition duration-300"
           >
             <option value="">Seleccione un rol</option>
             <option value="1">Estudiante</option>
@@ -176,23 +185,27 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
 
       {/* Botones */}
       <div className="flex justify-end gap-4 pt-4">
-        <button
+        <motion.button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow 
-                     hover:bg-gray-300 transition"
+          whileHover={{ scale: 1.03 }}
+          className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold 
+                     shadow hover:bg-gray-200 transition duration-300"
         >
           Cancelar
-        </button>
-        <button
+        </motion.button>
+
+        <motion.button
           type="submit"
-          className="px-4 py-2 bg-green-600 text-white rounded-lg shadow 
-                     hover:bg-green-700 transition"
+          whileHover={{ scale: 1.03 }}
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 
+                     text-white font-semibold shadow hover:from-green-600 hover:to-green-700 
+                     transition duration-300"
         >
           Guardar
-        </button>
+        </motion.button>
       </div>
-    </form>
+    </motion.form>
   );
 }
 

@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import { useState } from "react";
-import { Car, Users } from "lucide-react";
+import { Car, Users, MoveRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Loader from "../../components/Loader";
 function Home() {
@@ -53,7 +53,6 @@ function Home() {
           </motion.div>
         </div>
 
-        {/* --- Panel principal --- */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -89,9 +88,9 @@ function Home() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="w-full bg-[#198754] text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-700 transition"
+              className="w-full bg-[#198754] text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
             >
-              Ingresar
+              Buscar <MoveRight />
             </motion.button>
           </motion.div>
 
