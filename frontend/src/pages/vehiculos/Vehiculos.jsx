@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getVehiculos } from "../../api/vehiculos";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
+import Modal from "../../components/Modal";
+import FormularioVehiculo from "../../components/FormularioVehiculo";
 import Loader from "../../components/Loader";
 function Vehiculos() {
   const [vehiculos, setVehiculos] = useState([]);
@@ -35,19 +37,31 @@ function Vehiculos() {
   return cargando ? (
     <Loader texto="Cargando vehículos..." />
   ) : (
-    <TablaConPaginacion
-      titulo="Vehículos"
-      columnas={columnas}
-      datos={datosFiltrados}
-      placeholderBusqueda="Buscar..."
-      textoBoton="Nuevo vehículo"
-      onNuevo={() => setIsOpen(true)}
-      onBuscar={(valor) => {
-        setBusqueda(valor);
-        console.log("Buscar propietario:", valor);
-      }}
-      deshabilitarFechas={true}
-    />
+    <>
+      <TablaConPaginacion
+        titulo="Vehículos"
+        columnas={columnas}
+        datos={datosFiltrados}
+        placeholderBusqueda="Buscar..."
+        textoBoton="Nuevo vehículo"
+        onNuevo={() => setIsOpen(true)}
+        onBuscar={(valor) => {
+          setBusqueda(valor);
+          console.log("Buscar propietario:", valor);
+        }}
+        deshabilitarFechas={true}
+      />
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <h2 className="text-2xl font-bold mb-4">Agregar Vehiculo</h2>
+        <FormularioVehiculo
+          onSubmit={(data) => {
+            console.log("Guardar propietario:", data);
+            setIsOpen(false);
+          }}
+          onCancel={() => setIsOpen(false)}
+        />
+      </Modal>
+    </>
   );
 }
 

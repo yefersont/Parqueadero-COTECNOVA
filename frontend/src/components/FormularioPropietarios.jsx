@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { createPropietario } from "../api/propietarios";
 import { motion } from "framer-motion";
 import { User, Phone, CreditCard } from "lucide-react";
-import Swal from "sweetalert2";
 
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   const [form, setForm] = useState({
@@ -40,41 +39,11 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
     setForm({ ...form, [name]: nuevoValor });
   };
 
-  const mostrarAlerta = () => {
-    Swal.fire({
-      title: "Registro exitoso",
-      text: "El propietario ha sido registrado correctamente. Selecciona la acción que deseas realizar a continuación:",
-      icon: "success",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Finalizar",
-      denyButtonText: "Registrar nuevo vehículo",
-      cancelButtonText: "Vincular vehículo existente",
-      confirmButtonColor: "#2c3e50", // gris oscuro elegante
-      denyButtonColor: "#27ae60", // verde profesional
-      cancelButtonColor: "#2980b9", // azul serio
-      reverseButtons: true, // invierte el orden para que quede más natural
-      allowOutsideClick: false, // obliga al usuario a decidir
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("✔️ Acción: Finalizar");
-        // Acción para cerrar flujo o refrescar tabla
-      } else if (result.isDenied) {
-        console.log("🚗 Acción: Registrar nuevo vehículo");
-        // Redirigir a formulario de vehículo nuevo
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        console.log("📋 Acción: Vincular vehículo existente");
-        // Redirigir a vincular vehículo existente
-      }
-    });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     createPropietario(form)
       .then((res) => {
         console.log("Propietario creado:", res.data);
-        mostrarAlerta();
         if (onSubmit) onSubmit(res.data);
       })
       .catch((err) => {
@@ -184,23 +153,26 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end gap-4 pt-4">
+      <div className="flex justify-end gap-3 pt-4">
+        {/* Cancelar */}
         <motion.button
           type="button"
           onClick={onCancel}
-          whileHover={{ scale: 1.03 }}
-          className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold 
-                     shadow hover:bg-gray-200 transition duration-300"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 font-normal 
+               hover:bg-gray-300 transition-colors duration-150"
         >
           Cancelar
         </motion.button>
 
+        {/* Guardar */}
         <motion.button
           type="submit"
-          whileHover={{ scale: 1.03 }}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 
-                     text-white font-semibold shadow hover:from-green-600 hover:to-green-700 
-                     transition duration-300"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className="px-5 py-2 rounded-md bg-green-600 text-white font-normal 
+               hover:bg-green-700 transition-colors duration-150"
         >
           Guardar
         </motion.button>
