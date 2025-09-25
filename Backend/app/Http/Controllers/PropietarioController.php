@@ -13,7 +13,7 @@ class PropietarioController extends Controller
     public function index()
     {
         //
-        $propietarios = Propietario::with('rol')->get();
+        $propietarios = Propietario::with('rol', 'vehiculos')->get();
         return response()->json($propietarios);
     }
 
