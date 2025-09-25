@@ -7,6 +7,8 @@ use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\SalidaController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\PropietarioController;
+use App\Http\Controllers\TipoVehiculoController;
+use App\Http\Controllers\MarcaVehiculoController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,3 +29,5 @@ Route::apiResource('ingresos', IngresoController::class);
 Route::apiResource('salidas', SalidaController::class);
 Route::apiResource('vehiculos', VehiculoController::class);
 Route::apiResource('propietarios', PropietarioController::class);
+Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
+Route::apiResource('marcavehiculos', MarcaVehiculoController::class);

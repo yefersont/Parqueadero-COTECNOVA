@@ -15,12 +15,22 @@ function Salidas() {
       .catch((err) => console.error(err));
   }, []);
 
-  const columnas = ["ID Ingreso", "Fecha de salida", "Hora de salida"];
+  const columnas = [
+    "Nombre",
+    "Vehiculo",
+    "Fecha y hora de ingreso",
+    "Fecha y hora salida",
+  ];
 
   const datos = salidas.map((i) => ({
-    "ID Ingreso": i.Ingresos_idIngresos,
-    "Fecha de salida": i.fecha_salida,
-    "Hora de salida": i.hora_salida,
+    Nombre:
+      i.ingreso.propietario.Nombre_propietario +
+      " " +
+      i.ingreso.propietario.Apellido_propietario,
+    Vehiculo: i.ingreso.vehiculo.Placa_vehiculo,
+    "Fecha y hora de ingreso":
+      i.ingreso.fecha_ingreso + " - " + i.ingreso.hora_ingreso,
+    "Fecha y hora salida": i.fecha_salida + " - " + i.hora_salida,
   }));
 
   return cargando ? (

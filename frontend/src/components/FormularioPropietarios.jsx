@@ -3,6 +3,7 @@ import { createPropietario } from "../api/propietarios";
 import { motion } from "framer-motion";
 import { User, Phone, CreditCard } from "lucide-react";
 
+// Formulario para registrar o editar propietarios
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   const [form, setForm] = useState({
     Cedula_propietario: "",
@@ -12,12 +13,17 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
     Rol: "",
   });
 
+  // Guardar el ID del propietario creado
+  const [Id, setIdPropietario] = useState(null);
+
+  // Cargar valores iniciales si se proporcionan (para edición)
   useEffect(() => {
     if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
       setForm((prev) => ({ ...prev, ...valoresIniciales }));
     }
   }, [valoresIniciales]);
 
+  // Manejo de cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -39,11 +45,14 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
     setForm({ ...form, [name]: nuevoValor });
   };
 
+  // Manejo del envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
     createPropietario(form)
       .then((res) => {
         console.log("Propietario creado:", res.data);
+        setIdPropietario(res.data.idPropietario);
+        console.log("id: ", Id);
         if (onSubmit) onSubmit(res.data);
       })
       .catch((err) => {

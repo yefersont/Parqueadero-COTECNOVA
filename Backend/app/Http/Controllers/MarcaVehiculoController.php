@@ -13,6 +13,8 @@ class MarcaVehiculoController extends Controller
     public function index()
     {
         //
+        $marcasVehiculos = MarcaVehiculo::all();
+        return response()->json($marcasVehiculos);
     }
 
     /**

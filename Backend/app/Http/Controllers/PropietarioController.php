@@ -33,7 +33,10 @@ class PropietarioController extends Controller
             ]);
 
             $propietario = Propietario::create($request->all());
-            return response()->json($propietario, 201);
+            return response()->json([
+                'message' => 'Propietario creado exitosamente',
+                'idPropietario' => $propietario->idPropietario
+            ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {

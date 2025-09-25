@@ -23,6 +23,22 @@ class VehiculoController extends Controller
     public function store(Request $request)
     {
         //
+
+        try {
+            $request->validate([
+                'Tipo_vehiculo' => 'required|exists:tipo_vehiculo,idTipo_vehiculo',
+                'Marca_vehiculo' => 'required|exists:marca_vehiculo,idMarca_vehiculo',
+                'Placa_vehiculo' => 'required|string|max:45',
+                'Modelo_vehiculo' => 'required|string|max:45'
+            ]);
+            $vehiculo = Vehiculo::create($request->all());
+            return response()->json([
+                'message' => 'Vehiculo creado exitosamente',
+                'vehiculo' => $vehiculo->idVehiculo
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al crear el vehiculo', 'message' => $e->getMessage()], 500);
+        }
     }
 
     /**

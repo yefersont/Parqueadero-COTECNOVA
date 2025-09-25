@@ -82,7 +82,6 @@ function Propietarios() {
         }}
         deshabilitarFechas={true}
       />
-
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-2xl font-bold mb-4">Agregar propietario</h2>
         <FormularioPropietario
@@ -101,7 +100,6 @@ function Propietarios() {
           onSubmit={(vehiculo) => {
             console.log("Vehículo registrado:", vehiculo);
             setIsVehiculoOpen(false);
-            // Aquí podrías refrescar la tabla de vehículos
           }}
           onCancel={() => setIsVehiculoOpen(false)}
         />

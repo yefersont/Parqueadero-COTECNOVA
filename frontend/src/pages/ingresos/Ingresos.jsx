@@ -20,7 +20,10 @@ function Ingresos() {
 
   const datos = ingresos.map((i) => ({
     ID: i.idIngresos,
-    Propietario: i.propietario.Nombre_propietario,
+    Propietario:
+      i.propietario.Nombre_propietario +
+      " " +
+      i.propietario.Apellido_propietario,
     Vehículo: i.vehiculo.Placa_vehiculo,
     Fecha: i.fecha_ingreso,
     Hora: i.hora_ingreso,

@@ -13,7 +13,7 @@ class SalidaController extends Controller
     public function index()
     {
         //
-        $salida = Salida::all();
+        $salida = Salida::with('ingreso.propietario', 'ingreso.vehiculo')->get();
         return response()->json($salida);
     }
 

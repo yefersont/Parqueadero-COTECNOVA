@@ -13,6 +13,8 @@ class TipoVehiculoController extends Controller
     public function index()
     {
         //
+        $tiposVehiculos = TipoVehiculo::all();
+        return response()->json($tiposVehiculos);
     }
 
     /**
