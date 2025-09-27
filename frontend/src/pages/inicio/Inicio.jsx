@@ -3,14 +3,26 @@ import { useState, useEffect } from "react";
 import { Car, LogIn, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { getPropietarios } from "../../api/propietarios";
-
+import { createIngreso, getIngresosHoy } from "../../api/ingresos";
+import Swal from "sweetalert2";
 function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
   const [vehiculosIngreso, setVehiculosIngreso] = useState([]);
   const [vehiculosSalida, setVehiculosSalida] = useState([]);
   const [propietarios, setPropietarios] = useState([]);
+  const [vehiculoSeleccionadoIngreso, setVehiculoSeleccionadoIngreso] =
+    useState("");
+  const [vehiculoSeleccionadoSalida, setVehiculoSeleccionadoSalida] =
+    useState("");
+  const [ingresosHoy, setIngresosHoy] = useState([]);
+  const [ccIngresoInput, setCcIngresoInput] = useState("");
+  const [idPropietarioIngreso, setIdPropietarioIngreso] = useState("");
 
+  // const [ccSalidaInput, setCcSalidaInput] = useState("");
+  // const [idPropietarioSalida, setIdPropietarioSalida] = useState("");
+
+  // Cargar propietarios desde el backend
   const fetchPropietarios = async () => {
     try {
       const response = await getPropietarios();
@@ -21,23 +33,75 @@ function Home() {
     }
   };
 
-  const handleIngresar = () => {
-    if (ccIngreso.trim() !== "") {
-      const propietario = propietarios.find(
-        (p) => String(p.Cedula_propietario) === ccIngreso
-      );
+  const fetchIngresosHoy = async () => {
+    try {
+      const response = await getIngresosHoy();
+      setIngresosHoy(response.data);
+      console.log("Ingresos de hoy cargados:", response.data);
+    } catch (error) {
+      console.error("Error fetching ingresos hoy:", error);
+    }
+  };
 
+  const mostrarAlerta = () => {
+    Swal.fire({
+      title: "Ingreso registrado con éxito",
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  // Buscar propietario para ingresos
+  const handleBuscarIngreso = () => {
+    if (ccIngresoInput.trim() !== "") {
+      const propietario = propietarios.find(
+        (p) => String(p.Cedula_propietario) === ccIngresoInput
+      );
       if (propietario) {
+        setIdPropietarioIngreso(propietario.idPropietario); // guarda el id
         setVehiculosIngreso(propietario.vehiculos);
       } else {
+        setIdPropietarioIngreso(""); // limpia si no existe
         setVehiculosIngreso([]);
       }
     } else {
+      setIdPropietarioIngreso("");
       setVehiculosIngreso([]);
     }
   };
 
-  const handleSalida = () => {
+  // Registrar ingreso
+  const handleRegistrarIngreso = async () => {
+    if (!idPropietarioIngreso || !vehiculoSeleccionadoIngreso) {
+      console.warn(
+        "⚠️ Debes ingresar la identificación y seleccionar un vehículo."
+      );
+      return;
+    }
+    const ingresoData = {
+      Propietario_idPropietario: idPropietarioIngreso,
+      Vehiculo_idVehiculo: parseInt(vehiculoSeleccionadoIngreso),
+    };
+
+    try {
+      const { data } = await createIngreso(ingresoData);
+      console.log("✅ Ingreso registrado:", data);
+      mostrarAlerta();
+      fetchIngresosHoy();
+      setCcIngresoInput("");
+      setVehiculoSeleccionadoIngreso("");
+      setVehiculosIngreso([]);
+    } catch (error) {
+      console.error("❌ Error registrando ingreso:", error);
+      const errorMsg =
+        error.response?.data?.message || "Ocurrió un error inesperado";
+      console.warn(`Error: ${errorMsg}`);
+    }
+  };
+
+  // Buscar propietario para salidas
+  const handleBuscarSalida = () => {
     if (ccSalida.trim() !== "") {
       const propietario = propietarios.find(
         (p) => String(p.Cedula_propietario) === ccSalida
@@ -53,8 +117,22 @@ function Home() {
     }
   };
 
+  // Registrar salida (aquí iría la petición real al backend)
+  const handleRegistrarSalida = () => {
+    if (ccSalida && vehiculoSeleccionadoSalida) {
+      console.log("Registrando salida:", {
+        cedula: ccSalida,
+        vehiculo: vehiculoSeleccionadoSalida,
+      });
+      // Aquí puedes llamar a tu API
+    } else {
+      alert("Debes ingresar la identificación y seleccionar un vehículo.");
+    }
+  };
+
   useEffect(() => {
     fetchPropietarios();
+    fetchIngresosHoy();
   }, []);
 
   return (
@@ -80,7 +158,7 @@ function Home() {
               </div>
               <div>
                 <h3 className="text-sm text-gray-600">Ingresos Hoy</h3>
-                <p className="text-xl font-bold text-gray-800">25</p>
+                <p className="text-xl font-bold text-gray-800">{ingresosHoy}</p>
               </div>
             </motion.div>
           </div>
@@ -93,26 +171,29 @@ function Home() {
             <motion.input
               type="text"
               placeholder="Número de identificación"
-              value={ccIngreso}
+              value={ccIngresoInput}
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d*$/.test(value)) {
-                  setCcIngreso(value);
+                  setCcIngresoInput(value);
                 }
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  handleIngresar();
+                  handleBuscarIngreso();
                 }
               }}
               className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 mb-4"
               whileFocus={{ scale: 1.02 }}
             />
-
             {/* SELECT arriba del botón */}
             <div className="mb-4">
               {vehiculosIngreso.length > 0 ? (
                 <motion.select
+                  value={vehiculoSeleccionadoIngreso}
+                  onChange={(e) =>
+                    setVehiculoSeleccionadoIngreso(e.target.value)
+                  }
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -132,7 +213,11 @@ function Home() {
             </div>
 
             <motion.button
-              onClick={handleIngresar}
+              onClick={
+                vehiculosIngreso.length > 0
+                  ? handleRegistrarIngreso
+                  : handleBuscarIngreso
+              }
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
@@ -190,6 +275,11 @@ function Home() {
                   setCcSalida(value);
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleBuscarSalida();
+                }
+              }}
               className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 mb-4"
               whileFocus={{ scale: 1.02 }}
             />
@@ -198,6 +288,10 @@ function Home() {
             <div className="mb-4">
               {vehiculosSalida.length > 0 ? (
                 <motion.select
+                  value={vehiculoSeleccionadoSalida}
+                  onChange={(e) =>
+                    setVehiculoSeleccionadoSalida(e.target.value)
+                  }
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -217,12 +311,24 @@ function Home() {
             </div>
 
             <motion.button
-              onClick={handleSalida}
+              onClick={
+                vehiculosSalida.length > 0
+                  ? handleRegistrarSalida
+                  : handleBuscarSalida
+              }
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
             >
-              Registrar Salida <LogOut />
+              {vehiculosSalida.length > 0 ? (
+                <>
+                  Registrar Salida <LogOut />
+                </>
+              ) : (
+                <>
+                  Buscar <Car />
+                </>
+              )}
             </motion.button>
           </div>
         </motion.div>

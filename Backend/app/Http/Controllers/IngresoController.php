@@ -23,7 +23,27 @@ class IngresoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'Propietario_idPropietario' => 'required|integer',
+                'Vehiculo_idVehiculo' =>  'required|integer',
+            ]);
+            $ingreso = Ingreso::create(
+                [
+                    'Propietario_idPropietario' => $request->Propietario_idPropietario,
+                    'Vehiculo_idVehiculo' => $request->Vehiculo_idVehiculo,
+                    'fecha_ingreso' => Carbon::now(),
+                    'hora_ingreso' => Carbon::now()->format('H:i:s'),
+                ]
+            );
+            return response()->json($ingreso, 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => 'Datos inválidos', 'message'
+            => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al registrar el ingreso', 'message'
+            => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -48,5 +68,19 @@ class IngresoController extends Controller
     public function destroy(Ingreso $ingreso)
     {
         //
+    }
+    public function ShowToday()
+    {
+        try {
+            $ingresos = Ingreso::whereDate('fecha_ingreso', Carbon::today())
+                ->count();
+            return response()->json($ingresos);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['error' => 'Error en la consulta de la base de datos', 'message'
+            => $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al obtener los ingresos de hoy', 'message'
+            => $e->getMessage()], 500);
+        }
     }
 }
