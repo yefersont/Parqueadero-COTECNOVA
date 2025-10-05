@@ -7,3 +7,4 @@ export const getSalida = (id) => axios.get(`${API_URL}/${id}`);
 export const createSalida = (data) => axios.post(API_URL, data);
 export const updateSalida = (id, data) => axios.put(`${API_URL}/${id}`, data);
 export const deleteSalida = (id) => axios.delete(`${API_URL}/${id}`);
+export const getSalidasHoy = () => axios.get(`${API_URL}/hoy`);

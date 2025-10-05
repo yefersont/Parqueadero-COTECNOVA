@@ -29,8 +29,8 @@ class Salida extends Model
 
 	protected $casts = [
 		'Ingresos_idIngresos' => 'int',
-		'fecha_salida' => 'datetime',
-		'hora_salida' => 'datetime'
+		'fecha_salida' => 'date',
+		'hora_salida' => 'datetime',
 	];
 
 	protected $fillable = [

@@ -1,26 +1,28 @@
 // src/pages/Home.jsx
 import { useState, useEffect } from "react";
-import { Car, LogIn, LogOut } from "lucide-react";
+import { Car, LogIn, LogOut, AlertCircle, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { getPropietarios } from "../../api/propietarios";
 import { createIngreso, getIngresosHoy } from "../../api/ingresos";
+import { getSalidasHoy, createSalida } from "../../api/salidas";
 import Swal from "sweetalert2";
 function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
   const [vehiculosIngreso, setVehiculosIngreso] = useState([]);
-  const [vehiculosSalida, setVehiculosSalida] = useState([]);
   const [propietarios, setPropietarios] = useState([]);
   const [vehiculoSeleccionadoIngreso, setVehiculoSeleccionadoIngreso] =
     useState("");
-  const [vehiculoSeleccionadoSalida, setVehiculoSeleccionadoSalida] =
-    useState("");
   const [ingresosHoy, setIngresosHoy] = useState([]);
+  const [salidasHoy, setSalidasHoy] = useState([]);
   const [ccIngresoInput, setCcIngresoInput] = useState("");
+
   const [idPropietarioIngreso, setIdPropietarioIngreso] = useState("");
 
-  // const [ccSalidaInput, setCcSalidaInput] = useState("");
-  // const [idPropietarioSalida, setIdPropietarioSalida] = useState("");
+  const [ccSalidaInput, setCcSalidaInput] = useState("");
+  const [idPropietarioSalida, setIdPropietarioSalida] = useState("");
+
+  const [errorNotification, setErrorNotification] = useState("");
 
   // Cargar propietarios desde el backend
   const fetchPropietarios = async () => {
@@ -42,10 +44,28 @@ function Home() {
       console.error("Error fetching ingresos hoy:", error);
     }
   };
+  const fetchSalidasHoy = async () => {
+    try {
+      const response = await getSalidasHoy();
+      setSalidasHoy(response.data);
+      console.log("Salidas de hoy cargados:", response.data);
+    } catch (error) {
+      console.error("Error fetching salidas hoy:", error);
+    }
+  };
 
-  const mostrarAlerta = () => {
+  const mostrarAlertaIngreso = () => {
     Swal.fire({
       title: "Ingreso registrado con éxito",
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  const mostrarAlertaSalida = () => {
+    Swal.fire({
+      title: "Salida registrada con éxito",
       icon: "success",
       showConfirmButton: false,
       timer: 1500,
@@ -58,20 +78,29 @@ function Home() {
       const propietario = propietarios.find(
         (p) => String(p.Cedula_propietario) === ccIngresoInput
       );
+
       if (propietario) {
-        setIdPropietarioIngreso(propietario.idPropietario); // guarda el id
-        setVehiculosIngreso(propietario.vehiculos);
+        if (propietario.vehiculos && propietario.vehiculos.length > 0) {
+          setIdPropietarioIngreso(propietario.idPropietario);
+          setVehiculosIngreso(propietario.vehiculos);
+          setCcIngreso(""); // limpia el error
+        } else {
+          setIdPropietarioIngreso(propietario.idPropietario);
+          setVehiculosIngreso([]);
+          setCcIngreso("El propietario no tiene vehículos registrados");
+        }
       } else {
-        setIdPropietarioIngreso(""); // limpia si no existe
+        setIdPropietarioIngreso("");
         setVehiculosIngreso([]);
+        setCcIngreso("Identificación no encontrada");
       }
     } else {
       setIdPropietarioIngreso("");
       setVehiculosIngreso([]);
+      setCcIngreso("");
     }
   };
 
-  // Registrar ingreso
   const handleRegistrarIngreso = async () => {
     if (!idPropietarioIngreso || !vehiculoSeleccionadoIngreso) {
       console.warn(
@@ -87,7 +116,7 @@ function Home() {
     try {
       const { data } = await createIngreso(ingresoData);
       console.log("✅ Ingreso registrado:", data);
-      mostrarAlerta();
+      mostrarAlertaIngreso();
       fetchIngresosHoy();
       setCcIngresoInput("");
       setVehiculoSeleccionadoIngreso("");
@@ -97,240 +126,249 @@ function Home() {
       const errorMsg =
         error.response?.data?.message || "Ocurrió un error inesperado";
       console.warn(`Error: ${errorMsg}`);
+      setErrorNotification(errorMsg);
     }
   };
+  const handleRegistrarSalida = async () => {
+    if (!ccSalidaInput.trim()) {
+      console.warn("⚠️ Debes ingresar una cédula válida.");
+      return;
+    }
+    const propietario = propietarios.find(
+      (p) => String(p.Cedula_propietario) === ccSalidaInput
+    );
 
-  // Buscar propietario para salidas
+    if (!propietario) {
+      console.warn("⚠️ El propietario no existe.");
+      return;
+    }
+
+    try {
+      const salidaData = {
+        Propietario_idPropietario: propietario.idPropietario,
+      };
+
+      const { data } = await createSalida(salidaData);
+      console.log("✅ Salida registrada:", data);
+
+      mostrarAlertaSalida();
+      fetchSalidasHoy();
+      setCcSalidaInput("");
+    } catch (error) {
+      console.error("❌ Error registrando salida:", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        "No se pudo registrar la salida si el propietario no tiene ingresos activos";
+      console.warn(`Error: ${errorMsg}`);
+      setErrorNotification(errorMsg);
+    }
+  };
   const handleBuscarSalida = () => {
-    if (ccSalida.trim() !== "") {
+    if (ccSalidaInput.trim() !== "") {
       const propietario = propietarios.find(
-        (p) => String(p.Cedula_propietario) === ccSalida
+        (p) => String(p.Cedula_propietario) === ccSalidaInput
       );
 
       if (propietario) {
-        setVehiculosSalida(propietario.vehiculos);
+        setIdPropietarioSalida(propietario.idPropietario);
+        setCcSalida("");
+        handleRegistrarSalida();
       } else {
-        setVehiculosSalida([]);
+        setIdPropietarioSalida("");
+        setCcSalida("Identificación no encontrada");
       }
     } else {
-      setVehiculosSalida([]);
-    }
-  };
-
-  // Registrar salida (aquí iría la petición real al backend)
-  const handleRegistrarSalida = () => {
-    if (ccSalida && vehiculoSeleccionadoSalida) {
-      console.log("Registrando salida:", {
-        cedula: ccSalida,
-        vehiculo: vehiculoSeleccionadoSalida,
-      });
-      // Aquí puedes llamar a tu API
-    } else {
-      alert("Debes ingresar la identificación y seleccionar un vehículo.");
+      setIdPropietarioSalida("");
+      setCcSalida("");
+      setCcSalidaInput("");
     }
   };
 
   useEffect(() => {
     fetchPropietarios();
     fetchIngresosHoy();
-  }, []);
+    fetchSalidasHoy();
+    if (errorNotification) {
+      const timer = setTimeout(() => setErrorNotification(""), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [errorNotification]);
 
   return (
-    <div className=" bg-gradient-to-r from-green-50 to-gray-100 h-[85vh] flex items-center justify-center px-6 py-6">
+    <div className="bg-gradient-to-r from-green-50 to-gray-100 h-[85vh] flex items-center justify-center px-6 py-6">
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* ---------------- Panel Izquierdo: INGRESOS ---------------- */}
+        {/* -------------------- Notificación de error ------------------------ */}
+
+        {errorNotification && (
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed top-20 left-0 w-full bg-red-100 text-red-700 border-t border-b border-red-300 
+             py-3 shadow-md z-50 flex items-center justify-center gap-2 text-center"
+          >
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <span className="font-semibold">{errorNotification}</span>
+          </motion.div>
+        )}
+
+        {/* ---------- Panel de Ingresos ---------- */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-xl p-8 flex flex-col justify-between"
+          className="bg-white rounded-2xl shadow-xl p-8 flex flex-col"
         >
-          {/* Estadísticas de ingresos */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-green-100 rounded-xl p-4 flex items-center gap-3"
-            >
-              <div className="bg-green-600 text-white p-3 rounded-full">
-                <LogIn size={24} />
-              </div>
-              <div>
-                <h3 className="text-sm text-gray-600">Ingresos Hoy</h3>
-                <p className="text-xl font-bold text-gray-800">{ingresosHoy}</p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Formulario de ingresos */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Ingresos Vehiculares
-            </h2>
-            <motion.input
-              type="text"
-              placeholder="Número de identificación"
-              value={ccIngresoInput}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value)) {
-                  setCcIngresoInput(value);
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleBuscarIngreso();
-                }
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 mb-4"
-              whileFocus={{ scale: 1.02 }}
-            />
-            {/* SELECT arriba del botón */}
-            <div className="mb-4">
-              {vehiculosIngreso.length > 0 ? (
-                <motion.select
-                  value={vehiculoSeleccionadoIngreso}
-                  onChange={(e) =>
-                    setVehiculoSeleccionadoIngreso(e.target.value)
-                  }
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <option value="">Selecciona un vehículo</option>
-                  {vehiculosIngreso.map((v) => (
-                    <option key={v.idVehiculo} value={v.idVehiculo}>
-                      {v.Placa_vehiculo} - {v.Modelo_vehiculo}
-                    </option>
-                  ))}
-                </motion.select>
-              ) : (
-                <p className="text-gray-500 text-center">
-                  No hay vehículos registrados aún
-                </p>
-              )}
+          {/* Estadística */}
+          <div className="flex items-center gap-4 bg-green-50 rounded-xl p-4 mb-8">
+            <div className="bg-green-600 text-white p-3 rounded-full">
+              <LogIn size={24} />
             </div>
-
-            <motion.button
-              onClick={
-                vehiculosIngreso.length > 0
-                  ? handleRegistrarIngreso
-                  : handleBuscarIngreso
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
-            >
-              {vehiculosIngreso.length > 0 ? (
-                <>
-                  Registrar Ingreso <LogIn />
-                </>
-              ) : (
-                <>
-                  Buscar <Car />
-                </>
-              )}
-            </motion.button>
+            <div>
+              <h3 className="text-sm text-gray-600">Ingresos Hoy</h3>
+              <p className="text-2xl font-bold text-gray-900">{ingresosHoy}</p>
+            </div>
           </div>
+
+          {/* Formulario */}
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Ingresos Vehiculares
+          </h2>
+          <motion.input
+            type="text"
+            placeholder="Número de identificación"
+            value={ccIngresoInput}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value)) setCcIngresoInput(value);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleBuscarIngreso()}
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none mb-4 transition-colors"
+            whileFocus={{ scale: 1.02 }}
+          />
+          {ccIngreso && (
+            <div
+              className={`flex items-center gap-2 mt-2 mb-4 px-3 py-2 rounded-lg text-sm font-medium shadow-sm 
+    ${
+      ccIngreso === "Identificación no encontrada" ||
+      ccIngreso === "El propietario no tiene vehículos registrados"
+        ? "bg-red-100 text-red-600 border border-red-300"
+        : "bg-green-100 text-green-700 border border-green-300"
+    }`}
+            >
+              {ccIngreso === "Identificación no encontrada" ? (
+                <AlertCircle className="w-4 h-4" />
+              ) : (
+                <CheckCircle className="w-4 h-4" />
+              )}
+              <span>{ccIngreso}</span>
+            </div>
+          )}
+          {/* Select */}
+          {vehiculosIngreso.length > 0 && (
+            <motion.select
+              value={vehiculoSeleccionadoIngreso}
+              onChange={(e) => setVehiculoSeleccionadoIngreso(e.target.value)}
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <option value="">Selecciona un vehículo</option>
+              {vehiculosIngreso.map((v) => (
+                <option key={v.idVehiculo} value={v.idVehiculo}>
+                  {v.Placa_vehiculo} - {v.Modelo_vehiculo}
+                </option>
+              ))}
+            </motion.select>
+          )}
+
+          {/* Botón */}
+          <motion.button
+            onClick={
+              vehiculosIngreso.length > 0
+                ? handleRegistrarIngreso
+                : handleBuscarIngreso
+            }
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
+          >
+            {vehiculosIngreso.length > 0 ? (
+              <>
+                Registrar Ingreso <LogIn />
+              </>
+            ) : (
+              <>
+                Buscar <Car />
+              </>
+            )}
+          </motion.button>
         </motion.div>
 
-        {/* ---------------- Panel Derecho: SALIDAS ---------------- */}
+        {/* ---------- Panel de Salidas ---------- */}
         <motion.div
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-xl p-8 flex flex-col justify-between"
+          className="bg-white rounded-2xl shadow-xl p-8 flex flex-col"
         >
-          {/* Estadísticas de salidas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-red-100 rounded-xl p-4 flex items-center gap-3"
-            >
-              <div className="bg-red-600 text-white p-3 rounded-full">
-                <LogOut size={24} />
-              </div>
-              <div>
-                <h3 className="text-sm text-gray-600">Salidas Hoy</h3>
-                <p className="text-xl font-bold text-gray-800">18</p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Formulario de salidas */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Salidas Vehiculares
-            </h2>
-            <motion.input
-              type="text"
-              placeholder="Número de identificación"
-              value={ccSalida}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*$/.test(value)) {
-                  setCcSalida(value);
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleBuscarSalida();
-                }
-              }}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 mb-4"
-              whileFocus={{ scale: 1.02 }}
-            />
-
-            {/* SELECT arriba del botón */}
-            <div className="mb-4">
-              {vehiculosSalida.length > 0 ? (
-                <motion.select
-                  value={vehiculoSeleccionadoSalida}
-                  onChange={(e) =>
-                    setVehiculoSeleccionadoSalida(e.target.value)
-                  }
-                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <option value="">Selecciona un vehículo</option>
-                  {vehiculosSalida.map((v) => (
-                    <option key={v.idVehiculo} value={v.idVehiculo}>
-                      {v.Placa_vehiculo} - {v.Modelo_vehiculo}
-                    </option>
-                  ))}
-                </motion.select>
-              ) : (
-                <p className="text-gray-500 text-center">
-                  No hay vehículos registrados aún
-                </p>
-              )}
+          {/* Estadística */}
+          <div className="flex items-center gap-4 bg-red-50 rounded-xl p-4 mb-8">
+            <div className="bg-red-600 text-white p-3 rounded-full">
+              <LogOut size={24} />
             </div>
-
-            <motion.button
-              onClick={
-                vehiculosSalida.length > 0
-                  ? handleRegistrarSalida
-                  : handleBuscarSalida
-              }
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
-            >
-              {vehiculosSalida.length > 0 ? (
-                <>
-                  Registrar Salida <LogOut />
-                </>
-              ) : (
-                <>
-                  Buscar <Car />
-                </>
-              )}
-            </motion.button>
+            <div>
+              <h3 className="text-sm text-gray-600">Salidas Hoy</h3>
+              <p className="text-2xl font-bold text-gray-900">{salidasHoy}</p>
+            </div>
           </div>
+
+          {/* Formulario */}
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Salidas Vehiculares
+          </h2>
+          <motion.input
+            type="text"
+            placeholder="Número de identificación"
+            value={ccSalidaInput}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value)) setCcSalidaInput(value);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleBuscarSalida()}
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:outline-none mb-4 transition-colors"
+            whileFocus={{ scale: 1.02 }}
+          />
+
+          {/* Mensaje dinámico igual al de Ingresos */}
+          {ccSalida && (
+            <div
+              className={`flex items-center gap-2 mt-2 mb-4 px-3 py-2 rounded-lg text-sm font-medium shadow-sm 
+      ${
+        ccSalida === "Identificación no encontrada"
+          ? "bg-red-100 text-red-600 border border-red-300"
+          : "bg-green-100 text-green-700 border border-green-300"
+      }`}
+            >
+              {ccSalida === "Identificación no encontrada" ? (
+                <AlertCircle className="w-4 h-4" />
+              ) : (
+                <CheckCircle className="w-4 h-4" />
+              )}
+              <span>{ccSalida}</span>
+            </div>
+          )}
+
+          {/* Botón */}
+          <motion.button
+            onClick={handleRegistrarSalida}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
+          >
+            Registrar Salida <LogOut />
+          </motion.button>
         </motion.div>
       </div>
     </div>

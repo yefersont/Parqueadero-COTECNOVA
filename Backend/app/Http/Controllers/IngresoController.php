@@ -26,23 +26,35 @@ class IngresoController extends Controller
         try {
             $request->validate([
                 'Propietario_idPropietario' => 'required|integer',
-                'Vehiculo_idVehiculo' =>  'required|integer',
+                'Vehiculo_idVehiculo' => 'required|integer',
             ]);
-            $ingreso = Ingreso::create(
-                [
-                    'Propietario_idPropietario' => $request->Propietario_idPropietario,
-                    'Vehiculo_idVehiculo' => $request->Vehiculo_idVehiculo,
-                    'fecha_ingreso' => Carbon::now(),
-                    'hora_ingreso' => Carbon::now()->format('H:i:s'),
-                ]
-            );
+            $ingresoPendiente = Ingreso::where('Propietario_idPropietario', $request->Propietario_idPropietario)
+                ->whereDoesntHave('salidas')
+                ->latest('fecha_ingreso')
+                ->first();
+            if ($ingresoPendiente) {
+                return response()->json([
+                    'error' => 'Ingreso pendiente',
+                    'message' => 'El propietario ya tiene un ingreso sin salida registrada.'
+                ], 422);
+            }
+            $ingreso = Ingreso::create([
+                'Propietario_idPropietario' => $request->Propietario_idPropietario,
+                'Vehiculo_idVehiculo' => $request->Vehiculo_idVehiculo,
+                'fecha_ingreso' => Carbon::now()->toDateString(),
+                'hora_ingreso' => Carbon::now()->format('H:i:s'),
+            ]);
             return response()->json($ingreso, 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => 'Datos inválidos', 'message'
-            => $e->getMessage()], 422);
+            return response()->json([
+                'error' => 'Datos inválidos',
+                'message' => $e->getMessage()
+            ], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al registrar el ingreso', 'message'
-            => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al registrar el ingreso',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
