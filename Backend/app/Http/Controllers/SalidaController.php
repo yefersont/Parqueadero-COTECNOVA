@@ -80,9 +80,14 @@ class SalidaController extends Controller
     public function ShowToday()
     {
         try {
-            $salidas = Salida::whereDate('fecha_salida', Carbon::today())
-                ->count();
-            return response()->json($salidas);
+            $salidas = Salida::with('ingreso.propietario', 'ingreso.vehiculo')
+                ->whereDate('fecha_salida', Carbon::today())->get();
+
+            $total = $salidas->count();
+            return response()->json([
+                'total' => $total,
+                'registros' => $salidas
+            ]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Error en la consulta de la base de datos', 'message'
             => $e->getMessage()], 500);

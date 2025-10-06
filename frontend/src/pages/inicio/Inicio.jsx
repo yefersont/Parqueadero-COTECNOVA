@@ -5,7 +5,9 @@ import { motion } from "framer-motion";
 import { getPropietarios } from "../../api/propietarios";
 import { createIngreso, getIngresosHoy } from "../../api/ingresos";
 import { getSalidasHoy, createSalida } from "../../api/salidas";
+import Modal from "../../components/Modal";
 import Swal from "sweetalert2";
+import TablaConPaginacion from "../../components/TablaconPaginacion";
 function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
@@ -16,13 +18,12 @@ function Home() {
   const [ingresosHoy, setIngresosHoy] = useState([]);
   const [salidasHoy, setSalidasHoy] = useState([]);
   const [ccIngresoInput, setCcIngresoInput] = useState("");
-
   const [idPropietarioIngreso, setIdPropietarioIngreso] = useState("");
-
   const [ccSalidaInput, setCcSalidaInput] = useState("");
   const [idPropietarioSalida, setIdPropietarioSalida] = useState("");
-
   const [errorNotification, setErrorNotification] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenSalidas, setIsModalOpenSalidas] = useState(false);
 
   // Cargar propietarios desde el backend
   const fetchPropietarios = async () => {
@@ -184,6 +185,14 @@ function Home() {
     }
   };
 
+  const handleClickIngresos = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleClickSalidas = () => {
+    setIsModalOpenSalidas(true);
+  };
+
   useEffect(() => {
     fetchPropietarios();
     fetchIngresosHoy();
@@ -193,6 +202,46 @@ function Home() {
       return () => clearTimeout(timer);
     }
   }, [errorNotification]);
+
+  // Tabla modal de ingresos de hoy
+
+  const columnasIngresos = [
+    "Propietario",
+    "Telefono",
+    "Vehículo",
+    "Fecha",
+    "Hora",
+  ];
+
+  const datosIngresos = ingresosHoy.registros?.map((i) => ({
+    Propietario:
+      i.propietario.Nombre_propietario +
+      " " +
+      i.propietario.Apellido_propietario,
+    Telefono: i.propietario.Telefono_propietario,
+    Vehículo: i.vehiculo.Placa_vehiculo,
+    Fecha: i.fecha_ingreso,
+    Hora: i.hora_ingreso,
+  }));
+
+  // Tabla modal de salidas de hoy
+  const columnasSalidas = [
+    "Propietario",
+    "Cédula",
+    "Teléfono",
+    "Vehículo",
+    "Fecha y hora ingreso",
+    "Fecha y hora Salida",
+  ];
+
+  const datosSalidas = salidasHoy?.registros?.map((s) => ({
+    Propietario: `${s.ingreso.propietario.Nombre_propietario} ${s.ingreso.propietario.Apellido_propietario}`,
+    Cédula: s.ingreso.propietario.Cedula_propietario,
+    Teléfono: s.ingreso.propietario.Telefono_propietario,
+    Vehículo: s.ingreso.vehiculo.Placa_vehiculo,
+    "Fecha Ingreso": s.ingreso.fecha_ingreso + "  " + s.ingreso.hora_ingreso,
+    "Fecha Salida": s.fecha_salida + "   " + s.hora_salida,
+  }));
 
   return (
     <div className="bg-gradient-to-r from-green-50 to-gray-100 h-[85vh] flex items-center justify-center px-6 py-6">
@@ -221,13 +270,18 @@ function Home() {
           className="bg-white rounded-2xl shadow-xl p-8 flex flex-col"
         >
           {/* Estadística */}
-          <div className="flex items-center gap-4 bg-green-50 rounded-xl p-4 mb-8">
-            <div className="bg-green-600 text-white p-3 rounded-full">
+          <div
+            onClick={handleClickIngresos}
+            className="flex items-center gap-4 bg-green-50 rounded-xl p-4 mb-8 cursor-pointer transition-all duration-300 hover:shadow-lg hover:bg-green-100 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <div className="bg-green-600 text-white p-3 rounded-full transition-transform duration-300 group-hover:rotate-6">
               <LogIn size={24} />
             </div>
             <div>
               <h3 className="text-sm text-gray-600">Ingresos Hoy</h3>
-              <p className="text-2xl font-bold text-gray-900">{ingresosHoy}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {ingresosHoy.total}
+              </p>
             </div>
           </div>
 
@@ -314,13 +368,18 @@ function Home() {
           className="bg-white rounded-2xl shadow-xl p-8 flex flex-col"
         >
           {/* Estadística */}
-          <div className="flex items-center gap-4 bg-red-50 rounded-xl p-4 mb-8">
-            <div className="bg-red-600 text-white p-3 rounded-full">
+          <div
+            onClick={handleClickSalidas}
+            className="flex items-center gap-4 bg-red-50 rounded-xl p-4 mb-8 cursor-pointer transition-all duration-300 hover:shadow-lg hover:bg-red-100 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <div className="bg-red-600 text-white p-3 rounded-full transition-transform duration-300 group-hover:rotate-6">
               <LogOut size={24} />
             </div>
             <div>
               <h3 className="text-sm text-gray-600">Salidas Hoy</h3>
-              <p className="text-2xl font-bold text-gray-900">{salidasHoy}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {salidasHoy.total}
+              </p>
             </div>
           </div>
 
@@ -371,6 +430,38 @@ function Home() {
           </motion.button>
         </motion.div>
       </div>
+
+      {/* modal ingresos de  hoy */}
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          size="xl"
+        >
+          <TablaConPaginacion
+            titulo="Ingresos Hoy"
+            columnas={columnasIngresos}
+            datos={datosIngresos}
+            mostrarControles={false}
+          />
+        </Modal>
+      )}
+
+      {/* modal saldias de  hoy */}
+      {isModalOpenSalidas && (
+        <Modal
+          isOpen={isModalOpenSalidas}
+          onClose={() => setIsModalOpenSalidas(false)}
+          size="xl"
+        >
+          <TablaConPaginacion
+            titulo="Salidas Hoy"
+            columnas={columnasSalidas}
+            datos={datosSalidas}
+            mostrarControles={false}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

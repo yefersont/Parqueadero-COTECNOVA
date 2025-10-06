@@ -84,15 +84,25 @@ class IngresoController extends Controller
     public function ShowToday()
     {
         try {
-            $ingresos = Ingreso::whereDate('fecha_ingreso', Carbon::today())
-                ->count();
-            return response()->json($ingresos);
+            // Obtener todos los ingresos de hoy
+            $ingresos = Ingreso::with('propietario', 'vehiculo')
+                ->whereDate('fecha_ingreso', Carbon::today())->get();
+            $total = $ingresos->count();
+
+            return response()->json([
+                'total' => $total,
+                'registros' => $ingresos
+            ]);
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['error' => 'Error en la consulta de la base de datos', 'message'
-            => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error en la consulta de la base de datos',
+                'message' => $e->getMessage()
+            ], 500);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener los ingresos de hoy', 'message'
-            => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al obtener los ingresos de hoy',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }
