@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPropietario } from "../api/propietarios";
 import { motion } from "framer-motion";
 import { User, Phone, CreditCard } from "lucide-react";
+import { useRegistro } from "../context/RegistroContext";
 
 // Formulario para registrar o editar propietarios
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
@@ -14,7 +15,7 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   });
 
   // Guardar el ID del propietario creado
-  const [Id, setIdPropietario] = useState(null);
+  const { setIdPropietario } = useRegistro();
 
   // Cargar valores iniciales si se proporcionan (para edición)
   useEffect(() => {
@@ -52,7 +53,6 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
       .then((res) => {
         console.log("Propietario creado:", res.data);
         setIdPropietario(res.data.idPropietario);
-        console.log("id: ", Id);
         if (onSubmit) onSubmit(res.data);
       })
       .catch((err) => {

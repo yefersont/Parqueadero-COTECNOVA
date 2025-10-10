@@ -1,6 +1,13 @@
 // src/pages/Home.jsx
 import { useState, useEffect } from "react";
-import { Car, LogIn, LogOut, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Car,
+  LogIn,
+  LogOut,
+  AlertCircle,
+  CheckCircle,
+  Download,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { getPropietarios } from "../../api/propietarios";
 import { createIngreso, getIngresosHoy } from "../../api/ingresos";
@@ -243,25 +250,39 @@ function Home() {
     "Fecha Salida": s.fecha_salida + "   " + s.hora_salida,
   }));
 
+  // Llama a la funcion para crear el pdf
+  const handleDescargarPDF = () => {
+    window.open("http://127.0.0.1:8000/api/reportes/ingresos", "_blank");
+  };
   return (
-    <div className="bg-gradient-to-r from-green-50 to-gray-100 h-[85vh] flex items-center justify-center px-6 py-6">
+    <div className="relative bg-gradient-to-r from-green-50 to-gray-100 min-h-[85vh] flex flex-col items-center justify-center px-6 py-10">
+      {/* -------------------- Notificación de error -------------------- */}
+      {errorNotification && (
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed top-20 left-0 w-full bg-red-100 text-red-700 border-t border-b border-red-300 py-3 shadow-md z-50 flex items-center justify-center gap-2 text-center"
+        >
+          <AlertCircle className="w-5 h-5 text-red-600" />
+          <span className="font-semibold">{errorNotification}</span>
+        </motion.div>
+      )}
+
+      {/* ---------- Botón descargar registros diarios ---------- */}
+      <div className="w-full max-w-6xl mb-8 flex justify-start">
+        <motion.button
+          onClick={handleDescargarPDF}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-md transition-all duration-300"
+        >
+          <Download /> Descargar registros
+        </motion.button>
+      </div>
+
       <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* -------------------- Notificación de error ------------------------ */}
-
-        {errorNotification && (
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-20 left-0 w-full bg-red-100 text-red-700 border-t border-b border-red-300 
-             py-3 shadow-md z-50 flex items-center justify-center gap-2 text-center"
-          >
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <span className="font-semibold">{errorNotification}</span>
-          </motion.div>
-        )}
-
         {/* ---------- Panel de Ingresos ---------- */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
@@ -274,7 +295,7 @@ function Home() {
             onClick={handleClickIngresos}
             className="flex items-center gap-4 bg-green-50 rounded-xl p-4 mb-8 cursor-pointer transition-all duration-300 hover:shadow-lg hover:bg-green-100 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <div className="bg-green-600 text-white p-3 rounded-full transition-transform duration-300 group-hover:rotate-6">
+            <div className="bg-green-600 text-white p-3 rounded-full">
               <LogIn size={24} />
             </div>
             <div>
@@ -285,10 +306,11 @@ function Home() {
             </div>
           </div>
 
-          {/* Formulario */}
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             Ingresos Vehiculares
           </h2>
+
+          {/* Campo de búsqueda */}
           <motion.input
             type="text"
             placeholder="Número de identificación"
@@ -301,15 +323,17 @@ function Home() {
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none mb-4 transition-colors"
             whileFocus={{ scale: 1.02 }}
           />
+
+          {/* Mensaje de resultado */}
           {ccIngreso && (
             <div
               className={`flex items-center gap-2 mt-2 mb-4 px-3 py-2 rounded-lg text-sm font-medium shadow-sm 
-    ${
-      ccIngreso === "Identificación no encontrada" ||
-      ccIngreso === "El propietario no tiene vehículos registrados"
-        ? "bg-red-100 text-red-600 border border-red-300"
-        : "bg-green-100 text-green-700 border border-green-300"
-    }`}
+            ${
+              ccIngreso === "Identificación no encontrada" ||
+              ccIngreso === "El propietario no tiene vehículos registrados"
+                ? "bg-red-100 text-red-600 border border-red-300"
+                : "bg-green-100 text-green-700 border border-green-300"
+            }`}
             >
               {ccIngreso === "Identificación no encontrada" ? (
                 <AlertCircle className="w-4 h-4" />
@@ -319,7 +343,8 @@ function Home() {
               <span>{ccIngreso}</span>
             </div>
           )}
-          {/* Select */}
+
+          {/* Select de vehículo */}
           {vehiculosIngreso.length > 0 && (
             <motion.select
               value={vehiculoSeleccionadoIngreso}
@@ -337,7 +362,7 @@ function Home() {
             </motion.select>
           )}
 
-          {/* Botón */}
+          {/* Botón principal */}
           <motion.button
             onClick={
               vehiculosIngreso.length > 0
@@ -367,12 +392,11 @@ function Home() {
           transition={{ duration: 0.3 }}
           className="bg-white rounded-2xl shadow-xl p-8 flex flex-col"
         >
-          {/* Estadística */}
           <div
             onClick={handleClickSalidas}
             className="flex items-center gap-4 bg-red-50 rounded-xl p-4 mb-8 cursor-pointer transition-all duration-300 hover:shadow-lg hover:bg-red-100 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <div className="bg-red-600 text-white p-3 rounded-full transition-transform duration-300 group-hover:rotate-6">
+            <div className="bg-red-600 text-white p-3 rounded-full">
               <LogOut size={24} />
             </div>
             <div>
@@ -383,10 +407,10 @@ function Home() {
             </div>
           </div>
 
-          {/* Formulario */}
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             Salidas Vehiculares
           </h2>
+
           <motion.input
             type="text"
             placeholder="Número de identificación"
@@ -400,15 +424,14 @@ function Home() {
             whileFocus={{ scale: 1.02 }}
           />
 
-          {/* Mensaje dinámico igual al de Ingresos */}
           {ccSalida && (
             <div
               className={`flex items-center gap-2 mt-2 mb-4 px-3 py-2 rounded-lg text-sm font-medium shadow-sm 
-      ${
-        ccSalida === "Identificación no encontrada"
-          ? "bg-red-100 text-red-600 border border-red-300"
-          : "bg-green-100 text-green-700 border border-green-300"
-      }`}
+            ${
+              ccSalida === "Identificación no encontrada"
+                ? "bg-red-100 text-red-600 border border-red-300"
+                : "bg-green-100 text-green-700 border border-green-300"
+            }`}
             >
               {ccSalida === "Identificación no encontrada" ? (
                 <AlertCircle className="w-4 h-4" />
@@ -419,7 +442,6 @@ function Home() {
             </div>
           )}
 
-          {/* Botón */}
           <motion.button
             onClick={handleRegistrarSalida}
             whileHover={{ scale: 1.05 }}
@@ -431,7 +453,7 @@ function Home() {
         </motion.div>
       </div>
 
-      {/* modal ingresos de  hoy */}
+      {/* ---------- Modales ---------- */}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
@@ -447,7 +469,6 @@ function Home() {
         </Modal>
       )}
 
-      {/* modal saldias de  hoy */}
       {isModalOpenSalidas && (
         <Modal
           isOpen={isModalOpenSalidas}

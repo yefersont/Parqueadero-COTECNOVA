@@ -29,7 +29,10 @@ class VehiculoHasPropietario extends Model
 		'Vehiculo_idVehiculo' => 'int',
 		'Propietario_idPropietario' => 'int'
 	];
-
+	protected $fillable = [
+		'Vehiculo_idVehiculo',
+		'Propietario_idPropietario',
+	];
 	public function propietario()
 	{
 		return $this->belongsTo(Propietario::class, 'Propietario_idPropietario');

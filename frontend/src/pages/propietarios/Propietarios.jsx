@@ -5,14 +5,18 @@ import Loader from "../../components/Loader";
 import Modal from "../../components/Modal";
 import FormularioPropietario from "../../components/FormularioPropietarios";
 import FormularioVehiculo from "../../components/FormularioVehiculo";
+import { useRegistro } from "../../context/RegistroContext";
+import { createVehiculoHasPropietario } from "../../api/vehiculohaspropietario";
+
 import Swal from "sweetalert2";
 function Propietarios() {
   const [propietarios, setPropietarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isVehiculoOpen, setIsVehiculoOpen] = useState(false);
-
+  const { setIdPropietario } = useRegistro();
   const [busqueda, setBusqueda] = useState("");
+  const { idPropietario } = useRegistro();
 
   useEffect(() => {
     getPropietarios()
@@ -23,11 +27,11 @@ function Propietarios() {
       .catch((err) => console.error(err));
   }, []);
 
-  const columnas = ["Cédula", "Nombre", "Apellido", "Teléfono", "Rol"];
+  // Campos para la tabla propietarios
+  const columnas = ["Cédula", "Nombre completo", "Teléfono", "Rol"];
   const datos = propietarios.map((i) => ({
     Cédula: i.Cedula_propietario,
-    Nombre: i.Nombre_propietario,
-    Apellido: i.Apellido_propietario,
+    Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
     Teléfono: i.Telefono_propietario,
     Rol: i.rol.Rol,
   }));
@@ -65,10 +69,36 @@ function Propietarios() {
     });
   };
 
+  const AlertAsociacion = () => {
+    Swal.fire({
+      title: "Vehiculo asociado con éxito",
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  const asociar = (newVehiculo) => {
+    const form = {
+      Vehiculo_idVehiculo: newVehiculo,
+      Propietario_idPropietario: idPropietario,
+    };
+    createVehiculoHasPropietario(form)
+      .then((res) => {
+        console.log("✅ Asociación creada correctamente:", res.data);
+        AlertAsociacion();
+      })
+      .catch((err) => {
+        console.error("Error al asociar vehículo y propietario:", err);
+        console.log("Datos enviados:", form);
+      });
+  };
+
   return cargando ? (
     <Loader texto="Cargando propietarios..." />
   ) : (
     <>
+      {/* Tabla */}
       <TablaConPaginacion
         titulo="Propietarios"
         columnas={columnas}
@@ -81,12 +111,19 @@ function Propietarios() {
           console.log("Buscar propietario:", valor);
         }}
         deshabilitarFechas={true}
+        onRowClick={(fila) => {
+          console.log("🧾 Fila seleccionada:", fila.idPropietario);
+        }}
       />
+
+      {/* Modal para Agregar un propietario */}
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-2xl font-bold mb-4">Agregar propietario</h2>
         <FormularioPropietario
           onSubmit={(data) => {
             console.log("Guardar propietario:", data);
+            const NuevoId = data.idPropietario;
+            setIdPropietario(NuevoId);
             setIsOpen(false);
             mostrarAlerta();
           }}
@@ -94,12 +131,14 @@ function Propietarios() {
         />
       </Modal>
 
+      {/* Modal para registrar un nuevo vehiculo */}
       <Modal isOpen={isVehiculoOpen} onClose={() => setIsVehiculoOpen(false)}>
         <h2 className="text-2xl font-bold mb-4">Registrar nuevo vehículo</h2>
         <FormularioVehiculo
           onSubmit={(vehiculo) => {
             console.log("Vehículo registrado:", vehiculo);
             setIsVehiculoOpen(false);
+            asociar(vehiculo.vehiculo);
           }}
           onCancel={() => setIsVehiculoOpen(false)}
         />

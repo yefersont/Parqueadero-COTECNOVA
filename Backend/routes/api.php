@@ -9,6 +9,8 @@ use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\TipoVehiculoController;
 use App\Http\Controllers\MarcaVehiculoController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\VehiculoHasPropietarioController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,3 +35,5 @@ Route::apiResource('vehiculos', VehiculoController::class);
 Route::apiResource('propietarios', PropietarioController::class);
 Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
 Route::apiResource('marcavehiculos', MarcaVehiculoController::class);
+Route::apiResource('asociar',  VehiculoHasPropietarioController::class);
+Route::get('/reportes/ingresos', [ReporteController::class, 'descargarIngresos']);

@@ -13,7 +13,7 @@ class VehiculoController extends Controller
     public function index()
     {
         //
-        $vehiculos = Vehiculo::with('Tipo_vehiculo')->get();
+        $vehiculos = Vehiculo::with('Tipo_vehiculo', 'marca_vehiculo')->get();
         return response()->json($vehiculos);
     }
 
@@ -22,13 +22,11 @@ class VehiculoController extends Controller
      */
     public function store(Request $request)
     {
-        //
-
         try {
             $request->validate([
                 'Tipo_vehiculo' => 'required|exists:tipo_vehiculo,idTipo_vehiculo',
                 'Marca_vehiculo' => 'required|exists:marca_vehiculo,idMarca_vehiculo',
-                'Placa_vehiculo' => 'required|string|max:45',
+                'Placa_vehiculo' => 'required|string|max:45|unique:vehiculo,Placa_vehiculo',
                 'Modelo_vehiculo' => 'required|string|max:45'
             ]);
             $vehiculo = Vehiculo::create($request->all());
@@ -40,7 +38,6 @@ class VehiculoController extends Controller
             return response()->json(['error' => 'Error al crear el vehiculo', 'message' => $e->getMessage()], 500);
         }
     }
-
     /**
      * Display the specified resource.
      */

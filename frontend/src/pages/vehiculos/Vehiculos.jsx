@@ -28,7 +28,7 @@ function Vehiculos() {
   // Mapear datos de vehículos para la tabla
   const datos = vehiculos.map((i) => ({
     Tipo: i.tipo_vehiculo.Tipo_vehiculo,
-    Marca: i.Marca_vehiculo,
+    Marca: i.marca_vehiculo.Marca_vehiculo,
     Placa: i.Placa_vehiculo,
     Modelo: i.Modelo_vehiculo,
   }));

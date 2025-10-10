@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api/vehiculos    ";
+const API_URL = "http://127.0.0.1:8000/api/vehiculos";
 
 export const getVehiculos = () => axios.get(API_URL);
 export const getVehiculo = (id) => axios.get(`${API_URL}/${id}`);

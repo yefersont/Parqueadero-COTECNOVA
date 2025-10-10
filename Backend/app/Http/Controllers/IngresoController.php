@@ -81,6 +81,7 @@ class IngresoController extends Controller
     {
         //
     }
+
     public function ShowToday()
     {
         try {

@@ -4,6 +4,7 @@ import { CreditCard, Truck, Edit3, Hash } from "lucide-react";
 import { getTiposVehiculos } from "../api/tp_vehiculo";
 import { getMarcasVehiculos } from "../api/marcavehiculo";
 import { createVehiculo } from "../api/vehiculos";
+import { useRegistro } from "../context/RegistroContext";
 
 // Formulario para registrar o editar vehículos
 function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
@@ -17,6 +18,9 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
   // Estados para tipos y marcas de vehículos
   const [tiposVehiculos, setTiposVehiculos] = useState([]);
   const [marcasVehiculos, setMarcasVehiculos] = useState([]);
+
+  // Guarda en el context los Id's
+  const { setVehiculoPropietario } = useRegistro();
 
   // Cargar tipos y marcas de vehículos al montar el componente
   useEffect(() => {
@@ -74,6 +78,7 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
     createVehiculo(form)
       .then((res) => {
         console.log("Vehículo creado:", res.data);
+        setVehiculoPropietario(res.data.idVehiculo);
         if (onSubmit) onSubmit(res.data);
       })
       .catch((err) => {

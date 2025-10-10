@@ -14,19 +14,10 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      {/* main crece, pero puede hacer scroll interno sin empujar el footer */}
       <main className="flex-grow overflow-auto min-h-0">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <h1 className="text-xl font-bold p-6">
-                Bienvenido al sistema 🚀
-              </h1>
-            }
-          />
+          <Route path="/" element={<Inicio />} />
           <Route path="/inicio" element={<Inicio />} />
-
           <Route path="/propietario" element={<Propietarios />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/vehiculos" element={<Vehiculos />} />
@@ -34,7 +25,6 @@ function App() {
           <Route path="/salidas" element={<Salidas />} />
         </Routes>
       </main>
-
       <Footer />
     </div>
   );

@@ -13,6 +13,7 @@ function TablaConPaginacion({
   deshabilitarFechas = false,
   onBuscar,
   mostrarControles = true,
+  onRowClick,
 }) {
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaInput, setBusquedaInput] = useState("");
@@ -155,7 +156,10 @@ function TablaConPaginacion({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-green-50 transition-all duration-200 cursor-pointer"
+                    onClick={() => {
+                      if (typeof onRowClick === "function") onRowClick(fila);
+                    }}
                   >
                     {Object.values(fila).map((valor, i) => (
                       <td

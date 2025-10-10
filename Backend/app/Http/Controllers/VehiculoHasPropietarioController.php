@@ -21,6 +21,15 @@ class VehiculoHasPropietarioController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'Vehiculo_idVehiculo'  => 'required|integer',
+            'Propietario_idPropietario' => 'required|integer'
+        ]);
+        $asociar = VehiculoHasPropietario::create($request->all());
+        return response()->json([
+            'message' => 'Propietario y vehiculo asociado',
+            'date' => $asociar
+        ]);
     }
 
     /**

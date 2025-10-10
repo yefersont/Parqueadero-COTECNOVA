@@ -22,7 +22,7 @@ class PropietarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
         try {
             $request->validate([
                 'Cedula_propietario' => 'required|unique:propietario,Cedula_propietario',
