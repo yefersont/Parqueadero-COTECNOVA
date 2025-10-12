@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Propietario;
 use Illuminate\Http\Request;
 
+
 class PropietarioController extends Controller
 {
     /**
@@ -84,5 +85,13 @@ class PropietarioController extends Controller
     public function destroy(Propietario $propietario)
     {
         //
+    }
+    public function getVehiculosByPropietario($propietarioId)
+    {
+        $propietario = Propietario::with('vehiculos.Tipo_vehiculo', 'vehiculos.Marca_vehiculo')->find($propietarioId);
+        if (!$propietario) {
+            return response()->json(['message' => 'Propietario no encontrado'], 404);
+        }
+        return response()->json($propietario->vehiculos);
     }
 }

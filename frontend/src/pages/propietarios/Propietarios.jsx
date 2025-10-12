@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getPropietarios } from "../../api/propietarios";
+import {
+  getPropietarios,
+  getVehiculosByPropietario,
+} from "../../api/propietarios";
+import { Car, Calendar, BadgeInfo, X } from "lucide-react";
+
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
 import Modal from "../../components/Modal";
@@ -14,8 +19,12 @@ function Propietarios() {
   const [cargando, setCargando] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isVehiculoOpen, setIsVehiculoOpen] = useState(false);
+  const [isInformationOpen, setIsInformationOpen] = useState(false);
   const { setIdPropietario } = useRegistro();
   const [busqueda, setBusqueda] = useState("");
+  const [vehiculosPropietario, setVehiculosPropietario] = useState([]);
+  const [idPropietarioSeleccionado, setIdPropietarioSeleccionado] =
+    useState(null);
   const { idPropietario } = useRegistro();
 
   useEffect(() => {
@@ -28,8 +37,9 @@ function Propietarios() {
   }, []);
 
   // Campos para la tabla propietarios
-  const columnas = ["Cédula", "Nombre completo", "Teléfono", "Rol"];
+  const columnas = ["Cédula", "Nombre", "Teléfono", "Rol"];
   const datos = propietarios.map((i) => ({
+    idPropietario: i.idPropietario,
     Cédula: i.Cedula_propietario,
     Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
     Teléfono: i.Telefono_propietario,
@@ -94,6 +104,24 @@ function Propietarios() {
       });
   };
 
+  const informacioPropietario = (id) => {
+    setIdPropietarioSeleccionado(id);
+    setIsInformationOpen(true);
+
+    getVehiculosByPropietario(id)
+      .then((res) => {
+        console.log("🚗 Vehículos del propietario:", res.data);
+        setVehiculosPropietario(res.data);
+      })
+      .catch((err) => {
+        console.error(
+          "❌ Error al obtener los vehículos del propietario:",
+          err
+        );
+        setVehiculosPropietario([]);
+      });
+  };
+
   return cargando ? (
     <Loader texto="Cargando propietarios..." />
   ) : (
@@ -112,7 +140,7 @@ function Propietarios() {
         }}
         deshabilitarFechas={true}
         onRowClick={(fila) => {
-          console.log("🧾 Fila seleccionada:", fila.idPropietario);
+          informacioPropietario(fila.idPropietario);
         }}
       />
 
@@ -142,6 +170,41 @@ function Propietarios() {
           }}
           onCancel={() => setIsVehiculoOpen(false)}
         />
+      </Modal>
+
+      {/* Modal para informacion del propietario */}
+      <Modal
+        isOpen={isInformationOpen}
+        onClose={() => setIsInformationOpen(false)}
+      >
+        <div className="flex items-center justify-between mb-5 border-b pb-3">
+          <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+            <Car className="text-green-600" size={24} />
+            Vehículos del propietario
+          </h2>
+        </div>
+
+        {vehiculosPropietario.length > 0 ? (
+          <TablaConPaginacion
+            columnas={["Placa", "Marca", "Modelo", "Tipo"]}
+            datos={vehiculosPropietario.map((v) => ({
+              Placa: v.Placa_vehiculo,
+              Marca: v.marca_vehiculo.Marca_vehiculo,
+              Modelo: v.Modelo_vehiculo,
+              Tipo: v.tipo_vehiculo?.Tipo_vehiculo,
+            }))}
+            porPagina={4}
+            mostrarControles={false}
+            deshabilitarFechas={true}
+          />
+        ) : (
+          <div className="py-10 text-center text-gray-500">
+            <Car size={36} className="mx-auto mb-3 text-gray-400" />
+            <p className="italic">
+              Este propietario no tiene vehículos registrados.
+            </p>
+          </div>
+        )}
       </Modal>
     </>
   );

@@ -8,3 +8,5 @@ export const createPropietario = (data) => axios.post(API_URL, data);
 export const updatePropietario = (id, data) =>
   axios.put(`${API_URL}/${id}`, data);
 export const deletePropietario = (id) => axios.delete(`${API_URL}/${id}`);
+export const getVehiculosByPropietario = (id) =>
+  axios.get(`${API_URL}/vehiculos/${id}`);

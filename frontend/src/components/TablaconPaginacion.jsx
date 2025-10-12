@@ -161,14 +161,16 @@ function TablaConPaginacion({
                       if (typeof onRowClick === "function") onRowClick(fila);
                     }}
                   >
-                    {Object.values(fila).map((valor, i) => (
-                      <td
-                        key={i}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
-                      >
-                        {valor}
-                      </td>
-                    ))}
+                    {Object.entries(fila).map(([key, valor], i) =>
+                      key !== "idPropietario" ? (
+                        <td
+                          key={i}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"
+                        >
+                          {valor}
+                        </td>
+                      ) : null
+                    )}
                   </motion.tr>
                 ))}
                 {datos.length === 0 && (

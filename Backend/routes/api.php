@@ -25,13 +25,17 @@ use App\Http\Controllers\VehiculoHasPropietarioController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);
 
 Route::apiResource('usuarios', UsuarioController::class);
 Route::get('ingresos/hoy', [IngresoController::class, 'ShowToday']);
 Route::apiResource('ingresos', IngresoController::class);
 Route::get('/salidas/hoy', [SalidaController::class, 'ShowToday']);
 Route::apiResource('salidas', SalidaController::class);
+
 Route::apiResource('vehiculos', VehiculoController::class);
+
+
 Route::apiResource('propietarios', PropietarioController::class);
 Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
 Route::apiResource('marcavehiculos', MarcaVehiculoController::class);
