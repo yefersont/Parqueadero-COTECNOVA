@@ -4,7 +4,7 @@ import {
   getVehiculosByPropietario,
 } from "../../api/propietarios";
 import { Car, Calendar, BadgeInfo, X } from "lucide-react";
-
+import TablaPequeña from "../../components/TablaPequeña";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
 import Modal from "../../components/Modal";
@@ -25,6 +25,7 @@ function Propietarios() {
   const [vehiculosPropietario, setVehiculosPropietario] = useState([]);
   const [idPropietarioSeleccionado, setIdPropietarioSeleccionado] =
     useState(null);
+  const [ingresosPropietario, setIngresosPropietario] = useState([]);
   const { idPropietario } = useRegistro();
 
   useEffect(() => {
@@ -105,20 +106,18 @@ function Propietarios() {
   };
 
   const informacioPropietario = (id) => {
-    setIdPropietarioSeleccionado(id);
     setIsInformationOpen(true);
 
     getVehiculosByPropietario(id)
       .then((res) => {
-        console.log("🚗 Vehículos del propietario:", res.data);
-        setVehiculosPropietario(res.data);
+        console.log("📦 Datos del propietario:", res.data);
+        setVehiculosPropietario(res.data.vehiculos || []);
+        setIngresosPropietario(res.data.ultimos_ingresos || []);
       })
       .catch((err) => {
-        console.error(
-          "❌ Error al obtener los vehículos del propietario:",
-          err
-        );
+        console.error("❌ Error al obtener los datos del propietario:", err);
         setVehiculosPropietario([]);
+        setIngresosPropietario([]);
       });
   };
 
@@ -172,39 +171,45 @@ function Propietarios() {
         />
       </Modal>
 
-      {/* Modal para informacion del propietario */}
+      {/* Modal informacion */}
       <Modal
         isOpen={isInformationOpen}
         onClose={() => setIsInformationOpen(false)}
       >
-        <div className="flex items-center justify-between mb-5 border-b pb-3">
-          <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-            <Car className="text-green-600" size={24} />
-            Vehículos del propietario
-          </h2>
-        </div>
+        <TablaPequeña
+          titulo="Vehículos asociados"
+          columnas={["Placa", "Marca", "Modelo", "Tipo"]}
+          datos={vehiculosPropietario.map((v) => ({
+            Placa: v.Placa_vehiculo,
+            Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
+            Modelo: v.Modelo_vehiculo,
+            Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+          }))}
+          porPagina={3}
+        />
 
-        {vehiculosPropietario.length > 0 ? (
-          <TablaConPaginacion
-            columnas={["Placa", "Marca", "Modelo", "Tipo"]}
-            datos={vehiculosPropietario.map((v) => ({
-              Placa: v.Placa_vehiculo,
-              Marca: v.marca_vehiculo.Marca_vehiculo,
-              Modelo: v.Modelo_vehiculo,
-              Tipo: v.tipo_vehiculo?.Tipo_vehiculo,
-            }))}
-            porPagina={4}
-            mostrarControles={false}
-            deshabilitarFechas={true}
-          />
-        ) : (
-          <div className="py-10 text-center text-gray-500">
-            <Car size={36} className="mx-auto mb-3 text-gray-400" />
-            <p className="italic">
-              Este propietario no tiene vehículos registrados.
-            </p>
-          </div>
-        )}
+        <TablaPequeña
+          titulo="Últimos ingresos"
+          columnas={["Vehículo", "Fecha ingreso", "Hora ingreso", "Salida"]}
+          datos={ingresosPropietario.map((i) => ({
+            Vehículo: i.vehiculo?.Placa_vehiculo || "—",
+            "Fecha ingreso": i.fecha_ingreso,
+            "Hora ingreso": i.hora_ingreso,
+            Salida: i.salidas
+              ? `${i.salidas.fecha_salida} ${i.salidas.hora_salida}`
+              : "Pendiente",
+          }))}
+          porPagina={3}
+        />
+
+        <div className="mt-4 text-right border-t pt-3">
+          <button
+            onClick={() => setIsInformationOpen(false)}
+            className="px-5 py-1.5 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-medium rounded-md hover:from-green-700 hover:to-green-600 transition-all"
+          >
+            Cerrar
+          </button>
+        </div>
       </Modal>
     </>
   );

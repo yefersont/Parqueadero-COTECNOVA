@@ -88,10 +88,29 @@ class PropietarioController extends Controller
     }
     public function getVehiculosByPropietario($propietarioId)
     {
-        $propietario = Propietario::with('vehiculos.Tipo_vehiculo', 'vehiculos.Marca_vehiculo')->find($propietarioId);
+        $propietario = Propietario::with([
+            'vehiculos.Tipo_vehiculo',
+            'vehiculos.Marca_vehiculo',
+            'ingresos.salidas' => function ($query) {
+                // Cargar la salida asociada a cada ingreso
+            },
+            'ingresos.vehiculo' => function ($query) {
+                // Cargar el vehículo vinculado al ingreso
+            }
+        ])
+            ->find($propietarioId);
         if (!$propietario) {
             return response()->json(['message' => 'Propietario no encontrado'], 404);
         }
-        return response()->json($propietario->vehiculos);
+        // Obtener solo los últimos 5 ingresos
+        $ultimosIngresos = $propietario->ingresos()
+            ->with(['salidas', 'vehiculo'])
+            ->orderBy('fecha_ingreso', 'desc')
+            ->take(5)
+            ->get();
+        return response()->json([
+            'vehiculos' => $propietario->vehiculos,
+            'ultimos_ingresos' => $ultimosIngresos
+        ]);
     }
 }
