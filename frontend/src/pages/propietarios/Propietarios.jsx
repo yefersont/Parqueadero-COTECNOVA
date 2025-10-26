@@ -3,6 +3,7 @@ import {
   getPropietarios,
   getVehiculosByPropietario,
 } from "../../api/propietarios";
+import { getVehiculos } from "../../api/vehiculos";
 import { Car, Calendar, BadgeInfo, X } from "lucide-react";
 import TablaPequeña from "../../components/TablaPequeña";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
@@ -16,9 +17,11 @@ import { createVehiculoHasPropietario } from "../../api/vehiculohaspropietario";
 import Swal from "sweetalert2";
 function Propietarios() {
   const [propietarios, setPropietarios] = useState([]);
+  const [vehiculos, setVehiculos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isVehiculoOpen, setIsVehiculoOpen] = useState(false);
+  const [isAsociarOpen, setIsAsociarOpen] = useState(false);
   const [isInformationOpen, setIsInformationOpen] = useState(false);
   const { setIdPropietario } = useRegistro();
   const [busqueda, setBusqueda] = useState("");
@@ -52,7 +55,6 @@ function Propietarios() {
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
     )
   );
-
   const mostrarAlerta = () => {
     Swal.fire({
       title: "Registro exitoso",
@@ -76,10 +78,10 @@ function Propietarios() {
         setIsVehiculoOpen(true); // <-- abre el modal del vehículo
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         console.log("📋 Acción: Vincular vehículo existente");
+        cargarVehiculos();
       }
     });
   };
-
   const AlertAsociacion = () => {
     Swal.fire({
       title: "Vehiculo asociado con éxito",
@@ -88,7 +90,6 @@ function Propietarios() {
       timer: 1500,
     });
   };
-
   const asociar = (newVehiculo) => {
     const form = {
       Vehiculo_idVehiculo: newVehiculo,
@@ -104,7 +105,6 @@ function Propietarios() {
         console.log("Datos enviados:", form);
       });
   };
-
   const informacioPropietario = (id) => {
     setIsInformationOpen(true);
 
@@ -118,6 +118,17 @@ function Propietarios() {
         console.error("❌ Error al obtener los datos del propietario:", err);
         setVehiculosPropietario([]);
         setIngresosPropietario([]);
+      });
+  };
+  const cargarVehiculos = () => {
+    setIsAsociarOpen(true);
+    getVehiculos()
+      .then((res) => {
+        console.log("🚗 Vehículos cargados:", res.data);
+        setVehiculos(res.data);
+      })
+      .catch((err) => {
+        console.error("❌ Error al cargar vehículos:", err);
       });
   };
 
@@ -168,6 +179,50 @@ function Propietarios() {
             asociar(vehiculo.vehiculo);
           }}
           onCancel={() => setIsVehiculoOpen(false)}
+        />
+      </Modal>
+
+      {/* Modal para asociar con un vehiculo existente */}
+      <Modal
+        isOpen={isAsociarOpen}
+        onClose={() => setIsAsociarOpen(false)}
+        size="lg"
+      >
+        <TablaConPaginacion
+          titulo="Asociar vehículo existente"
+          mostrarControles={false}
+          placeholderBusqueda="Buscar vehículo..."
+          columnas={["Placa", "Marca", "Modelo", "Tipo", "Acción"]}
+          datos={vehiculos.map((v) => ({
+            Placa: v.Placa_vehiculo,
+            Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
+            Modelo: v.Modelo_vehiculo,
+            Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+            Acción: (
+              <button
+                onClick={() => {
+                  Swal.fire({
+                    title: `¿Asociar el vehículo ${v.Placa_vehiculo}?`,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Sí, asociar",
+                    cancelButtonText: "Cancelar",
+                    confirmButtonColor: "#27ae60",
+                    cancelButtonColor: "#c0392b",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      asociar(v.idVehiculo);
+                      setIsAsociarOpen(false);
+                    }
+                  });
+                }}
+                className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-md hover:from-blue-700 hover:to-blue-600 transition-all text-sm"
+              >
+                Asociar
+              </button>
+            ),
+          }))}
+          porPagina={6}
         />
       </Modal>
 
