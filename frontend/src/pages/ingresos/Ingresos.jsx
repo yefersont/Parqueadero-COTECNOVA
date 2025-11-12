@@ -16,17 +16,15 @@ function Ingresos() {
       .catch((err) => console.error(err));
   }, []);
 
-  const columnas = ["ID", "Propietario", "Vehículo", "Fecha", "Hora"];
+  const columnas = ["Propietario", "Vehículo", "Fecha y hora"];
 
   const datos = ingresos.map((i) => ({
-    ID: i.idIngresos,
     Propietario:
       i.propietario.Nombre_propietario +
       " " +
       i.propietario.Apellido_propietario,
     Vehículo: i.vehiculo.Placa_vehiculo,
-    Fecha: i.fecha_ingreso,
-    Hora: i.hora_ingreso,
+    "Fecha y hora": i.fecha_ingreso + "   " + i.hora_ingreso,
   }));
 
   return cargando ? (

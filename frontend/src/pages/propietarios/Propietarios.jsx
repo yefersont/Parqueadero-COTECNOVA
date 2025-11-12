@@ -4,7 +4,15 @@ import {
   getVehiculosByPropietario,
 } from "../../api/propietarios";
 import { getVehiculos } from "../../api/vehiculos";
-import { Car, Calendar, BadgeInfo, X } from "lucide-react";
+import {
+  Car,
+  Calendar,
+  BadgeInfo,
+  X,
+  SquarePen,
+  Trash2,
+  Link,
+} from "lucide-react";
 import TablaPequeña from "../../components/TablaPequeña";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
@@ -41,13 +49,48 @@ function Propietarios() {
   }, []);
 
   // Campos para la tabla propietarios
-  const columnas = ["Cédula", "Nombre", "Teléfono", "Rol"];
+  const columnas = ["Cédula", "Nombre", "Teléfono", "Rol", "Acción"];
+
   const datos = propietarios.map((i) => ({
     idPropietario: i.idPropietario,
     Cédula: i.Cedula_propietario,
     Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
     Teléfono: i.Telefono_propietario,
     Rol: i.rol.Rol,
+    Acción: (
+      <div className="flex items-center gap-2 justify-center">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIdPropietario(i.idPropietario);
+            cargarVehiculos();
+          }}
+          className="p-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+        >
+          <Link size={18} />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            editarPropietario(i.idPropietario);
+          }}
+          className="p-2 rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
+        >
+          <SquarePen size={18} />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            eliminarPropietario(i.idPropietario);
+          }}
+          className="p-2 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    ),
   }));
 
   const datosFiltrados = datos.filter((i) =>
@@ -90,6 +133,7 @@ function Propietarios() {
       timer: 1500,
     });
   };
+
   const asociar = (newVehiculo) => {
     const form = {
       Vehiculo_idVehiculo: newVehiculo,

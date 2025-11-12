@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getVehiculos } from "../../api/vehiculos";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
+import TablaPequeña from "../../components/TablaPequeña";
 import Modal from "../../components/Modal";
 import FormularioVehiculo from "../../components/FormularioVehiculo";
 import Loader from "../../components/Loader";
@@ -11,6 +12,7 @@ function Vehiculos() {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isInformationOpen, setIsInformationOpen] = useState(false);
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
@@ -27,6 +29,7 @@ function Vehiculos() {
 
   // Mapear datos de vehículos para la tabla
   const datos = vehiculos.map((i) => ({
+    idVehiculo: i.idVehiculo,
     Tipo: i.tipo_vehiculo.Tipo_vehiculo,
     Marca: i.marca_vehiculo.Marca_vehiculo,
     Placa: i.Placa_vehiculo,
@@ -39,7 +42,6 @@ function Vehiculos() {
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
     )
   );
-
   // Función para mostrar alerta después de registrar un vehiculo
   const mostrarAlerta = () => {
     Swal.fire({
@@ -68,6 +70,10 @@ function Vehiculos() {
     });
   };
 
+  const informacionVehiculo = (id) => {
+    setIsInformationOpen(true);
+  };
+
   // Renderizado condicional: mostrar loader o tabla
   return cargando ? (
     <Loader texto="Cargando vehículos..." />
@@ -85,7 +91,12 @@ function Vehiculos() {
           console.log("Buscar propietario:", valor);
         }}
         deshabilitarFechas={true}
+        onRowClick={(fila) => {
+          informacionVehiculo(fila.idVehiculo);
+        }}
       />
+
+      {/* Modal para agregar un vehiculo */}
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <h2 className="text-2xl font-bold mb-4">Agregar Vehiculo</h2>
         <FormularioVehiculo
@@ -96,6 +107,15 @@ function Vehiculos() {
           }}
           onCancel={() => setIsOpen(false)}
         />
+      </Modal>
+
+      {/* Modal informacion del vehiculo */}
+
+      <Modal
+        isOpen={isInformationOpen}
+        onClose={() => setIsInformationOpen(false)}
+      >
+        <h2 className="text-2xl font-bold mb-4">Información del Vehículo</h2>
       </Modal>
     </>
   );

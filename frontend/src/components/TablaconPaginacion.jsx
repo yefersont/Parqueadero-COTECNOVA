@@ -48,7 +48,7 @@ function TablaConPaginacion({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="text-2xl md:text-3xl font-bold mb-4 text-gray-800"
+            className="text-2xl md:text-3xl font-semibold mb-4 text-gray-900 font-[Inter] tracking-tight"
           >
             {titulo}
           </motion.h1>
