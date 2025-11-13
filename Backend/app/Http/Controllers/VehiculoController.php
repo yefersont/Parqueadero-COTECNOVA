@@ -61,4 +61,19 @@ class VehiculoController extends Controller
     {
         //
     }
+
+    public function getPropietariosByVehiculo($vehiculoId)
+    {
+        // Cargar el vehículo con sus propietarios relacionados
+        $vehiculo = Vehiculo::with('propietarios')->find($vehiculoId);
+
+        if (!$vehiculo) {
+            return response()->json(['message' => 'Vehículo no encontrado'], 404);
+        }
+
+        // Retornar únicamente los propietarios asociados
+        return response()->json([
+            'propietarios' => $vehiculo->propietarios,
+        ]);
+    }
 }

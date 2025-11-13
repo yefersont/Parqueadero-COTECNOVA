@@ -65,7 +65,7 @@ function Propietarios() {
             setIdPropietario(i.idPropietario);
             cargarVehiculos();
           }}
-          className="p-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+          className=" rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
         >
           <Link size={18} />
         </button>
@@ -75,7 +75,7 @@ function Propietarios() {
             e.stopPropagation();
             editarPropietario(i.idPropietario);
           }}
-          className="p-2 rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
+          className=" rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
         >
           <SquarePen size={18} />
         </button>
@@ -83,9 +83,10 @@ function Propietarios() {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            eliminarPropietario(i.idPropietario);
+            console.log(i.idPropietario);
+            // Aqui la funcion para eliminar
           }}
-          className="p-2 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
+          className=" rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
         >
           <Trash2 size={18} />
         </button>

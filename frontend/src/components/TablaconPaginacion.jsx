@@ -162,7 +162,7 @@ function TablaConPaginacion({
                     }}
                   >
                     {Object.entries(fila).map(([key, valor], i) =>
-                      key !== "idPropietario" ? (
+                      key !== "idPropietario" && key !== "idVehiculo" ? (
                         <td
                           key={i}
                           className="px-6 py-4 whitespace-nowrap text-sm text-gray-600"

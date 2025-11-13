@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);
+Route::get('/vehiculos/propietario/{id}', [VehiculoController::class, 'getPropietariosByVehiculo']);
+
 
 Route::apiResource('usuarios', UsuarioController::class);
 Route::get('ingresos/hoy', [IngresoController::class, 'ShowToday']);
