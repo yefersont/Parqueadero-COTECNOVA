@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, X } from "lucide-react";
+import { Edit2Icon, Link, X, SquarePen } from "lucide-react";
 import { getVehiculos, getPropietarioByVehiculo } from "../../api/vehiculos";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import TablaPequeña from "../../components/TablaPequeña";
@@ -13,6 +13,9 @@ function Vehiculos() {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  // Estado para modal editar vehículo
+  const [isEdit, setIsEdit] = useState(false);
+  // Estado para modal información vehículo
   const [isInformationOpen, setIsInformationOpen] = useState(false);
   // Variables de estado para alamcenar propietarios de un vehículo
   const [propietariosVehiculo, setPropietariosVehiculo] = useState([]);
@@ -38,16 +41,28 @@ function Vehiculos() {
     Placa: i.Placa_vehiculo,
     Modelo: i.Modelo_vehiculo,
     Acciones: (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIdPropietario(i.idPropietario);
-          cargarVehiculos();
-        }}
-        className="rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
-      >
-        <Link size={18} />
-      </button>
+      <>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIdPropietario(i.idPropietario);
+            cargarVehiculos();
+          }}
+          className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+        >
+          <Link size={18} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("Editar vehículo:", i.idVehiculo);
+            editVehiculo(i.idVehiculo);
+          }}
+          className="ml-2 rounded-md bg-yellow-50 hover:bg-green-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
+        >
+          <SquarePen size={18} />
+        </button>
+      </>
     ),
   }));
 
@@ -98,6 +113,10 @@ function Vehiculos() {
       });
   };
 
+  const editVehiculo = (id) => {
+    setIsEdit(true);
+  };
+
   // Renderizado condicional: mostrar loader o tabla
   return cargando ? (
     <Loader texto="Cargando vehículos..." />
@@ -131,6 +150,11 @@ function Vehiculos() {
           }}
           onCancel={() => setIsOpen(false)}
         />
+      </Modal>
+
+      {/* Modal para editar un vehiculo */}
+      <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
+        <h2 className="text-2xl font-bold mb-4">Editar Vehiculo</h2>
       </Modal>
 
       {/* Modal informacion del vehiculo */}
