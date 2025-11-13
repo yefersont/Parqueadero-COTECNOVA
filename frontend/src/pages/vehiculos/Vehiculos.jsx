@@ -19,6 +19,8 @@ function Vehiculos() {
   const [isInformationOpen, setIsInformationOpen] = useState(false);
   // Variables de estado para alamcenar propietarios de un vehículo
   const [propietariosVehiculo, setPropietariosVehiculo] = useState([]);
+  // Estado para vehículo seleccionado al editar
+  const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
@@ -56,7 +58,8 @@ function Vehiculos() {
           onClick={(e) => {
             e.stopPropagation();
             console.log("Editar vehículo:", i.idVehiculo);
-            editVehiculo(i.idVehiculo);
+            editVehiculo(i);
+            console.log(i);
           }}
           className="ml-2 rounded-md bg-yellow-50 hover:bg-green-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
         >
@@ -113,7 +116,8 @@ function Vehiculos() {
       });
   };
 
-  const editVehiculo = (id) => {
+  const editVehiculo = (vehiculo) => {
+    setVehiculoSeleccionado(vehiculo);
     setIsEdit(true);
   };
 
@@ -152,9 +156,18 @@ function Vehiculos() {
         />
       </Modal>
 
-      {/* Modal para editar un vehiculo */}
+      {/* Modal para editar un vehículo */}
       <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
-        <h2 className="text-2xl font-bold mb-4">Editar Vehiculo</h2>
+        <h2 className="text-2xl font-bold mb-4">Editar Vehículo</h2>
+        <FormularioVehiculo
+          editar={true}
+          valoresIniciales={vehiculoSeleccionado}
+          onSubmit={(data) => {
+            console.log("Editar vehículo:", data);
+            setIsEdit(false);
+          }}
+          onCancel={() => setIsEdit(false)}
+        />
       </Modal>
 
       {/* Modal informacion del vehiculo */}

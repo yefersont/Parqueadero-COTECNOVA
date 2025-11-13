@@ -59,6 +59,24 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
     }
   }, [form.Tipo_vehiculo, tiposVehiculos]);
 
+  // Rellenar el formulario si se proporcionan valores iniciales (modo edición)
+  useEffect(() => {
+    if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
+      setForm({
+        Tipo_vehiculo:
+          valoresIniciales.tipo_vehiculo?.idTipo_vehiculo ??
+          valoresIniciales.Tipo_vehiculo ??
+          "",
+        Marca_vehiculo:
+          valoresIniciales.marca_vehiculo?.idMarca_vehiculo ??
+          valoresIniciales.Marca_vehiculo ??
+          "",
+        Modelo_vehiculo: valoresIniciales.Modelo_vehiculo ?? "",
+        Placa_vehiculo: valoresIniciales.Placa_vehiculo ?? "",
+      });
+    }
+  }, [valoresIniciales]);
+
   // Manejo de cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
