@@ -37,7 +37,6 @@ Route::apiResource('salidas', SalidaController::class);
 
 Route::apiResource('vehiculos', VehiculoController::class);
 
-
 Route::apiResource('propietarios', PropietarioController::class);
 Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
 Route::apiResource('marcavehiculos', MarcaVehiculoController::class);

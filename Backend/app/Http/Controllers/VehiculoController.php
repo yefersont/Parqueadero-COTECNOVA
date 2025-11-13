@@ -49,10 +49,39 @@ class VehiculoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vehiculo $vehiculo)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            // Buscar el vehículo
+            $vehiculo = Vehiculo::findOrFail($id);
+            // Validar los datos
+            $request->validate([
+                'Tipo_vehiculo' => 'required|exists:tipo_vehiculo,idTipo_vehiculo',
+                'Marca_vehiculo' => 'required|exists:marca_vehiculo,idMarca_vehiculo',
+                'Placa_vehiculo' => 'required|string|max:45|unique:vehiculo,Placa_vehiculo,' . $vehiculo->idVehiculo . ',idVehiculo',
+                'Modelo_vehiculo' => 'required|string|max:45'
+            ]);
+            // Actualizar los campos
+            $vehiculo->update([
+                'Tipo_vehiculo' => $request->Tipo_vehiculo,
+                'Marca_vehiculo' => $request->Marca_vehiculo,
+                'Placa_vehiculo' => $request->Placa_vehiculo,
+                'Modelo_vehiculo' => $request->Modelo_vehiculo
+            ]);
+            return response()->json([
+                'message' => 'Vehículo actualizado exitosamente',
+                'vehiculo' => $vehiculo
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Vehículo no encontrado'], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar el vehículo',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -60,6 +89,8 @@ class VehiculoController extends Controller
     public function destroy(Vehiculo $vehiculo)
     {
         //
+        $vehiculo->delete();
+        return response()->json(['message' => 'Vehículo eliminado exitosamente'], 200);
     }
 
     public function getPropietariosByVehiculo($vehiculoId)

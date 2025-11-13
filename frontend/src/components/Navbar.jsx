@@ -1,22 +1,44 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { User } from "lucide-react";
+import { motion } from "framer-motion";
 
 function Navbar() {
   return (
     <header className="bg-[#198754] shadow-lg">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
         {/* Logo + Título */}
-        <div className="flex items-center gap-3">
-          <img
-            src="/cotecnova.png"
-            alt="Logo Cotecnova"
-            className="h-12 w-auto drop-shadow-md"
-          />
-          <h1 className="text-2xl font-semibold text-white tracking-wide">
-            COTECNOVA
-          </h1>
-        </div>
+        <Link
+          to="/inicio"
+          className="flex items-center gap-4 group cursor-pointer"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="relative"
+          >
+            <img
+              src="/cotecnova.png"
+              alt="Logo Cotecnova"
+              className="h-12 w-auto drop-shadow-lg transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-white/20 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col"
+          >
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-widest text-white drop-shadow-sm uppercase select-none">
+              COTECNOVA
+            </h1>
+            {/* Línea decorativa fija */}
+            <div className="w-16 h-[3px] bg-white rounded-full mt-1"></div>
+          </motion.div>
+        </Link>
 
         {/* Menú principal */}
         <nav className="flex items-center gap-6">
@@ -33,7 +55,7 @@ function Navbar() {
               className="text-white text-lg font-medium relative group"
             >
               {item.name}
-              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
+              <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full rounded-full"></span>
             </Link>
           ))}
 

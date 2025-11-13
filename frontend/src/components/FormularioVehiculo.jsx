@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { CreditCard, Truck, Edit3, Hash } from "lucide-react";
 import { getTiposVehiculos } from "../api/tp_vehiculo";
 import { getMarcasVehiculos } from "../api/marcavehiculo";
-import { createVehiculo } from "../api/vehiculos";
+import { createVehiculo, updateVehiculo } from "../api/vehiculos";
 import { useRegistro } from "../context/RegistroContext";
 
 // Formulario para registrar o editar vehículos
@@ -61,7 +61,13 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
 
   // Rellenar el formulario si se proporcionan valores iniciales (modo edición)
   useEffect(() => {
-    if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
+    // Solo ejecutar cuando ya hay datos cargados
+    if (
+      valoresIniciales &&
+      Object.keys(valoresIniciales).length > 0 &&
+      tiposVehiculos.length > 0 &&
+      marcasVehiculos.length > 0
+    ) {
       setForm({
         Tipo_vehiculo:
           valoresIniciales.tipo_vehiculo?.idTipo_vehiculo ??
@@ -75,7 +81,7 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
         Placa_vehiculo: valoresIniciales.Placa_vehiculo ?? "",
       });
     }
-  }, [valoresIniciales]);
+  }, [valoresIniciales, tiposVehiculos, marcasVehiculos]);
 
   // Manejo de cambios en los campos del formulario
   const handleChange = (e) => {
@@ -91,18 +97,37 @@ function FormularioVehiculo({ valoresIniciales = {}, onSubmit, onCancel }) {
   };
 
   // Manejo del envío del formulario
+  // Manejo del envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    createVehiculo(form)
-      .then((res) => {
-        console.log("Vehículo creado:", res.data);
-        setVehiculoPropietario(res.data.idVehiculo);
-        if (onSubmit) onSubmit(res.data);
-      })
-      .catch((err) => {
-        console.error("Error al crear vehículo:", err);
-        console.log("Datos que envío:", form);
-      });
+
+    // Si hay un idVehiculo en los valores iniciales, es modo edición
+    const esEdicion = Boolean(valoresIniciales.idVehiculo);
+
+    if (esEdicion) {
+      // Actualizar vehículo existente
+      updateVehiculo(valoresIniciales.idVehiculo, form)
+        .then((res) => {
+          console.log("Vehículo actualizado:", res.data);
+          if (onSubmit) onSubmit(res.data);
+        })
+        .catch((err) => {
+          console.error("Error al actualizar vehículo:", err);
+          console.log("Datos que envío:", form);
+        });
+    } else {
+      // Crear nuevo vehículo
+      createVehiculo(form)
+        .then((res) => {
+          console.log("Vehículo creado:", res.data);
+          setVehiculoPropietario(res.data.idVehiculo);
+          if (onSubmit) onSubmit(res.data);
+        })
+        .catch((err) => {
+          console.error("Error al crear vehículo:", err);
+          console.log("Datos que envío:", form);
+        });
+    }
   };
 
   // Determinar si el tipo seleccionado es "Bicicleta"

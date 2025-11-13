@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { Edit2Icon, Link, X, SquarePen } from "lucide-react";
-import { getVehiculos, getPropietarioByVehiculo } from "../../api/vehiculos";
+import { Edit2Icon, Link, X, SquarePen, Trash2 } from "lucide-react";
+import {
+  getVehiculos,
+  getPropietarioByVehiculo,
+  deleteVehiculo,
+} from "../../api/vehiculos";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import TablaPequeña from "../../components/TablaPequeña";
 import Modal from "../../components/Modal";
@@ -24,14 +28,17 @@ function Vehiculos() {
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
+    cargarVehiculos();
+  }, []);
+
+  const cargarVehiculos = () => {
     getVehiculos()
       .then((res) => {
         setVehiculos(res.data);
         setCargando(false);
       })
       .catch((err) => console.error(err));
-  }, []);
-
+  };
   // Definir columnas y datos para la tabla
   const columnas = ["Tipo", "Marca", "Placa", "Modelo", "Acciones"];
 
@@ -64,6 +71,15 @@ function Vehiculos() {
           className="ml-2 rounded-md bg-yellow-50 hover:bg-green-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
         >
           <SquarePen size={18} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            eliminarVehiculo(i.idVehiculo);
+          }}
+          className="ml-4 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
+        >
+          <Trash2 size={18} />
         </button>
       </>
     ),
@@ -102,6 +118,52 @@ function Vehiculos() {
       }
     });
   };
+
+  // Función para mostrar alerta después de actualizar un vehiculo
+  const mostrarAlertaActualizado = () => {
+    Swal.fire({
+      title: "Vehículo actualizado",
+      text: "Los datos del vehículo se han guardado correctamente.",
+      icon: "success",
+      timer: 2000, // se cierra automáticamente en 2 segundos
+      timerProgressBar: true,
+      showConfirmButton: false,
+      position: "center",
+      background: "#f9fafb",
+      color: "#2c3e50",
+    });
+  };
+
+  // Alerta para confirmar eliminación de un vehículo
+  const confirmarEliminacion = () => {
+    return Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el vehículo de forma permanente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#e53935",
+      cancelButtonColor: "#546e7a",
+      reverseButtons: true,
+      focusCancel: true,
+    });
+  };
+
+  const mostrarAlertaEliminado = () => {
+    Swal.fire({
+      title: "Vehículo eliminado",
+      text: "El vehículo ha sido eliminado correctamente.",
+      icon: "success",
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      position: "center",
+      background: "#f9fafb",
+      color: "#2c3e50",
+    });
+  };
+
   const informacionVehiculo = (id) => {
     setIsInformationOpen(true);
     setPropietariosVehiculo([]);
@@ -116,9 +178,20 @@ function Vehiculos() {
       });
   };
 
+  // para abrir el modal de editar vehiculo
   const editVehiculo = (vehiculo) => {
     setVehiculoSeleccionado(vehiculo);
     setIsEdit(true);
+  };
+
+  const eliminarVehiculo = (id) => {
+    confirmarEliminacion().then((result) => {
+      if (result.isConfirmed) {
+        deleteVehiculo(id);
+        mostrarAlertaEliminado();
+        cargarVehiculos();
+      }
+    });
   };
 
   // Renderizado condicional: mostrar loader o tabla
@@ -165,6 +238,8 @@ function Vehiculos() {
           onSubmit={(data) => {
             console.log("Editar vehículo:", data);
             setIsEdit(false);
+            mostrarAlertaActualizado();
+            cargarVehiculos();
           }}
           onCancel={() => setIsEdit(false)}
         />
