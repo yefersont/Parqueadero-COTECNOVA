@@ -12,6 +12,7 @@ import {
   SquarePen,
   Trash2,
   Link,
+  Search, // Añadido para el icono del input
 } from "lucide-react";
 import TablaPequeña from "../../components/TablaPequeña";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
@@ -21,8 +22,10 @@ import FormularioPropietario from "../../components/FormularioPropietarios";
 import FormularioVehiculo from "../../components/FormularioVehiculo";
 import { useRegistro } from "../../context/RegistroContext";
 import { createVehiculoHasPropietario } from "../../api/vehiculohaspropietario";
+import { motion } from "framer-motion"; // Importar motion para la animación del input
 
 import Swal from "sweetalert2";
+
 function Propietarios() {
   const [propietarios, setPropietarios] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
@@ -39,6 +42,9 @@ function Propietarios() {
   const [ingresosPropietario, setIngresosPropietario] = useState([]);
   const { idPropietario } = useRegistro();
 
+  // filtro para busqueda en modal asociar vehiculo
+  const [filtroBusqueda, setFiltroBusqueda] = useState("");
+
   useEffect(() => {
     getPropietarios()
       .then((res) => {
@@ -51,10 +57,11 @@ function Propietarios() {
   // Campos para la tabla propietarios
   const columnas = ["Cédula", "Nombre", "Teléfono", "Rol", "Acción"];
 
+  // Datos para la tabla propietarios
   const datos = propietarios.map((i) => ({
     idPropietario: i.idPropietario,
     Cédula: i.Cedula_propietario,
-    Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
+    Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
     Teléfono: i.Telefono_propietario,
     Rol: i.rol.Rol,
     Acción: (
@@ -99,6 +106,8 @@ function Propietarios() {
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
     )
   );
+
+  // Alerta de registro exitoso
   const mostrarAlerta = () => {
     Swal.fire({
       title: "Registro exitoso",
@@ -126,6 +135,8 @@ function Propietarios() {
       }
     });
   };
+
+  // Alerta de asociación exitosa
   const AlertAsociacion = () => {
     Swal.fire({
       title: "Vehiculo asociado con éxito",
@@ -135,6 +146,7 @@ function Propietarios() {
     });
   };
 
+  // Funcion para asociar el vehiculo al propietario
   const asociar = (newVehiculo) => {
     const form = {
       Vehiculo_idVehiculo: newVehiculo,
@@ -150,6 +162,8 @@ function Propietarios() {
         console.log("Datos enviados:", form);
       });
   };
+
+  // Funcion para visualizar la informacion del propietario (vehiculos e ingresos)
   const informacioPropietario = (id) => {
     setIsInformationOpen(true);
 
@@ -165,6 +179,8 @@ function Propietarios() {
         setIngresosPropietario([]);
       });
   };
+
+  // Funciion para cargar los vevhiculos disponibles
   const cargarVehiculos = () => {
     setIsAsociarOpen(true);
     getVehiculos()
@@ -176,6 +192,27 @@ function Propietarios() {
         console.error("❌ Error al cargar vehículos:", err);
       });
   };
+
+  // ------------------------------------------------------------------
+  // LÓGICA DE FILTRADO PARA EL MODAL DE ASOCIACIÓN
+  // ------------------------------------------------------------------
+
+  const vehiculosFiltrados = vehiculos.filter((v) => {
+    const term = filtroBusqueda.toLowerCase();
+    const placa = v.Placa_vehiculo?.toLowerCase() || "";
+    const modelo = v.Modelo_vehiculo?.toLowerCase() || "";
+    const marca = v.marca_vehiculo?.Marca_vehiculo?.toLowerCase() || "";
+    const tipo = v.tipo_vehiculo?.Tipo_vehiculo?.toLowerCase() || "";
+
+    return (
+      placa.includes(term) ||
+      modelo.includes(term) ||
+      marca.includes(term) ||
+      tipo.includes(term)
+    );
+  });
+
+  // ------------------------------------------------------------------
 
   return cargando ? (
     <Loader texto="Cargando propietarios..." />
@@ -227,88 +264,120 @@ function Propietarios() {
         />
       </Modal>
 
-      {/* Modal para asociar con un vehiculo existente */}
+      {/* Modal para asociar con un vehiculo existente (MODIFICADO) */}
       <Modal
         isOpen={isAsociarOpen}
         onClose={() => setIsAsociarOpen(false)}
         size="lg"
       >
-        <TablaConPaginacion
-          titulo="Asociar vehículo existente"
-          mostrarControles={false}
-          placeholderBusqueda="Buscar vehículo..."
-          columnas={["Placa", "Marca", "Modelo", "Tipo", "Acción"]}
-          datos={vehiculos.map((v) => ({
-            Placa: v.Placa_vehiculo,
-            Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
-            Modelo: v.Modelo_vehiculo,
-            Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
-            Acción: (
-              <button
-                onClick={() => {
-                  Swal.fire({
-                    title: `¿Asociar el vehículo ${v.Placa_vehiculo}?`,
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Sí, asociar",
-                    cancelButtonText: "Cancelar",
-                    confirmButtonColor: "#27ae60",
-                    cancelButtonColor: "#c0392b",
-                  }).then((result) => {
-                    if (result.isConfirmed) {
-                      asociar(v.idVehiculo);
-                      setIsAsociarOpen(false);
-                    }
-                  });
-                }}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-md hover:from-blue-700 hover:to-blue-600 transition-all text-sm"
-              >
-                Asociar
-              </button>
-            ),
-          }))}
-          porPagina={6}
-        />
+        {/* Contenedor con padding para el estilo minimalista/elegante */}
+        <div className="p-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
+            Asociar vehículo existente
+          </h2>
+
+          {/* ---------- Input de búsqueda ---------- */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative mb-6"
+          >
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar por Placa, Marca o Modelo..."
+              value={filtroBusqueda}
+              onChange={(e) => setFiltroBusqueda(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-300 focus:outline-none transition-colors text-base"
+            />
+          </motion.div>
+
+          <TablaConPaginacion
+            titulo=""
+            mostrarControles={false}
+            // CAMBIO: Pasa los datos FILTRADOS
+            datos={vehiculosFiltrados.map((v) => ({
+              Placa: v.Placa_vehiculo,
+              Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
+              Modelo: v.Modelo_vehiculo,
+              Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+              Acción: (
+                <button
+                  onClick={() => {
+                    Swal.fire({
+                      title: `¿Asociar el vehículo ${v.Placa_vehiculo}?`,
+                      icon: "question",
+                      showCancelButton: true,
+                      confirmButtonText: "Sí, asociar",
+                      cancelButtonText: "Cancelar",
+                      confirmButtonColor: "#27ae60",
+                      cancelButtonColor: "#c0392b",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        asociar(v.idVehiculo);
+                        setIsAsociarOpen(false);
+                      }
+                    });
+                  }}
+                  // CAMBIO: Estilo minimalista/elegante para el botón de acción
+                  className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  Asociar
+                </button>
+              ),
+            }))}
+            columnas={["Placa", "Marca", "Modelo", "Tipo", "Acción"]}
+            porPagina={4}
+          />
+        </div>
       </Modal>
 
-      {/* Modal informacion */}
+      {/* Modal informacion (sin cambios, solo se pasa el 'X' del modal por consistencia) */}
       <Modal
         isOpen={isInformationOpen}
         onClose={() => setIsInformationOpen(false)}
+        size="lg" // Cambiado a 'lg' para dar espacio a dos TablasPequeñas
       >
-        <TablaPequeña
-          titulo="Vehículos asociados"
-          columnas={["Placa", "Marca", "Modelo", "Tipo"]}
-          datos={vehiculosPropietario.map((v) => ({
-            Placa: v.Placa_vehiculo,
-            Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
-            Modelo: v.Modelo_vehiculo,
-            Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
-          }))}
-          porPagina={3}
-        />
+        <div className="p-6">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
+            Información del Propietario
+          </h2>
 
-        <TablaPequeña
-          titulo="Últimos ingresos"
-          columnas={["Vehículo", "Fecha ingreso", "Hora ingreso", "Salida"]}
-          datos={ingresosPropietario.map((i) => ({
-            Vehículo: i.vehiculo?.Placa_vehiculo || "—",
-            "Fecha ingreso": i.fecha_ingreso,
-            "Hora ingreso": i.hora_ingreso,
-            Salida: i.salidas
-              ? `${i.salidas.fecha_salida} ${i.salidas.hora_salida}`
-              : "Pendiente",
-          }))}
-          porPagina={3}
-        />
+          <TablaPequeña
+            titulo="Vehículos asociados"
+            columnas={["Placa", "Marca", "Modelo", "Tipo"]}
+            datos={vehiculosPropietario.map((v) => ({
+              Placa: v.Placa_vehiculo,
+              Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
+              Modelo: v.Modelo_vehiculo,
+              Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+            }))}
+            porPagina={3}
+          />
 
-        <div className="mt-4 text-right border-t pt-3">
-          <button
-            onClick={() => setIsInformationOpen(false)}
-            className="px-5 py-1.5 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm font-medium rounded-md hover:from-green-700 hover:to-green-600 transition-all"
-          >
-            Cerrar
-          </button>
+          <TablaPequeña
+            titulo="Últimos ingresos"
+            columnas={["Vehículo", "Fecha ingreso", "Hora ingreso", "Salida"]}
+            datos={ingresosPropietario.map((i) => ({
+              Vehículo: i.vehiculo?.Placa_vehiculo || "—",
+              "Fecha ingreso": i.fecha_ingreso,
+              "Hora ingreso": i.hora_ingreso,
+              Salida: i.salidas
+                ? `${i.salidas.fecha_salida} ${i.salidas.hora_salida}`
+                : "Pendiente",
+            }))}
+            porPagina={3}
+          />
+
+          <div className="mt-6 text-right border-t pt-4">
+            <button
+              onClick={() => setIsInformationOpen(false)}
+              className="px-5 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all focus:outline-none focus:ring-2 focus:ring-green-300"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
       </Modal>
     </>

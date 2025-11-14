@@ -270,7 +270,7 @@ function Vehiculos() {
               Apellido: p.Apellido_propietario,
               Teléfono: p.Telefono_propietario,
             }))}
-            porPagina={3}
+            porPagina={6}
           />
 
           {/* Pie de modal */}

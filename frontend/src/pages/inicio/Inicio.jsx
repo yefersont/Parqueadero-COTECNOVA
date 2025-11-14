@@ -254,6 +254,7 @@ function Home() {
   const handleDescargarPDF = () => {
     window.open("http://127.0.0.1:8000/api/reportes/ingresos", "_blank");
   };
+
   return (
     <div className="relative bg-gradient-to-r from-green-50 to-gray-100 min-h-[85vh] flex flex-col items-center justify-center px-6 py-10">
       {/* -------------------- Notificación de error -------------------- */}
