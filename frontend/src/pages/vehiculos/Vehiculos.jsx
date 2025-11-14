@@ -5,6 +5,8 @@ import {
   getPropietarioByVehiculo,
   deleteVehiculo,
 } from "../../api/vehiculos";
+
+import { getPropietarios } from "../../api/propietarios";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import TablaPequeña from "../../components/TablaPequeña";
 import Modal from "../../components/Modal";
@@ -16,6 +18,7 @@ function Vehiculos() {
   const [vehiculos, setVehiculos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
+  const [Propietarios, setPropietarios] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   // Estado para modal editar vehículo
   const [isEdit, setIsEdit] = useState(false);
@@ -25,6 +28,8 @@ function Vehiculos() {
   const [propietariosVehiculo, setPropietariosVehiculo] = useState([]);
   // Estado para vehículo seleccionado al editar
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
+  // Estado para abrir el modal de vincular vehiculo a propietario
+  const [isAsociarOpen, setIsAsociarOpen] = useState(false);
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
@@ -54,8 +59,8 @@ function Vehiculos() {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIdPropietario(i.idPropietario);
-            cargarVehiculos();
+            console.log(i.idVehiculo);
+            cargarPropietarios();
           }}
           className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
         >
@@ -84,6 +89,16 @@ function Vehiculos() {
       </>
     ),
   }));
+
+  const cargarPropietarios = () => {
+    setIsAsociarOpen(true);
+    getPropietarios()
+      .then((res) => {
+        console.log("Propietarios cargados:", res.data);
+        setPropietarios(res.data);
+      })
+      .catch((err) => console.error(err));
+  };
 
   // Filtrar datos según la búsqueda
   const datosFiltrados = datos.filter((i) =>
@@ -242,6 +257,12 @@ function Vehiculos() {
           }}
           onCancel={() => setIsEdit(false)}
         />
+      </Modal>
+
+      <Modal isOpen={isAsociarOpen} onClose={() => setIsAsociarOpen(false)}>
+        <h2 className="text-2xl font-bold mb-4">
+          Vincular Vehículo a Propietario
+        </h2>
       </Modal>
 
       {/* Modal informacion del vehiculo */}

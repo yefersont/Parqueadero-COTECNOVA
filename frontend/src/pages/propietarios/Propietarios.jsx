@@ -77,7 +77,7 @@ function Propietarios() {
             setIdPropietario(i.idPropietario);
             cargarVehiculos();
           }}
-          className=" rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+          className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
         >
           <Link size={18} />
         </button>
@@ -98,7 +98,7 @@ function Propietarios() {
             console.log(i.idPropietario);
             eliminarPropietario(i.idPropietario);
           }}
-          className=" rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
+          className="ml-2 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
         >
           <Trash2 size={18} />
         </button>
