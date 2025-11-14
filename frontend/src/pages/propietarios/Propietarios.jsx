@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getPropietarios,
   getVehiculosByPropietario,
+  deletePropietario,
 } from "../../api/propietarios";
 import { getVehiculos } from "../../api/vehiculos";
 import {
@@ -46,13 +47,17 @@ function Propietarios() {
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
 
   useEffect(() => {
+    cargarPropietarios();
+  }, []);
+
+  const cargarPropietarios = () => {
     getPropietarios()
       .then((res) => {
         setPropietarios(res.data);
         setCargando(false);
       })
       .catch((err) => console.error(err));
-  }, []);
+  };
 
   // Campos para la tabla propietarios
   const columnas = ["Cédula", "Nombre", "Teléfono", "Rol", "Acción"];
@@ -91,7 +96,7 @@ function Propietarios() {
           onClick={(e) => {
             e.stopPropagation();
             console.log(i.idPropietario);
-            // Aqui la funcion para eliminar
+            eliminarPropietario(i.idPropietario);
           }}
           className=" rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
         >
@@ -106,6 +111,44 @@ function Propietarios() {
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
     )
   );
+  const confirmarEliminacionPropietario = () => {
+    return Swal.fire({
+      title: "¿Estás seguro?",
+      // CAMBIO: El texto ahora se refiere a la eliminación del propietario.
+      text: "Esta acción eliminará al propietario y toda su información asociada de forma permanente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar propietario", // Botón más específico
+      cancelButtonText: "Cancelar",
+      // Se mantienen los colores y estilos elegantes
+      confirmButtonColor: "#e53935", // Rojo para eliminar
+      cancelButtonColor: "#546e7a", // Gris/Azul para cancelar
+      reverseButtons: true,
+      focusCancel: true,
+    });
+  };
+
+  const mostrarAlertaEliminadoPropietario = () => {
+    Swal.fire({
+      title: "Propietario eliminado", // CAMBIO: Título actualizado
+      text: "El propietario ha sido eliminado correctamente.", // CAMBIO: Texto actualizado
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+      position: "center",
+      background: "#f9fafb", // Fondo gris muy claro
+      color: "#2c3e50", // Color de texto oscuro
+    });
+  };
+  const eliminarPropietario = (id) => {
+    confirmarEliminacionPropietario().then((result) => {
+      if (result.isConfirmed) {
+        deletePropietario(id);
+        mostrarAlertaEliminadoPropietario();
+        cargarPropietarios();
+      }
+    });
+  };
 
   // Alerta de registro exitoso
   const mostrarAlerta = () => {
@@ -246,6 +289,7 @@ function Propietarios() {
             setIdPropietario(NuevoId);
             setIsOpen(false);
             mostrarAlerta();
+            cargarPropietarios();
           }}
           onCancel={() => setIsOpen(false)}
         />

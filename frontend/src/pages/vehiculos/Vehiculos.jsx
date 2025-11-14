@@ -156,7 +156,6 @@ function Vehiculos() {
       text: "El vehículo ha sido eliminado correctamente.",
       icon: "success",
       timer: 2000,
-      timerProgressBar: true,
       showConfirmButton: false,
       position: "center",
       background: "#f9fafb",

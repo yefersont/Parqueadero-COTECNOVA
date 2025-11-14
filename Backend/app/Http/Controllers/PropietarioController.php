@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Propietario;
 use Illuminate\Http\Request;
-
+use Exception;
 
 class PropietarioController extends Controller
 {
@@ -85,6 +85,14 @@ class PropietarioController extends Controller
     public function destroy(Propietario $propietario)
     {
         //
+        try {
+
+            $propietario->delete();
+            return response()->json(['message' => 'Propieatario eliminado exitosamente']);
+        } catch (Exception $e) {
+
+            return response()->json(['error' => 'Error al eliminar el propietario', 'detalle' => $e->getMessage()], 500);
+        }
     }
     public function getVehiculosByPropietario($propietarioId)
     {
