@@ -35,13 +35,13 @@ function Propietarios() {
   const [isVehiculoOpen, setIsVehiculoOpen] = useState(false);
   const [isAsociarOpen, setIsAsociarOpen] = useState(false);
   const [isInformationOpen, setIsInformationOpen] = useState(false);
-  const { setIdPropietario } = useRegistro();
   const [busqueda, setBusqueda] = useState("");
   const [vehiculosPropietario, setVehiculosPropietario] = useState([]);
   const [idPropietarioSeleccionado, setIdPropietarioSeleccionado] =
     useState(null);
   const [ingresosPropietario, setIngresosPropietario] = useState([]);
-  const { idPropietario } = useRegistro();
+
+  const { idPropietario, setIdPropietario } = useRegistro();
 
   // filtro para busqueda en modal asociar vehiculo
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -197,7 +197,7 @@ function Propietarios() {
     };
     createVehiculoHasPropietario(form)
       .then((res) => {
-        console.log("✅ Asociación creada correctamente:", res.data);
+        console.log(" Asociación creada correctamente:", res.data);
         AlertAsociacion();
       })
       .catch((err) => {
@@ -364,7 +364,6 @@ function Propietarios() {
                       }
                     });
                   }}
-                  // CAMBIO: Estilo minimalista/elegante para el botón de acción
                   className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-300"
                 >
                   Asociar
@@ -377,7 +376,7 @@ function Propietarios() {
         </div>
       </Modal>
 
-      {/* Modal informacion (sin cambios, solo se pasa el 'X' del modal por consistencia) */}
+      {/* Modal informacion  */}
       <Modal
         isOpen={isInformationOpen}
         onClose={() => setIsInformationOpen(false)}

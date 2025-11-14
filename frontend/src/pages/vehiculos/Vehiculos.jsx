@@ -5,14 +5,17 @@ import {
   getPropietarioByVehiculo,
   deleteVehiculo,
 } from "../../api/vehiculos";
-
+import { motion } from "framer-motion";
+import { Search, UserCheck } from "lucide-react";
 import { getPropietarios } from "../../api/propietarios";
+import { createVehiculoHasPropietario } from "../../api/vehiculohaspropietario";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import TablaPequeña from "../../components/TablaPequeña";
 import Modal from "../../components/Modal";
 import FormularioVehiculo from "../../components/FormularioVehiculo";
 import Loader from "../../components/Loader";
 import Swal from "sweetalert2";
+import { useRegistro } from "../../context/RegistroContext";
 function Vehiculos() {
   // Estados para vehículos y cargado
   const [vehiculos, setVehiculos] = useState([]);
@@ -20,6 +23,8 @@ function Vehiculos() {
   const [busqueda, setBusqueda] = useState("");
   const [Propietarios, setPropietarios] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  // Filtro de busqueda para propietarios
+  const [filtroBusqueda, setFiltroBusqueda] = useState("");
   // Estado para modal editar vehículo
   const [isEdit, setIsEdit] = useState(false);
   // Estado para modal información vehículo
@@ -30,6 +35,9 @@ function Vehiculos() {
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState(null);
   // Estado para abrir el modal de vincular vehiculo a propietario
   const [isAsociarOpen, setIsAsociarOpen] = useState(false);
+
+  // Guardamos el id  del vehiculo desde el contexto
+  const { idVehiculo, setVehiculoPropietario } = useRegistro();
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
@@ -60,6 +68,7 @@ function Vehiculos() {
           onClick={(e) => {
             e.stopPropagation();
             console.log(i.idVehiculo);
+            setVehiculoPropietario(i.idVehiculo);
             cargarPropietarios();
           }}
           className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
@@ -208,6 +217,48 @@ function Vehiculos() {
     });
   };
 
+  const AlertAsociacion = () => {
+    Swal.fire({
+      title: "Propietario asociado con éxito",
+      icon: "success",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+  const asociarPropietario = (newPropietario) => {
+    console.log(
+      "Asociando propietario:",
+      newPropietario,
+      "al vehículo:",
+      idVehiculo
+    );
+    const form = {
+      Vehiculo_idVehiculo: idVehiculo,
+      Propietario_idPropietario: newPropietario,
+    };
+    createVehiculoHasPropietario(form)
+      .then((res) => {
+        console.log("Vehículo asociado al propietario:", res.data);
+        AlertAsociacion();
+      })
+      .catch((err) => {
+        console.error("Error al asociar vehículo al propietario:", err);
+      });
+  };
+
+  const propietariosFiltrados = Propietarios.filter((p) => {
+    const term = filtroBusqueda.toLowerCase();
+    const cedula = String(p.Cedula_propietario);
+    const nombreCompleto =
+      `${p.Nombre_propietario} ${p.Apellido_propietario}`.toLowerCase();
+    const rol = p.rol?.Rol?.toLowerCase() || "";
+    return (
+      cedula.includes(term) ||
+      nombreCompleto.includes(term) ||
+      rol.includes(term)
+    );
+  });
+
   // Renderizado condicional: mostrar loader o tabla
   return cargando ? (
     <Loader texto="Cargando vehículos..." />
@@ -259,10 +310,71 @@ function Vehiculos() {
         />
       </Modal>
 
-      <Modal isOpen={isAsociarOpen} onClose={() => setIsAsociarOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">
-          Vincular Vehículo a Propietario
-        </h2>
+      {/* Modal para Seleccionar Propietario */}
+      <Modal
+        isOpen={isAsociarOpen}
+        onClose={() => setIsAsociarOpen(false)}
+        size="mx"
+      >
+        {/* Contenedor con padding para el estilo minimalista/elegante */}
+        <div className="p-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
+            Seleccionar propietario
+          </h2>
+
+          {/* ---------- Input de búsqueda ---------- */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative max-w-lg ml-20 mt-5"
+          >
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar por Cédula, Nombre o Rol..."
+              value={filtroBusqueda}
+              onChange={(e) => setFiltroBusqueda(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-300 focus:outline-none transition-colors text-base"
+            />
+          </motion.div>
+          {/* Tabla con datos filtrados */}
+          <TablaConPaginacion
+            mostrarControles={false}
+            datos={propietariosFiltrados.map((p) => ({
+              Cédula: p.Cedula_propietario,
+              Nombre: `${p.Nombre_propietario} ${p.Apellido_propietario}`,
+              Teléfono: p.Telefono_propietario,
+              Rol: p.rol?.Rol || "—",
+              Acción: (
+                <button
+                  onClick={() => {
+                    console.log("Seleccionar propietario:", p.idPropietario);
+                    Swal.fire({
+                      title: `¿Desea seleccionar a ${p.Nombre_propietario} ${p.Apellido_propietario}?`,
+                      icon: "question",
+                      showCancelButton: true,
+                      confirmButtonText: "Sí, seleccionar",
+                      cancelButtonText: "Cancelar",
+                      confirmButtonColor: "#27ae60",
+                      cancelButtonColor: "#c0392b",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        asociarPropietario(p.idPropietario);
+                        setIsAsociarOpen(false);
+                      }
+                    });
+                  }}
+                  className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  Seleccionar
+                </button>
+              ),
+            }))}
+            columnas={["Cédula", "Nombre", "Teléfono", "Rol", "Acción"]}
+            porPagina={4}
+          />
+        </div>
       </Modal>
 
       {/* Modal informacion del vehiculo */}

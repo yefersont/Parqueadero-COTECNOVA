@@ -37,7 +37,7 @@ function TablaConPaginacion({
 
   return (
     <div className="flex justify-center mt-8">
-      <motion.div
+      <div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -221,7 +221,7 @@ function TablaConPaginacion({
             </motion.button>
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
