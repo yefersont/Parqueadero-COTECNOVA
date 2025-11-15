@@ -192,7 +192,7 @@ function Propietarios() {
     background: "#f9fafb",
     color: "#2c3e50",
   });
-};
+ };
 
 
   // Alerta de asociación exitosa

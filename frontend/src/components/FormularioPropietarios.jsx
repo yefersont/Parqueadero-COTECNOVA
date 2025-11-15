@@ -3,6 +3,8 @@ import { createPropietario, updatePropietario } from "../api/propietarios";
 import { motion } from "framer-motion";
 import { User, Phone, CreditCard } from "lucide-react";
 import { useRegistro } from "../context/RegistroContext";
+import Swal from "sweetalert2";
+
 
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   const [form, setForm] = useState({
@@ -28,6 +30,18 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   }
 }, [valoresIniciales]);
 
+  const mostrarAlertaCedulaDuplicada = () => {
+    Swal.fire({
+      title: "Cédula ya registrada",
+      text: "Ya existe un propietario con esta cédula. Verifica la información.",
+      icon: "error",
+      timer: 2500,
+      showConfirmButton: false,
+      position: "center",
+      background: "#f9fafb",
+      color: "#2c3e50",
+    });
+  };
 
   // Manejo de cambios
   const handleChange = (e) => {
@@ -64,6 +78,8 @@ const handleSubmit = (e) => {
       .catch((err) => {
         console.error("Error al actualizar propietario:", err);
         console.log("Datos enviados:", form);
+        mostrarAlertaCedulaDuplicada();
+
       });
   } else {
     // Crear nuevo propietario
