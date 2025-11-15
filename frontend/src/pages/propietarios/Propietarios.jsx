@@ -32,13 +32,14 @@ function Propietarios() {
   const [vehiculos, setVehiculos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  // Variable de estado para abrir el modal editar
+  const [isEdit, setIsEdit] = useState(false);
   const [isVehiculoOpen, setIsVehiculoOpen] = useState(false);
   const [isAsociarOpen, setIsAsociarOpen] = useState(false);
   const [isInformationOpen, setIsInformationOpen] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [vehiculosPropietario, setVehiculosPropietario] = useState([]);
-  const [idPropietarioSeleccionado, setIdPropietarioSeleccionado] =
-    useState(null);
+  const [PropietarioSeleccionado, setPropietarioSeleccionado] = useState(null);
   const [ingresosPropietario, setIngresosPropietario] = useState([]);
 
   const { idPropietario, setIdPropietario } = useRegistro();
@@ -85,7 +86,8 @@ function Propietarios() {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            editarPropietario(i.idPropietario);
+            console.log(i.idPropietario);
+            editarPropietario(i);
           }}
           className=" rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
         >
@@ -179,6 +181,20 @@ function Propietarios() {
     });
   };
 
+  const mostrarAlertaPropietarioActualizado = () => {
+  Swal.fire({
+    title: "Propietario actualizado",
+    text: "Los datos del propietario se han guardado correctamente.",
+    icon: "success",
+    timer: 2000,
+    showConfirmButton: false,
+    position: "center",
+    background: "#f9fafb",
+    color: "#2c3e50",
+  });
+};
+
+
   // Alerta de asociación exitosa
   const AlertAsociacion = () => {
     Swal.fire({
@@ -204,6 +220,12 @@ function Propietarios() {
         console.error("Error al asociar vehículo y propietario:", err);
         console.log("Datos enviados:", form);
       });
+  };
+
+  // Funcion para editar un propietario
+  const editarPropietario = (propietario) => {
+    setPropietarioSeleccionado(propietario);
+    setIsEdit(true);
   };
 
   // Funcion para visualizar la informacion del propietario (vehiculos e ingresos)
@@ -236,9 +258,7 @@ function Propietarios() {
       });
   };
 
-  // ------------------------------------------------------------------
   // LÓGICA DE FILTRADO PARA EL MODAL DE ASOCIACIÓN
-  // ------------------------------------------------------------------
 
   const vehiculosFiltrados = vehiculos.filter((v) => {
     const term = filtroBusqueda.toLowerCase();
@@ -268,6 +288,7 @@ function Propietarios() {
         datos={datosFiltrados}
         placeholderBusqueda="Buscar propietario..."
         textoBoton="Nuevo propietario"
+        mostrarFiltrosFecha={false}
         onNuevo={() => setIsOpen(true)}
         onBuscar={(valor) => {
           setBusqueda(valor);
@@ -292,6 +313,22 @@ function Propietarios() {
             cargarPropietarios();
           }}
           onCancel={() => setIsOpen(false)}
+        />
+      </Modal>
+
+      {/* Moda para editar un propietario */}
+      <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
+        <h2 className="text-2xl font-bold mb-4">Editar propietario</h2>
+        <FormularioPropietario
+          editar={true}
+          valoresIniciales={PropietarioSeleccionado}
+          onSubmit={(data) => {
+            console.log("Editar propietario",data);
+            setIsEdit(false);
+            mostrarAlertaPropietarioActualizado();
+            cargarPropietarios();
+          }}
+          onCancel={() => setIsEdit(false)}
         />
       </Modal>
 

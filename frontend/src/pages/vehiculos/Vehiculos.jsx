@@ -269,6 +269,7 @@ function Vehiculos() {
         columnas={columnas}
         datos={datosFiltrados}
         placeholderBusqueda="Buscar..."
+        mostrarFiltrosFecha={false}
         textoBoton="Nuevo vehículo"
         onNuevo={() => setIsOpen(true)}
         onBuscar={(valor) => {

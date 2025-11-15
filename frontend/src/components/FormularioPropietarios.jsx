@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { createPropietario } from "../api/propietarios";
+import { createPropietario, updatePropietario } from "../api/propietarios";
 import { motion } from "framer-motion";
 import { User, Phone, CreditCard } from "lucide-react";
 import { useRegistro } from "../context/RegistroContext";
 
-// Formulario para registrar o editar propietarios
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   const [form, setForm] = useState({
     Cedula_propietario: "",
@@ -14,41 +13,60 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
     Rol: "",
   });
 
-  // Guardar el ID del propietario creado
   const { setIdPropietario } = useRegistro();
 
-  // Cargar valores iniciales si se proporcionan (para edición)
+  // Cargar valores para edición
   useEffect(() => {
-    if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
-      setForm((prev) => ({ ...prev, ...valoresIniciales }));
-    }
-  }, [valoresIniciales]);
+  if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
+    setForm((prev) => ({
+      ...prev,
+      ...valoresIniciales,
+      Rol: valoresIniciales?.rol?.idRol 
+        ? String(valoresIniciales.rol.idRol)
+        : String(valoresIniciales.Rol ?? "")
+    }));
+  }
+}, [valoresIniciales]);
 
-  // Manejo de cambios en los campos del formulario
+
+  // Manejo de cambios
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let nuevoValor = value;
 
-    // Validar solo letras y espacios para nombre y apellido
     if (name === "Nombre_propietario" || name === "Apellido_propietario") {
-      nuevoValor = value.replace(/[^a-zA-Z\s]/g, ""); // elimina cualquier cosa que no sea letra o espacio
+      nuevoValor = value.replace(/[^a-zA-Z\s]/g, "");
     }
 
     if (name === "Telefono_propietario" || name === "Cedula_propietario") {
-      nuevoValor = value.replace(/\D/g, ""); // elimina cualquier cosa que no sea número
+      nuevoValor = value.replace(/\D/g, "");
     }
 
-    if (name === "Rol" || name === "Cedula_propietario") {
+    if (name === "Rol") {
       nuevoValor = parseInt(nuevoValor, 10) || "";
     }
 
     setForm({ ...form, [name]: nuevoValor });
   };
 
-  // Manejo del envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // Detectar si es edición (igual que el formulario de vehículo)
+  const esEdicion = Boolean(valoresIniciales?.idPropietario);
+  if (esEdicion) {
+    // Actualizar propietario existente
+    updatePropietario(valoresIniciales.idPropietario, form)
+      .then((res) => {
+        console.log("Propietario actualizado:", res.data);
+        if (onSubmit) onSubmit(res.data);
+      })
+      .catch((err) => {
+        console.error("Error al actualizar propietario:", err);
+        console.log("Datos enviados:", form);
+      });
+  } else {
+    // Crear nuevo propietario
     createPropietario(form)
       .then((res) => {
         console.log("Propietario creado:", res.data);
@@ -57,9 +75,11 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
       })
       .catch((err) => {
         console.error("Error al crear propietario:", err);
-        console.log("Datos que envío:", form);
+        console.log("Datos enviados:", form);
       });
-  };
+  }
+};
+;
 
   return (
     <motion.form
@@ -163,25 +183,23 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
 
       {/* Botones */}
       <div className="flex justify-end gap-3 pt-4">
-        {/* Cancelar */}
         <motion.button
           type="button"
           onClick={onCancel}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 font-normal 
-               hover:bg-gray-300 transition-colors duration-150"
+          className="px-5 py-2 rounded-md bg-gray-200 text-gray-700 
+                     hover:bg-gray-300 transition-colors duration-150"
         >
           Cancelar
         </motion.button>
 
-        {/* Guardar */}
         <motion.button
           type="submit"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          className="px-5 py-2 rounded-md bg-green-600 text-white font-normal 
-               hover:bg-green-700 transition-colors duration-150"
+          className="px-5 py-2 rounded-md bg-green-600 text-white 
+                     hover:bg-green-700 transition-colors duration-150"
         >
           Guardar
         </motion.button>

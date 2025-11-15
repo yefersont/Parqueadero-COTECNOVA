@@ -23,7 +23,7 @@ class PropietarioController extends Controller
      */
     public function store(Request $request)
     {
-
+        
         try {
             $request->validate([
                 'Cedula_propietario' => 'required|unique:propietario,Cedula_propietario',
@@ -74,10 +74,40 @@ class PropietarioController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Propietario $propietario)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            // Buscar propietario
+            $propietario = Propietario::findOrFail($id);
+
+            // Validar campos
+            $request->validate([
+                'Cedula_propietario' => 'required|unique:propietario,Cedula_propietario,' . $id . ',idPropietario',
+                'Nombre_propietario' => 'required|string|max:100',
+                'Apellido_propietario' => 'required|string|max:100',
+                'Telefono_propietario' => 'required|string|max:15',
+                'Rol' => 'required|exists:rol,idRol',
+            ]);
+
+            // Actualizar propietario
+            $propietario->update($request->all());
+
+            return response()->json([
+                'message' => 'Propietario actualizado exitosamente',
+                'propietario' => $propietario
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar el propietario',
+                'detalle' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.

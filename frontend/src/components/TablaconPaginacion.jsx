@@ -10,7 +10,7 @@ function TablaConPaginacion({
   placeholderBusqueda = "Buscar...",
   textoBoton = "Nuevo registro",
   onNuevo,
-  deshabilitarFechas = false,
+  mostrarFiltrosFecha = true, // 🔥 NUEVO PROP
   onBuscar,
   mostrarControles = true,
   onRowClick,
@@ -18,10 +18,27 @@ function TablaConPaginacion({
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaInput, setBusquedaInput] = useState("");
 
+  // Filtros
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+
+  // Filtrar datos por fecha
+  const datosFiltrados = datos.filter((fila) => {
+    if (!mostrarFiltrosFecha) return true;
+
+    const fecha = new Date(fila["Fecha y hora"]?.split(" ")[0]);
+
+    if (fechaInicio && fecha < new Date(fechaInicio)) return false;
+    if (fechaFin && fecha > new Date(fechaFin)) return false;
+
+    return true;
+  });
+
+  // Paginación
   const indiceUltimo = paginaActual * porPagina;
   const indicePrimero = indiceUltimo - porPagina;
-  const datosPagina = datos.slice(indicePrimero, indiceUltimo);
-  const totalPaginas = Math.ceil(datos.length / porPagina);
+  const datosPagina = datosFiltrados.slice(indicePrimero, indiceUltimo);
+  const totalPaginas = Math.ceil(datosFiltrados.length / porPagina);
 
   const siguientePagina = () => {
     if (paginaActual < totalPaginas) setPaginaActual(paginaActual + 1);
@@ -48,77 +65,96 @@ function TablaConPaginacion({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
-            className="text-2xl md:text-3xl font-semibold mb-4 text-gray-900 font-[Inter] tracking-tight"
+            className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900 font-[Inter]"
           >
             {titulo}
           </motion.h1>
         )}
 
-        {/* Barra búsqueda + filtros + botón */}
+        {/* 🔥 CONTROLES: filtros + búsqueda + botón */}
         {mostrarControles && (
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            {/* Input de búsqueda */}
-            <div className="relative w-full sm:w-1/3">
-              <input
-                type="text"
-                placeholder={placeholderBusqueda}
-                value={busquedaInput}
-                onChange={(e) => {
-                  setBusquedaInput(e.target.value);
-                  if (onBuscar) onBuscar(e.target.value);
-                }}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              />
-              <button
-                onClick={HandleBuscar}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-800 transition"
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            {/* ------ CONTROLES DE LA DERECHA ------- */}
+            <div className="flex flex-wrap items-end gap-3 ml-auto">
+              {/* Filtros de fecha elegantes SIN borde */}
+              {mostrarFiltrosFecha && (
+                <div className="flex items-end gap-4 px-2 pb-1">
+                  {/* Fecha desde */}
+                  <div className="flex flex-col translate-y-[4px]">
+                    <label className="text-[12px] font-medium text-gray-700 mb-1">
+                      Fecha desde
+                    </label>
+                    <input
+                      type="date"
+                      value={fechaInicio}
+                      onChange={(e) => setFechaInicio(e.target.value)}
+                      className="px-3 py-2.5 rounded-lg bg-gray-50 
+          border border-gray-300 text-gray-700 text-sm shadow-inner
+          focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
+          transition-all"
+                    />
+                  </div>
+
+                  {/* Fecha hasta */}
+                  <div className="flex flex-col translate-y-[4px]">
+                    <label className="text-[12px] font-medium text-gray-700 mb-1">
+                      Fecha hasta
+                    </label>
+                    <input
+                      type="date"
+                      value={fechaFin}
+                      onChange={(e) => setFechaFin(e.target.value)}
+                      className="px-3 py-2.5 rounded-lg bg-gray-50 
+          border border-gray-300 text-gray-700 text-sm shadow-inner
+          focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
+          transition-all"
+                    />
+                  </div>
+
+                  {/* Botón Filtrar */}
+                  <button
+                    onClick={() => setPaginaActual(1)}
+                    className="px-5 py-2.5 rounded-lg bg-green-600 text-white font-semibold
+        hover:bg-green-700 transition-all shadow-sm active:scale-95 translate-y-[4px]"
+                  >
+                    Filtrar
+                  </button>
+                </div>
+              )}
+
+              {/* Barra de búsqueda */}
+              <div className="relative w-48 translate-y-[4px]">
+                <input
+                  type="text"
+                  placeholder={placeholderBusqueda}
+                  value={busquedaInput}
+                  onChange={(e) => {
+                    setBusquedaInput(e.target.value);
+                    if (onBuscar) onBuscar(e.target.value);
+                  }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 
+        bg-white shadow-sm text-sm
+        focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                />
+                <button
+                  onClick={HandleBuscar}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-700"
+                >
+                  <Search size={18} />
+                </button>
+              </div>
+
+              {/* Botón Nuevo */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onNuevo}
+                className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 
+      transition font-semibold shadow-sm whitespace-nowrap translate-y-[4px]"
               >
-                <Search size={20} />
-              </button>
+                {textoBoton}
+              </motion.button>
             </div>
-
-            {/* Filtros de fecha */}
-            <div className="flex gap-4 flex-wrap">
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-gray-500 mb-1">
-                  Desde
-                </label>
-                <input
-                  disabled={deshabilitarFechas}
-                  type="date"
-                  className={`px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition ${
-                    deshabilitarFechas
-                      ? "bg-gray-100 cursor-not-allowed opacity-60"
-                      : ""
-                  }`}
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-gray-500 mb-1">
-                  Hasta
-                </label>
-                <input
-                  disabled={deshabilitarFechas}
-                  type="date"
-                  className={`px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition ${
-                    deshabilitarFechas
-                      ? "bg-gray-100 cursor-not-allowed opacity-60"
-                      : ""
-                  }`}
-                />
-              </div>
-            </div>
-
-            {/* Botón Nuevo */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onNuevo}
-              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
-            >
-              {textoBoton}
-            </motion.button>
           </div>
         )}
 
@@ -129,10 +165,10 @@ function TablaConPaginacion({
           transition={{ delay: 0.3 }}
           className="text-sm text-gray-600 mb-2 text-right"
         >
-          Mostrando {datosPagina.length} de {datos.length} registros
+          Mostrando {datosPagina.length} de {datosFiltrados.length} registros
         </motion.p>
 
-        {/* Tabla sin sombra */}
+        {/* TABLA */}
         <div className="overflow-x-auto rounded-xl">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
@@ -147,6 +183,7 @@ function TablaConPaginacion({
                 ))}
               </tr>
             </thead>
+
             <tbody className="bg-white divide-y divide-gray-100">
               <AnimatePresence mode="sync">
                 {datosPagina.map((fila, idx) => (
@@ -156,10 +193,8 @@ function TablaConPaginacion({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="hover:bg-green-50 transition-all duration-200 cursor-pointer"
-                    onClick={() => {
-                      if (typeof onRowClick === "function") onRowClick(fila);
-                    }}
+                    className="hover:bg-green-50 transition cursor-pointer"
+                    onClick={() => onRowClick && onRowClick(fila)}
                   >
                     {Object.entries(fila).map(([key, valor], i) =>
                       key !== "idPropietario" && key !== "idVehiculo" ? (
@@ -173,12 +208,12 @@ function TablaConPaginacion({
                     )}
                   </motion.tr>
                 ))}
-                {datos.length === 0 && (
+
+                {datosFiltrados.length === 0 && (
                   <motion.tr
                     key="no-data"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
                   >
                     <td
                       colSpan={columnas.length}
@@ -194,31 +229,27 @@ function TablaConPaginacion({
         </div>
 
         {/* Paginación */}
-        {datos.length > porPagina && (
+        {datosFiltrados.length > porPagina && (
           <div className="flex justify-between items-center mt-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={anteriorPagina}
               disabled={paginaActual === 1}
               className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
             >
               Anterior
-            </motion.button>
+            </button>
 
             <span className="text-gray-700">
               Página {paginaActual} de {totalPaginas}
             </span>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={siguientePagina}
               disabled={paginaActual === totalPaginas}
               className="px-4 py-2 bg-gray-100 rounded disabled:opacity-50"
             >
               Siguiente
-            </motion.button>
+            </button>
           </div>
         )}
       </div>
