@@ -106,4 +106,23 @@ class IngresoController extends Controller
             ], 500);
         }
     }
+
+    public function getIngresosPorRangoFechas(Request $request)
+    {
+        try {
+            $fechaInicio = $request->query('inicio');
+            $fechaFin = $request->query('fin');
+
+            $Ingresos = Ingreso::with('propietario', 'vehiculo')
+                ->whereBetween('fecha_ingreso', [$fechaInicio, $fechaFin])
+                ->get();
+
+            return response()->json($Ingresos);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener los ingresos por rango de fechas',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

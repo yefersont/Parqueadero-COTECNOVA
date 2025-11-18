@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { getIngresos } from "../../api/ingresos";
+import { getIngresos, getIngresosPorRangoFechas } from "../../api/ingresos";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
+import FiltrosFecha from "../../components/FiltrosFecha";
 
 function Ingresos() {
   const [ingresos, setIngresos] = useState([]);
   const [cargando, setCargando] = useState(true);
+
+  // Filtros
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
 
   useEffect(() => {
     getIngresos()
@@ -16,7 +21,7 @@ function Ingresos() {
       .catch((err) => console.error(err));
   }, []);
 
-  const columnas = ["Propietario", "Vehículo", "Fecha y hora"];
+  const columnas = ["Propietario", "Vehículo", "Fecha", "Hora"];
 
   const datos = ingresos.map((i) => ({
     Propietario:
@@ -24,20 +29,61 @@ function Ingresos() {
       " " +
       i.propietario.Apellido_propietario,
     Vehículo: i.vehiculo.Placa_vehiculo,
-    "Fecha y hora": i.fecha_ingreso + "   " + i.hora_ingreso,
+    Fecha: i.fecha_ingreso,
+    Hora: i.hora_ingreso,
   }));
+
+  const filtrarPorFechas = () => {
+    if (!fechaInicio || !fechaFin) {
+      alert("Por favor, ingrese ambas fechas para filtrar.");
+      return;
+    }
+
+    setCargando(true);
+
+    getIngresosPorRangoFechas(fechaInicio, fechaFin)
+      .then((res) => {
+        setIngresos(res.data);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setCargando(false));
+  };
+
+  const limpiarCampos = () => {
+    setFechaInicio("");
+    setFechaFin("");
+    setCargando(true);
+    getIngresos()
+      .then((res) => {
+        setIngresos(res.data);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setCargando(false));
+  };
 
   return cargando ? (
     <Loader texto="Cargando ingresos..." />
   ) : (
-    <TablaConPaginacion
-      titulo="Ingresos"
-      columnas={columnas}
-      datos={datos}
-      placeholderBusqueda="Buscar ingreso..."
-      textoBoton="Nuevo ingreso"
-      onNuevo={() => console.log("Abrir modal de propietario")}
-    />
+    <div className="flex flex-col gap-4">
+      {/* Filtros */}
+      <FiltrosFecha
+        fechaInicio={fechaInicio}
+        fechaFin={fechaFin}
+        setFechaInicio={setFechaInicio}
+        setFechaFin={setFechaFin}
+        onFiltrar={() => filtrarPorFechas()}
+        onReset={limpiarCampos}
+      />
+      {/* Tabla */}
+      <TablaConPaginacion
+        titulo="Ingresos"
+        columnas={columnas}
+        datos={datos}
+        placeholderBusqueda="Buscar ingreso..."
+        textoBoton="Nuevo ingreso"
+        onNuevo={() => console.log("Abrir modal de propietario")}
+      />
+    </div>
   );
 }
 

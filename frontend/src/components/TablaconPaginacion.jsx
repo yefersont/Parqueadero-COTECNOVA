@@ -10,7 +10,6 @@ function TablaConPaginacion({
   placeholderBusqueda = "Buscar...",
   textoBoton = "Nuevo registro",
   onNuevo,
-  mostrarFiltrosFecha = true, // 🔥 NUEVO PROP
   onBuscar,
   mostrarControles = true,
   onRowClick,
@@ -18,27 +17,11 @@ function TablaConPaginacion({
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaInput, setBusquedaInput] = useState("");
 
-  // Filtros
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
-
-  // Filtrar datos por fecha
-  const datosFiltrados = datos.filter((fila) => {
-    if (!mostrarFiltrosFecha) return true;
-
-    const fecha = new Date(fila["Fecha y hora"]?.split(" ")[0]);
-
-    if (fechaInicio && fecha < new Date(fechaInicio)) return false;
-    if (fechaFin && fecha > new Date(fechaFin)) return false;
-
-    return true;
-  });
-
   // Paginación
   const indiceUltimo = paginaActual * porPagina;
   const indicePrimero = indiceUltimo - porPagina;
-  const datosPagina = datosFiltrados.slice(indicePrimero, indiceUltimo);
-  const totalPaginas = Math.ceil(datosFiltrados.length / porPagina);
+  const datosPagina = datos.slice(indicePrimero, indiceUltimo);
+  const totalPaginas = Math.ceil(datos.length / porPagina);
 
   const siguientePagina = () => {
     if (paginaActual < totalPaginas) setPaginaActual(paginaActual + 1);
@@ -54,7 +37,7 @@ function TablaConPaginacion({
 
   return (
     <div className="flex justify-center mt-8">
-      <div
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -71,57 +54,10 @@ function TablaConPaginacion({
           </motion.h1>
         )}
 
-        {/* 🔥 CONTROLES: filtros + búsqueda + botón */}
+        {/* 🔥 CONTROLES: búsqueda + botón */}
         {mostrarControles && (
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            {/* ------ CONTROLES DE LA DERECHA ------- */}
             <div className="flex flex-wrap items-end gap-3 ml-auto">
-              {/* Filtros de fecha elegantes SIN borde */}
-              {mostrarFiltrosFecha && (
-                <div className="flex items-end gap-4 px-2 pb-1">
-                  {/* Fecha desde */}
-                  <div className="flex flex-col translate-y-[4px]">
-                    <label className="text-[12px] font-medium text-gray-700 mb-1">
-                      Fecha desde
-                    </label>
-                    <input
-                      type="date"
-                      value={fechaInicio}
-                      onChange={(e) => setFechaInicio(e.target.value)}
-                      className="px-3 py-2.5 rounded-lg bg-gray-50 
-          border border-gray-300 text-gray-700 text-sm shadow-inner
-          focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
-          transition-all"
-                    />
-                  </div>
-
-                  {/* Fecha hasta */}
-                  <div className="flex flex-col translate-y-[4px]">
-                    <label className="text-[12px] font-medium text-gray-700 mb-1">
-                      Fecha hasta
-                    </label>
-                    <input
-                      type="date"
-                      value={fechaFin}
-                      onChange={(e) => setFechaFin(e.target.value)}
-                      className="px-3 py-2.5 rounded-lg bg-gray-50 
-          border border-gray-300 text-gray-700 text-sm shadow-inner
-          focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500
-          transition-all"
-                    />
-                  </div>
-
-                  {/* Botón Filtrar */}
-                  <button
-                    onClick={() => setPaginaActual(1)}
-                    className="px-5 py-2.5 rounded-lg bg-green-600 text-white font-semibold
-        hover:bg-green-700 transition-all shadow-sm active:scale-95 translate-y-[4px]"
-                  >
-                    Filtrar
-                  </button>
-                </div>
-              )}
-
               {/* Barra de búsqueda */}
               <div className="relative w-48 translate-y-[4px]">
                 <input
@@ -133,8 +69,8 @@ function TablaConPaginacion({
                     if (onBuscar) onBuscar(e.target.value);
                   }}
                   className="w-full px-4 py-2.5 rounded-lg border border-gray-300 
-        bg-white shadow-sm text-sm
-        focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                  bg-white shadow-sm text-sm
+                  focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
                 />
                 <button
                   onClick={HandleBuscar}
@@ -150,7 +86,7 @@ function TablaConPaginacion({
                 whileTap={{ scale: 0.95 }}
                 onClick={onNuevo}
                 className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 
-      transition font-semibold shadow-sm whitespace-nowrap translate-y-[4px]"
+                transition font-semibold shadow-sm whitespace-nowrap translate-y-[4px]"
               >
                 {textoBoton}
               </motion.button>
@@ -165,7 +101,7 @@ function TablaConPaginacion({
           transition={{ delay: 0.3 }}
           className="text-sm text-gray-600 mb-2 text-right"
         >
-          Mostrando {datosPagina.length} de {datosFiltrados.length} registros
+          Mostrando {datosPagina.length} de {datos.length} registros
         </motion.p>
 
         {/* TABLA */}
@@ -209,7 +145,7 @@ function TablaConPaginacion({
                   </motion.tr>
                 ))}
 
-                {datosFiltrados.length === 0 && (
+                {datos.length === 0 && (
                   <motion.tr
                     key="no-data"
                     initial={{ opacity: 0 }}
@@ -229,7 +165,7 @@ function TablaConPaginacion({
         </div>
 
         {/* Paginación */}
-        {datosFiltrados.length > porPagina && (
+        {datos.length > porPagina && (
           <div className="flex justify-between items-center mt-4">
             <button
               onClick={anteriorPagina}
@@ -252,7 +188,7 @@ function TablaConPaginacion({
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

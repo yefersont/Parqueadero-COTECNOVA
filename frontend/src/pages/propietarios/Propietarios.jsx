@@ -182,18 +182,17 @@ function Propietarios() {
   };
 
   const mostrarAlertaPropietarioActualizado = () => {
-  Swal.fire({
-    title: "Propietario actualizado",
-    text: "Los datos del propietario se han guardado correctamente.",
-    icon: "success",
-    timer: 2000,
-    showConfirmButton: false,
-    position: "center",
-    background: "#f9fafb",
-    color: "#2c3e50",
-  });
- };
-
+    Swal.fire({
+      title: "Propietario actualizado",
+      text: "Los datos del propietario se han guardado correctamente.",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+      position: "center",
+      background: "#f9fafb",
+      color: "#2c3e50",
+    });
+  };
 
   // Alerta de asociación exitosa
   const AlertAsociacion = () => {
@@ -288,7 +287,6 @@ function Propietarios() {
         datos={datosFiltrados}
         placeholderBusqueda="Buscar propietario..."
         textoBoton="Nuevo propietario"
-        mostrarFiltrosFecha={false}
         onNuevo={() => setIsOpen(true)}
         onBuscar={(valor) => {
           setBusqueda(valor);
@@ -323,7 +321,7 @@ function Propietarios() {
           editar={true}
           valoresIniciales={PropietarioSeleccionado}
           onSubmit={(data) => {
-            console.log("Editar propietario",data);
+            console.log("Editar propietario", data);
             setIsEdit(false);
             mostrarAlertaPropietarioActualizado();
             cargarPropietarios();
