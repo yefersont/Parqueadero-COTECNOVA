@@ -66,14 +66,14 @@ function Ingresos() {
   ) : (
     <div className="flex flex-col gap-4">
       {/* Filtros */}
-      <FiltrosFecha
+      {/* <FiltrosFecha
         fechaInicio={fechaInicio}
         fechaFin={fechaFin}
         setFechaInicio={setFechaInicio}
         setFechaFin={setFechaFin}
         onFiltrar={() => filtrarPorFechas()}
         onReset={limpiarCampos}
-      />
+      /> */}
       {/* Tabla */}
       <TablaConPaginacion
         titulo="Ingresos"
@@ -82,6 +82,16 @@ function Ingresos() {
         placeholderBusqueda="Buscar ingreso..."
         textoBoton="Nuevo ingreso"
         onNuevo={() => console.log("Abrir modal de propietario")}
+        extraControls={
+          <FiltrosFecha
+            fechaInicio={fechaInicio}
+            fechaFin={fechaFin}
+            setFechaInicio={setFechaInicio}
+            setFechaFin={setFechaFin}
+            onFiltrar={filtrarPorFechas}
+            onReset={limpiarCampos}
+          />
+        }
       />
     </div>
   );
