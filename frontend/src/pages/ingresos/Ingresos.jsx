@@ -4,12 +4,14 @@ import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
 import FiltrosFecha from "../../components/FiltrosFecha";
 import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function Ingresos() {
   const [ingresos, setIngresos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Para la busqueda
+  // Para la búsqueda
   const [busqueda, setBusqueda] = useState("");
 
   const [ingresosOriginales, setIngresosOriginales] = useState([]);
@@ -22,7 +24,7 @@ function Ingresos() {
     getIngresos()
       .then((res) => {
         setIngresos(res.data);
-        setIngresosOriginales(res.data); // ← COPIA ORIGINAL
+        setIngresosOriginales(res.data); // ← copia original
         setCargando(false);
       })
       .catch((err) => console.error(err));
@@ -39,6 +41,7 @@ function Ingresos() {
     Hora: i.hora_ingreso ?? "",
   }));
 
+  // Filtrado por búsqueda
   const datosFiltrados = datos.filter((i) =>
     Object.values(i).some((valor) =>
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
@@ -63,9 +66,7 @@ function Ingresos() {
     }
     setCargando(true);
     getIngresosPorRangoFechas(fechaInicio, fechaFin)
-      .then((res) => {
-        setIngresos(res.data);
-      })
+      .then((res) => setIngresos(res.data))
       .catch((err) => console.error(err))
       .finally(() => setCargando(false));
   };
@@ -73,16 +74,33 @@ function Ingresos() {
   const limpiarCampos = () => {
     setFechaInicio("");
     setFechaFin("");
-
-    // Restauras los datos originales
     setIngresos(ingresosOriginales);
+  };
+
+  const exportarExcel = () => {
+    if (datosFiltrados.length === 0) {
+      Swal.fire({
+        title: "Sin datos",
+        text: "No hay datos para exportar.",
+        icon: "info",
+        confirmButtonText: "Entendido",
+      });
+      return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(datosFiltrados);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Ingresos");
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "ingresos.xlsx");
   };
 
   return cargando ? (
     <Loader texto="Cargando ingresos..." />
   ) : (
     <div className="flex flex-col gap-4">
-      {/* Tabla */}
       <TablaConPaginacion
         titulo="Ingresos"
         columnas={columnas}
@@ -90,16 +108,24 @@ function Ingresos() {
         placeholderBusqueda="Buscar ingreso..."
         textoBoton="Nuevo ingreso"
         onBuscar={setBusqueda}
-        onNuevo={() => console.log("Abrir modal de propietario")}
+        onNuevo={() => console.log("Abrir modal de ingreso")}
         extraControls={
-          <FiltrosFecha
-            fechaInicio={fechaInicio}
-            fechaFin={fechaFin}
-            setFechaInicio={setFechaInicio}
-            setFechaFin={setFechaFin}
-            onFiltrar={filtrarPorFechas}
-            onReset={limpiarCampos}
-          />
+          <div className="flex gap-2 items-end">
+            <FiltrosFecha
+              fechaInicio={fechaInicio}
+              fechaFin={fechaFin}
+              setFechaInicio={setFechaInicio}
+              setFechaFin={setFechaFin}
+              onFiltrar={filtrarPorFechas}
+              onReset={limpiarCampos}
+            />
+            <button
+              onClick={exportarExcel}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
+            >
+              Exportar Excel
+            </button>
+          </div>
         }
       />
     </div>
