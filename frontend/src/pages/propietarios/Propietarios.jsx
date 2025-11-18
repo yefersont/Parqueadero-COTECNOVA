@@ -244,7 +244,7 @@ function Propietarios() {
       });
   };
 
-  // Funciion para cargar los vevhiculos disponibles
+  // Funcion para cargar los vevhiculos disponibles
   const cargarVehiculos = () => {
     setIsAsociarOpen(true);
     getVehiculos()
@@ -258,7 +258,6 @@ function Propietarios() {
   };
 
   // LÓGICA DE FILTRADO PARA EL MODAL DE ASOCIACIÓN
-
   const vehiculosFiltrados = vehiculos.filter((v) => {
     const term = filtroBusqueda.toLowerCase();
     const placa = v.Placa_vehiculo?.toLowerCase() || "";
