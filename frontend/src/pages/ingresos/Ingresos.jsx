@@ -23,6 +23,7 @@ function Ingresos() {
   useEffect(() => {
     getIngresos()
       .then((res) => {
+        console.log(res.data);
         setIngresos(res.data);
         setIngresosOriginales(res.data); // ← copia original
         setCargando(false);
@@ -30,7 +31,14 @@ function Ingresos() {
       .catch((err) => console.error(err));
   }, []);
 
-  const columnas = ["Propietario", "Vehículo", "Fecha", "Hora"];
+  const columnas = [
+    "Propietario",
+    "Vehículo",
+    "Fecha Ingreso",
+    "Hora Ingreso",
+    "Fecha Salida",
+    "Hora Salida",
+  ];
 
   const datos = ingresos.map((i) => ({
     Propietario: `${i.propietario?.Nombre_propietario ?? ""} ${
@@ -39,6 +47,8 @@ function Ingresos() {
     Vehículo: i.vehiculo?.Placa_vehiculo ?? "",
     Fecha: i.fecha_ingreso ?? "",
     Hora: i.hora_ingreso ?? "",
+    FechaSalida: i.salidas?.fecha_salida ?? "--/--/--",
+    HoraSalida: i.salidas?.hora_salida ?? "--/--/--",
   }));
 
   // Filtrado por búsqueda
@@ -110,7 +120,7 @@ function Ingresos() {
         onBuscar={setBusqueda}
         onNuevo={() => console.log("Abrir modal de ingreso")}
         extraControls={
-          <div className="flex w-full justify-between items-end">
+          <div className="flex w-full justify-between items-center">
             {/* Filtros a la izquierda */}
             <FiltrosFecha
               fechaInicio={fechaInicio}
@@ -121,34 +131,66 @@ function Ingresos() {
               onReset={limpiarCampos}
             />
 
-            {/* Botón Excel a la derecha */}
-            <button
-              onClick={exportarExcel}
-              className="
-        bg-black text-white 
-        px-4 py-2 rounded-xl 
-        hover:opacity-90 
-        transition-all shadow
-        flex items-center gap-2
-      "
-              title="Exportar a Excel"
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-4 w-4" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
+            {/* Botones de exportación a la derecha */}
+            <div className="flex gap-2">
+              {/* Botón Excel */}
+              <button
+                onClick={exportarExcel}
+                className="
+          bg-gray-200 text-gray-700 
+          px-4 py-2 rounded-xl 
+          hover:bg-gray-300 
+          transition-all shadow
+          flex items-center gap-2
+        "
+                title="Exportar a Excel"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
-                />
-              </svg>
-              Exportar Excel
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Exportar Excel
+              </button>
+
+              {/* Botón PDF */}
+              <button
+                onClick={() => console.log("Exportar PDF")}
+                className="
+          bg-gray-200 text-gray-700 
+          px-4 py-2 rounded-xl 
+          hover:bg-gray-300 
+          transition-all shadow
+          flex items-center gap-2
+        "
+                title="Exportar a PDF"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                Exportar PDF
+              </button>
+            </div>
           </div>
         }
       />

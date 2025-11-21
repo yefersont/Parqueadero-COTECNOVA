@@ -69,7 +69,6 @@ class Ingreso extends Model
 		return $this->belongsTo(Vehiculo::class, 'Vehiculo_idVehiculo');
 	}
 
-
 	public function salidas()
 	{
 		return $this->hasOne(Salida::class, 'Ingresos_idIngresos');

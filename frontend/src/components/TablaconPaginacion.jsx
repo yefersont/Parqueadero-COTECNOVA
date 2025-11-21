@@ -109,7 +109,7 @@ function TablaConPaginacion({
           Mostrando {datosPagina.length} de {datos.length} registros
         </motion.p>
 
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-100 text-xs text-gray-700 uppercase border-b border-gray-300">
               <tr>

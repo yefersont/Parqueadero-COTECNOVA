@@ -21,14 +21,13 @@ const NavLink = ({ to, name }) => (
   </Link>
 );
 
-// --- Componente principal Navbar ---
 function Navbar() {
   const menuItems = [
     { name: "Inicio", to: "/inicio" },
     { name: "Propietarios", to: "/propietario" },
     { name: "Vehículos", to: "/vehiculos" },
     { name: "Ingresos", to: "/ingresos" },
-    { name: "Salidas", to: "/salidas" },
+    // { name: "Salidas", to: "/salidas" },
   ];
 
   return (

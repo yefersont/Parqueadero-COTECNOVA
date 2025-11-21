@@ -14,7 +14,7 @@ class IngresoController extends Controller
      */
     public function index()
     {
-        $ingresos = Ingreso::with('propietario', 'vehiculo')->get();
+        $ingresos = Ingreso::with('propietario', 'vehiculo', 'salidas')->get();
         return response()->json($ingresos);
     }
 
@@ -113,7 +113,7 @@ class IngresoController extends Controller
             $fechaInicio = $request->query('inicio');
             $fechaFin = $request->query('fin');
 
-            $Ingresos = Ingreso::with('propietario', 'vehiculo')
+            $Ingresos = Ingreso::with('propietario', 'vehiculo', 'salidas')
                 ->whereBetween('fecha_ingreso', [$fechaInicio, $fechaFin])
                 ->get();
 
