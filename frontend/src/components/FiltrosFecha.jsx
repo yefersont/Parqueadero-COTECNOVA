@@ -58,19 +58,21 @@ function FiltrosFecha({
 
       {/* Botón Filtrar */}
       <button
-        onClick={onFiltrar}
-        className="
-          bg-black text-white 
-          px-3 py-2 rounded-xl 
-          hover:opacity-90 
-          transition-all shadow
-          flex items-center justify-center
-          mt-[22px]
-        "
-        title="Aplicar filtros"
-      >
-        <Funnel size={15} />
-      </button>
+  onClick={onFiltrar}
+  className="
+    bg-black text-white 
+    px-3 py-2 rounded-xl 
+    hover:opacity-90 
+    transition-all shadow
+    flex items-center justify-center
+    gap-2
+    mt-[22px]
+  "
+  title="Aplicar filtros"
+>
+  Filtrar <Funnel size={15} />
+</button>
+
 
       {/* Botón Limpiar */}
       <button
