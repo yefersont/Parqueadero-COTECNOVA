@@ -33,6 +33,7 @@ function Ingresos() {
 
   const columnas = [
     "Propietario",
+    "cedula Propietario",
     "Rol Propietario",
     "Vehículo",
     "Fecha Ingreso",
@@ -45,6 +46,7 @@ function Ingresos() {
     Propietario: `${i.propietario?.Nombre_propietario ?? ""} ${
       i.propietario?.Apellido_propietario ?? ""
     }`,
+    Cedula: i.propietario?.Cedula_propietario ?? "",
     Rol: i.propietario?.rol?.Rol ?? "",
     Vehículo: i.vehiculo?.Placa_vehiculo ?? "",
     Fecha: i.fecha_ingreso ?? "",
