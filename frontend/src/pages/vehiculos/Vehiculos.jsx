@@ -210,9 +210,14 @@ function Vehiculos() {
   const eliminarVehiculo = (id) => {
     confirmarEliminacion().then((result) => {
       if (result.isConfirmed) {
-        deleteVehiculo(id);
-        mostrarAlertaEliminado();
-        cargarVehiculos();
+        deleteVehiculo(id)
+          .then((res) => {
+            mostrarAlertaEliminado();
+            cargarVehiculos();
+          })
+          .catch((err) => {
+            console.error("Error al eliminar vehículo:", err);
+          });
       }
     });
   };

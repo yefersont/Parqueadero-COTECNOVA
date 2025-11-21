@@ -142,12 +142,16 @@ function Propietarios() {
       color: "#2c3e50", // Color de texto oscuro
     });
   };
+
   const eliminarPropietario = (id) => {
     confirmarEliminacionPropietario().then((result) => {
       if (result.isConfirmed) {
-        deletePropietario(id);
-        mostrarAlertaEliminadoPropietario();
-        cargarPropietarios();
+        deletePropietario(id)
+          .then(() => {
+            mostrarAlertaEliminadoPropietario();
+            cargarPropietarios();
+          })
+          .catch((err) => console.error(err));
       }
     });
   };

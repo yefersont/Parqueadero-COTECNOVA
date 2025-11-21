@@ -5,7 +5,6 @@ import { User, Phone, CreditCard } from "lucide-react";
 import { useRegistro } from "../context/RegistroContext";
 import Swal from "sweetalert2";
 
-
 function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
   const [form, setForm] = useState({
     Cedula_propietario: "",
@@ -19,16 +18,16 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
 
   // Cargar valores para edición
   useEffect(() => {
-  if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
-    setForm((prev) => ({
-      ...prev,
-      ...valoresIniciales,
-      Rol: valoresIniciales?.rol?.idRol 
-        ? String(valoresIniciales.rol.idRol)
-        : String(valoresIniciales.Rol ?? "")
-    }));
-  }
-}, [valoresIniciales]);
+    if (valoresIniciales && Object.keys(valoresIniciales).length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        ...valoresIniciales,
+        Rol: valoresIniciales?.rol?.idRol
+          ? String(valoresIniciales.rol.idRol)
+          : String(valoresIniciales.Rol ?? ""),
+      }));
+    }
+  }, [valoresIniciales]);
 
   const mostrarAlertaCedulaDuplicada = () => {
     Swal.fire({
@@ -63,40 +62,37 @@ function FormularioPropietario({ valoresIniciales = {}, onSubmit, onCancel }) {
     setForm({ ...form, [name]: nuevoValor });
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  // Detectar si es edición (igual que el formulario de vehículo)
-  const esEdicion = Boolean(valoresIniciales?.idPropietario);
-  if (esEdicion) {
-    // Actualizar propietario existente
-    updatePropietario(valoresIniciales.idPropietario, form)
-      .then((res) => {
-        console.log("Propietario actualizado:", res.data);
-        if (onSubmit) onSubmit(res.data);
-      })
-      .catch((err) => {
-        console.error("Error al actualizar propietario:", err);
-        console.log("Datos enviados:", form);
-        mostrarAlertaCedulaDuplicada();
-
-      });
-  } else {
-    // Crear nuevo propietario
-    createPropietario(form)
-      .then((res) => {
-        console.log("Propietario creado:", res.data);
-        setIdPropietario(res.data.idPropietario);
-        if (onSubmit) onSubmit(res.data);
-      })
-      .catch((err) => {
-        console.error("Error al crear propietario:", err);
-        console.log("Datos enviados:", form);
-      });
-  }
-};
-;
-
+    // Detectar si es edición (igual que el formulario de vehículo)
+    const esEdicion = Boolean(valoresIniciales?.idPropietario);
+    if (esEdicion) {
+      // Actualizar propietario existente
+      updatePropietario(valoresIniciales.idPropietario, form)
+        .then((res) => {
+          console.log("Propietario actualizado:", res.data);
+          if (onSubmit) onSubmit(res.data);
+        })
+        .catch((err) => {
+          console.error("Error al actualizar propietario:", err);
+          console.log("Datos enviados:", form);
+          mostrarAlertaCedulaDuplicada();
+        });
+    } else {
+      // Crear nuevo propietario
+      createPropietario(form)
+        .then((res) => {
+          console.log("Propietario creado:", res.data);
+          setIdPropietario(res.data.idPropietario);
+          if (onSubmit) onSubmit(res.data);
+        })
+        .catch((err) => {
+          console.error("Error al crear propietario:", err);
+          console.log("Datos enviados:", form);
+        });
+    }
+  };
   return (
     <motion.form
       onSubmit={handleSubmit}
