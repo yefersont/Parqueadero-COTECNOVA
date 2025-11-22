@@ -151,4 +151,34 @@ class PropietarioController extends Controller
             'ultimos_ingresos' => $ultimosIngresos
         ]);
     }
+
+    /**
+     * Get propietario by cedula
+     * 
+     * @param string $cedula
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getByCedula($cedula)
+    {
+        try {
+            // Buscar propietario por cédula con sus relaciones
+            $propietario = Propietario::with(['rol', 'vehiculos'])
+                ->where('Cedula_propietario', $cedula)
+                ->first();
+
+            if (!$propietario) {
+                return response()->json([
+                    'message' => 'Propietario no encontrado'
+                ], 404);
+            }
+
+            return response()->json($propietario, 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al buscar el propietario',
+                'detalle' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { useState, useEffect } from "react";
 import {
   Car,
@@ -9,7 +8,7 @@ import {
   Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { getPropietarios } from "../../api/propietarios";
+import { getPropietarioByCedula } from "../../api/propietarios";
 import { createIngreso, getIngresosHoy } from "../../api/ingresos";
 import { getSalidasHoy, createSalida } from "../../api/salidas";
 import Modal from "../../components/Modal";
@@ -19,7 +18,6 @@ function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
   const [vehiculosIngreso, setVehiculosIngreso] = useState([]);
-  const [propietarios, setPropietarios] = useState([]);
   const [vehiculoSeleccionadoIngreso, setVehiculoSeleccionadoIngreso] =
     useState("");
   const [ingresosHoy, setIngresosHoy] = useState([]);
@@ -32,16 +30,17 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenSalidas, setIsModalOpenSalidas] = useState(false);
 
-  // Cargar propietarios desde el backend
-  const fetchPropietarios = async () => {
-    try {
-      const response = await getPropietarios();
-      setPropietarios(response.data);
-      console.log("Propietarios cargados:", response.data);
-    } catch (error) {
-      console.error("Error fetching propietarios:", error);
+  useEffect(() => {
+    fetchIngresosHoy();
+    fetchSalidasHoy();
+  }, []);
+
+  useEffect(() => {
+    if (errorNotification) {
+      const timer = setTimeout(() => setErrorNotification(""), 4500);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [errorNotification]);
 
   const fetchIngresosHoy = async () => {
     try {
@@ -52,6 +51,7 @@ function Home() {
       console.error("Error fetching ingresos hoy:", error);
     }
   };
+
   const fetchSalidasHoy = async () => {
     try {
       const response = await getSalidasHoy();
@@ -81,13 +81,12 @@ function Home() {
   };
 
   // Buscar propietario para ingresos
-  const handleBuscarIngreso = () => {
+  const handleBuscarIngreso = async () => {
     if (ccIngresoInput.trim() !== "") {
-      const propietario = propietarios.find(
-        (p) => String(p.Cedula_propietario) === ccIngresoInput
-      );
+      try {
+        const response = await getPropietarioByCedula(ccIngresoInput);
+        const propietario = response.data;
 
-      if (propietario) {
         if (propietario.vehiculos && propietario.vehiculos.length > 0) {
           setIdPropietarioIngreso(propietario.idPropietario);
           setVehiculosIngreso(propietario.vehiculos);
@@ -97,10 +96,14 @@ function Home() {
           setVehiculosIngreso([]);
           setCcIngreso("El propietario no tiene vehículos registrados");
         }
-      } else {
+      } catch (error) {
         setIdPropietarioIngreso("");
         setVehiculosIngreso([]);
-        setCcIngreso("Identificación no encontrada");
+        if (error.response?.status === 404) {
+          setCcIngreso("Identificación no encontrada");
+        } else {
+          setCcIngreso("Error al buscar el propietario");
+        }
       }
     } else {
       setIdPropietarioIngreso("");
@@ -126,9 +129,11 @@ function Home() {
       console.log("✅ Ingreso registrado:", data);
       mostrarAlertaIngreso();
       fetchIngresosHoy();
+      fetchSalidasHoy(); // Actualizar también salidas para mantener sincronizado el estado
       setCcIngresoInput("");
       setVehiculoSeleccionadoIngreso("");
       setVehiculosIngreso([]);
+      setIdPropietarioIngreso(""); // Limpiar el ID del propietario
     } catch (error) {
       console.error("❌ Error registrando ingreso:", error);
       const errorMsg =
@@ -137,23 +142,16 @@ function Home() {
       setErrorNotification(errorMsg);
     }
   };
-  const handleRegistrarSalida = async () => {
-    if (!ccSalidaInput.trim()) {
-      console.warn("⚠️ Debes ingresar una cédula válida.");
-      return;
-    }
-    const propietario = propietarios.find(
-      (p) => String(p.Cedula_propietario) === ccSalidaInput
-    );
 
-    if (!propietario) {
-      console.warn("⚠️ El propietario no existe.");
+  const handleRegistrarSalida = async (idPropietario) => {
+    if (!idPropietario) {
+      console.warn("⚠️ Debes buscar un propietario válido primero.");
       return;
     }
 
     try {
       const salidaData = {
-        Propietario_idPropietario: propietario.idPropietario,
+        Propietario_idPropietario: idPropietario,
       };
 
       const { data } = await createSalida(salidaData);
@@ -161,7 +159,9 @@ function Home() {
 
       mostrarAlertaSalida();
       fetchSalidasHoy();
+      fetchIngresosHoy(); // Actualizar también ingresos para mantener sincronizado el estado
       setCcSalidaInput("");
+      setIdPropietarioSalida("");
     } catch (error) {
       console.error("❌ Error registrando salida:", error);
       const errorMsg =
@@ -171,19 +171,23 @@ function Home() {
       setErrorNotification(errorMsg);
     }
   };
-  const handleBuscarSalida = () => {
-    if (ccSalidaInput.trim() !== "") {
-      const propietario = propietarios.find(
-        (p) => String(p.Cedula_propietario) === ccSalidaInput
-      );
 
-      if (propietario) {
-        setIdPropietarioSalida(propietario.idPropietario);
+  const handleBuscarSalida = async () => {
+    if (ccSalidaInput.trim() !== "") {
+      try {
+        const response = await getPropietarioByCedula(ccSalidaInput);
+        const propietario = response.data;
+
         setCcSalida("");
-        handleRegistrarSalida();
-      } else {
+        // Pasar el ID directamente como parámetro
+        handleRegistrarSalida(propietario.idPropietario);
+      } catch (error) {
         setIdPropietarioSalida("");
-        setCcSalida("Identificación no encontrada");
+        if (error.response?.status === 404) {
+          setCcSalida("Identificación no encontrada");
+        } else {
+          setCcSalida("Error al buscar el propietario");
+        }
       }
     } else {
       setIdPropietarioSalida("");
@@ -199,16 +203,6 @@ function Home() {
   const handleClickSalidas = () => {
     setIsModalOpenSalidas(true);
   };
-
-  useEffect(() => {
-    fetchPropietarios();
-    fetchIngresosHoy();
-    fetchSalidasHoy();
-    if (errorNotification) {
-      const timer = setTimeout(() => setErrorNotification(""), 4500);
-      return () => clearTimeout(timer);
-    }
-  }, [errorNotification]);
 
   // Tabla modal de ingresos de hoy
 
@@ -444,7 +438,7 @@ function Home() {
           )}
 
           <motion.button
-            onClick={handleRegistrarSalida}
+            onClick={handleBuscarSalida}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"

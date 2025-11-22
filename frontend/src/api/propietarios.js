@@ -10,3 +10,11 @@ export const updatePropietario = (id, data) =>
 export const deletePropietario = (id) => axios.delete(`${API_URL}/${id}`);
 export const getVehiculosByPropietario = (id) =>
   axios.get(`${API_URL}/vehiculos/${id}`);
+export const getPropietarioByCedula = (cedula) =>
+  axios.get(`${API_URL}/cedula/${cedula}`, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  });

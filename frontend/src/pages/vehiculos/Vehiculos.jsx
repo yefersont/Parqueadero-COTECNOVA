@@ -230,6 +230,7 @@ function Vehiculos() {
       timer: 1500,
     });
   };
+
   const asociarPropietario = (newPropietario) => {
     console.log(
       "Asociando propietario:",

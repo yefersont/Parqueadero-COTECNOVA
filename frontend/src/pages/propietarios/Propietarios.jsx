@@ -6,10 +6,6 @@ import {
 } from "../../api/propietarios";
 import { getVehiculos } from "../../api/vehiculos";
 import {
-  Car,
-  Calendar,
-  BadgeInfo,
-  X,
   SquarePen,
   Trash2,
   Link,
@@ -175,9 +171,10 @@ function Propietarios() {
     }).then((result) => {
       if (result.isConfirmed) {
         console.log("✔️ Acción: Finalizar");
+        cargarPropietarios();
       } else if (result.isDenied) {
         console.log("🚗 Acción: Registrar nuevo vehículo");
-        setIsVehiculoOpen(true); // <-- abre el modal del vehículo
+        setIsVehiculoOpen(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         console.log("📋 Acción: Vincular vehículo existente");
         cargarVehiculos();

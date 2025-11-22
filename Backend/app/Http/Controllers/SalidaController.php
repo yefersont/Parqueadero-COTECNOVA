@@ -80,20 +80,27 @@ class SalidaController extends Controller
     public function ShowToday()
     {
         try {
-            $salidas = Salida::with('ingreso.propietario', 'ingreso.vehiculo')
-                ->whereDate('fecha_salida', Carbon::today())->get();
+            $salidas = Salida::with(['ingreso.propietario', 'ingreso.vehiculo'])
+                ->whereBetween('fecha_salida', [
+                    Carbon::today()->startOfDay(),
+                    Carbon::today()->endOfDay()
+                ])
+                ->get();
 
-            $total = $salidas->count();
             return response()->json([
-                'total' => $total,
+                'total' => $salidas->count(),
                 'registros' => $salidas
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['error' => 'Error en la consulta de la base de datos', 'message'
-            => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error en la consulta de la base de datos',
+                'message' => $e->getMessage()
+            ], 500);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al obtener la salida de hoy', 'message'
-            => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error al obtener las salidas de hoy',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

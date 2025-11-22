@@ -85,20 +85,17 @@ class IngresoController extends Controller
     public function ShowToday()
     {
         try {
-            // Obtener todos los ingresos de hoy
-            $ingresos = Ingreso::with('propietario', 'vehiculo')
-                ->whereDate('fecha_ingreso', Carbon::today())->get();
-            $total = $ingresos->count();
+            $ingresos = Ingreso::with(['propietario', 'vehiculo'])
+                ->whereBetween('fecha_ingreso', [
+                    Carbon::today()->startOfDay(),
+                    Carbon::today()->endOfDay()
+                ])
+                ->get();
 
             return response()->json([
-                'total' => $total,
+                'total' => $ingresos->count(),
                 'registros' => $ingresos
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'error' => 'Error en la consulta de la base de datos',
-                'message' => $e->getMessage()
-            ], 500);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al obtener los ingresos de hoy',
@@ -106,6 +103,10 @@ class IngresoController extends Controller
             ], 500);
         }
     }
+
+
+
+
 
     public function getIngresosPorRangoFechas(Request $request)
     {

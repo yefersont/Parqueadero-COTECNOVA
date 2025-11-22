@@ -25,6 +25,7 @@ use App\Http\Controllers\VehiculoHasPropietarioController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/propietarios/cedula/{cedula}', [PropietarioController::class, 'getByCedula']);
 Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);
 Route::get('/vehiculos/propietario/{id}', [VehiculoController::class, 'getPropietariosByVehiculo']);
 Route::get('/ingresos/rango', [IngresoController::class, 'getIngresosPorRangoFechas']);
