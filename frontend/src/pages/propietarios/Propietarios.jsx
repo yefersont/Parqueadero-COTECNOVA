@@ -300,7 +300,13 @@ function Propietarios() {
 
       {/* Modal para Agregar un propietario */}
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">Agregar propietario</h2>
+        <div className="border-b pb-3 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              Agregar propietario
+            </span>
+          </h2>
+        </div>
         <FormularioPropietario
           onSubmit={(data) => {
             console.log("Guardar propietario:", data);
@@ -314,9 +320,15 @@ function Propietarios() {
         />
       </Modal>
 
-      {/* Moda para editar un propietario */}
+      {/* Modal para editar un propietario */}
       <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
-        <h2 className="text-2xl font-bold mb-4">Editar propietario</h2>
+        <div className="border-b pb-3 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              Editar propietario
+            </span>
+          </h2>
+        </div>
         <FormularioPropietario
           editar={true}
           valoresIniciales={PropietarioSeleccionado}
@@ -332,7 +344,13 @@ function Propietarios() {
 
       {/* Modal para registrar un nuevo vehiculo */}
       <Modal isOpen={isVehiculoOpen} onClose={() => setIsVehiculoOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">Registrar nuevo vehículo</h2>
+        <div className="border-b pb-3 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              Registrar nuevo vehículo
+            </span>
+          </h2>
+        </div>
         <FormularioVehiculo
           onSubmit={(vehiculo) => {
             console.log("Vehículo registrado:", vehiculo);
@@ -415,13 +433,19 @@ function Propietarios() {
       <Modal
         isOpen={isInformationOpen}
         onClose={() => setIsInformationOpen(false)}
-        size="lg" // Cambiado a 'lg' para dar espacio a dos TablasPequeñas
+        size="lg"
       >
-        <div className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
-            Información del Propietario
-          </h2>
+        <div className="flex flex-col items-start justify-between gap-4">
+          {/* Encabezado elegante */}
+          <div className="w-full flex items-center justify-between border-b pb-3">
+            <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+              <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                Información del Propietario
+              </span>
+            </h2>
+          </div>
 
+          {/* Tablas */}
           <TablaPequeña
             titulo="Vehículos asociados"
             columnas={["Placa", "Marca", "Modelo", "Tipo"]}
@@ -448,10 +472,11 @@ function Propietarios() {
             porPagina={3}
           />
 
-          <div className="mt-6 text-right border-t pt-4">
+          {/* Pie de modal */}
+          <div className="w-full flex justify-end border-t pt-3">
             <button
               onClick={() => setIsInformationOpen(false)}
-              className="px-5 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-md shadow-sm hover:from-blue-700 hover:to-blue-600 transition-all text-sm font-medium"
             >
               Cerrar
             </button>

@@ -290,7 +290,13 @@ function Vehiculos() {
 
       {/* Modal para agregar un vehiculo */}
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">Agregar Vehiculo</h2>
+        <div className="border-b pb-3 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              Agregar Vehículo
+            </span>
+          </h2>
+        </div>
         <FormularioVehiculo
           onSubmit={(data) => {
             console.log("Guardar vehiculo:", data);
@@ -303,7 +309,13 @@ function Vehiculos() {
 
       {/* Modal para editar un vehículo */}
       <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
-        <h2 className="text-2xl font-bold mb-4">Editar Vehículo</h2>
+        <div className="border-b pb-3 mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              Editar Vehículo
+            </span>
+          </h2>
+        </div>
         <FormularioVehiculo
           editar={true}
           valoresIniciales={vehiculoSeleccionado}

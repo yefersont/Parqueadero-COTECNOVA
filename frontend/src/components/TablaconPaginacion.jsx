@@ -57,9 +57,9 @@ function TablaConPaginacion({
         {mostrarControles && (
           <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
             {/* IZQUIERDA → Búsqueda + Botón */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap mt-1">
               {/* Barra de búsqueda */}
-              <div className="relative w-52">
+              <div className="relative w-56">
                 <input
                   type="text"
                   placeholder={placeholderBusqueda}
@@ -68,14 +68,14 @@ function TablaConPaginacion({
                     setBusquedaInput(e.target.value);
                     if (onBuscar) onBuscar(e.target.value);
                   }}
-                  className="w-full px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs shadow-sm 
+                  className="w-full px-3 py-1.5 rounded-md border border-gray-300 bg-white text-xs shadow-sm 
     focus:outline-none focus:ring-1 focus:ring-green-500"
                 />
                 <button
                   onClick={HandleBuscar}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-700"
                 >
-                  <Search size={14} />
+                  <Search size={15} />
                 </button>
               </div>
 
@@ -84,7 +84,7 @@ function TablaConPaginacion({
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={onNuevo}
-                className="px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 
+                className="px-3.5 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 
         transition text-xs shadow-sm whitespace-nowrap"
               >
                 {textoBoton}
