@@ -51,8 +51,21 @@ class VehiculoHasPropietarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(VehiculoHasPropietario $vehiculoHasPropietario)
+    public function destroy($idVehiculo, $idPropietario)
     {
-        //
+        // Eliminar directamente usando query builder (funciona mejor con claves compuestas)
+        $deleted = VehiculoHasPropietario::where('Vehiculo_idVehiculo', $idVehiculo)
+            ->where('Propietario_idPropietario', $idPropietario)
+            ->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                'message' => 'La relación entre el vehículo y el propietario no existe'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Vehículo desligado del propietario exitosamente'
+        ], 200);
     }
 }

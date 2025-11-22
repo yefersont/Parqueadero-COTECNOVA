@@ -18,9 +18,11 @@ import Modal from "../../components/Modal";
 import FormularioPropietario from "../../components/FormularioPropietarios";
 import FormularioVehiculo from "../../components/FormularioVehiculo";
 import { useRegistro } from "../../context/RegistroContext";
-import { createVehiculoHasPropietario } from "../../api/vehiculohaspropietario";
-import { motion } from "framer-motion"; // Importar motion para la animación del input
-
+import {
+  createVehiculoHasPropietario,
+  deleteVehiculoHasPropietario,
+} from "../../api/vehiculohaspropietario";
+import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 
 function Propietarios() {
@@ -37,6 +39,7 @@ function Propietarios() {
   const [vehiculosPropietario, setVehiculosPropietario] = useState([]);
   const [PropietarioSeleccionado, setPropietarioSeleccionado] = useState(null);
   const [ingresosPropietario, setIngresosPropietario] = useState([]);
+  const [idPropietarioActual, setIdPropietarioActual] = useState(null);
 
   const { idPropietario, setIdPropietario } = useRegistro();
 
@@ -109,6 +112,7 @@ function Propietarios() {
       String(valor).toLowerCase().includes(busqueda.toLowerCase())
     )
   );
+
   const confirmarEliminacionPropietario = () => {
     return Swal.fire({
       title: "¿Estás seguro?",
@@ -231,6 +235,7 @@ function Propietarios() {
   // Funcion para visualizar la informacion del propietario (vehiculos e ingresos)
   const informacioPropietario = (id) => {
     setIsInformationOpen(true);
+    setIdPropietarioActual(id); // Guardar el ID del propietario actual
 
     getVehiculosByPropietario(id)
       .then((res) => {
@@ -243,6 +248,49 @@ function Propietarios() {
         setVehiculosPropietario([]);
         setIngresosPropietario([]);
       });
+  };
+
+  // Función para desligar un vehículo del propietario
+  const desligarVehiculo = (idVehiculo) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción desligará el vehículo del propietario.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, desligar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#e53935",
+      cancelButtonColor: "#546e7a",
+      reverseButtons: true,
+      focusCancel: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteVehiculoHasPropietario(idVehiculo, idPropietarioActual)
+          .then(() => {
+            Swal.fire({
+              title: "Vehículo desligado",
+              text: "El vehículo ha sido desligado exitosamente.",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+              position: "center",
+              background: "#f9fafb",
+              color: "#2c3e50",
+            });
+            // Actualizar la lista de vehículos
+            informacioPropietario(idPropietarioActual);
+          })
+          .catch((err) => {
+            console.error("❌ Error al desligar vehículo:", err);
+            Swal.fire({
+              title: "Error",
+              text: "No se pudo desligar el vehículo.",
+              icon: "error",
+              confirmButtonColor: "#e53935",
+            });
+          });
+      }
+    });
   };
 
   // Funcion para cargar los vevhiculos disponibles
@@ -448,12 +496,20 @@ function Propietarios() {
           {/* Tablas */}
           <TablaPequeña
             titulo="Vehículos asociados"
-            columnas={["Placa", "Marca", "Modelo", "Tipo"]}
+            columnas={["Placa", "Marca", "Modelo", "Tipo", "Acción"]}
             datos={vehiculosPropietario.map((v) => ({
               Placa: v.Placa_vehiculo,
               Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
               Modelo: v.Modelo_vehiculo,
               Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+              Acción: (
+                <button
+                  onClick={() => desligarVehiculo(v.idVehiculo)}
+                  className="px-3 py-1 bg-red-600 text-white text-xs rounded-md hover:bg-red-700 transition-all font-medium"
+                >
+                  Desligar
+                </button>
+              ),
             }))}
             porPagina={3}
           />

@@ -24,6 +24,7 @@ class VehiculoHasPropietario extends Model
 	protected $table = 'vehiculo_has_propietario';
 	public $incrementing = false;
 	public $timestamps = false;
+	protected $primaryKey = ['Vehiculo_idVehiculo', 'Propietario_idPropietario'];
 
 	protected $casts = [
 		'Vehiculo_idVehiculo' => 'int',

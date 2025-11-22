@@ -42,5 +42,6 @@ Route::apiResource('vehiculos', VehiculoController::class);
 Route::apiResource('propietarios', PropietarioController::class);
 Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
 Route::apiResource('marcavehiculos', MarcaVehiculoController::class);
+Route::delete('/asociar/{idVehiculo}/{idPropietario}', [VehiculoHasPropietarioController::class, 'destroy']);
 Route::apiResource('asociar',  VehiculoHasPropietarioController::class);
 Route::get('/reportes/ingresos', [ReporteController::class, 'descargarIngresos']);
