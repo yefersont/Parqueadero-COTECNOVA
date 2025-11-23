@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.5",
     "axios": "^1.12.2",
     "framer-motion": "^12.23.15",
     "lucide-react": "^0.544.0",

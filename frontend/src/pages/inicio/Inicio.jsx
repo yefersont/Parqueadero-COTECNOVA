@@ -438,7 +438,7 @@ function Home() {
           )}
 
           <motion.button
-            onClick={handleBuscarSalida}
+            onClick={handleRegistrarSalida}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2"

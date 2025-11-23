@@ -5,13 +5,16 @@ import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 import { RegistroProvider } from "./context/RegistroContext.jsx";
+import { HeroUIProvider } from "@heroui/react";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <RegistroProvider>
-        <App />
-      </RegistroProvider>
+      <HeroUIProvider>
+        <RegistroProvider>
+          <App />
+        </RegistroProvider>
+      </HeroUIProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

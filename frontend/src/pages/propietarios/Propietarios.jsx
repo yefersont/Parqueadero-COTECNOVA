@@ -5,12 +5,7 @@ import {
   deletePropietario,
 } from "../../api/propietarios";
 import { getVehiculos } from "../../api/vehiculos";
-import {
-  SquarePen,
-  Trash2,
-  Link,
-  Search, // Añadido para el icono del input
-} from "lucide-react";
+import { SquarePen, Trash2, Link, Search, Link2Off } from "lucide-react";
 import TablaPequeña from "../../components/TablaPequeña";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 import Loader from "../../components/Loader";
@@ -409,7 +404,7 @@ function Propietarios() {
         />
       </Modal>
 
-      {/* Modal para asociar con un vehiculo existente (MODIFICADO) */}
+      {/* Modal para asociar con un vehiculo existente */}
       <Modal
         isOpen={isAsociarOpen}
         onClose={() => setIsAsociarOpen(false)}
@@ -505,9 +500,21 @@ function Propietarios() {
               Acción: (
                 <button
                   onClick={() => desligarVehiculo(v.idVehiculo)}
-                  className="px-3 py-1 bg-red-600 text-white text-xs rounded-md hover:bg-red-700 transition-all font-medium"
+                  className="
+    ml-2 
+    rounded-md 
+    bg-red-50 
+    hover:bg-red-100 
+    text-red-600 
+    hover:text-red-700 
+    transition-all 
+    duration-200 
+    flex items-center gap-1 px-2 py-1
+  "
                 >
-                  Desligar
+                  {" "}
+                  <span>Desligar</span>
+                  <Link2Off className="w-4 h-4" />
                 </button>
               ),
             }))}
