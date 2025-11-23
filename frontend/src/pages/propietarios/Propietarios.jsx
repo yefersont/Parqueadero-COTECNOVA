@@ -73,6 +73,7 @@ function Propietarios() {
             cargarVehiculos();
           }}
           className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+          title="Vincular vehículo"
         >
           <Link size={18} />
         </button>
@@ -84,6 +85,7 @@ function Propietarios() {
             editarPropietario(i);
           }}
           className=" rounded-md bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
+          title="Editar propietario"
         >
           <SquarePen size={18} />
         </button>
@@ -94,6 +96,7 @@ function Propietarios() {
             console.log(i.idPropietario);
             eliminarPropietario(i.idPropietario);
           }}
+          title="Eliminar propietario"
           className="ml-2 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
         >
           <Trash2 size={18} />
@@ -340,7 +343,6 @@ function Propietarios() {
           informacioPropietario(fila.idPropietario);
         }}
       />
-
       {/* Modal para Agregar un propietario */}
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="border-b pb-3 mb-6">
@@ -362,7 +364,6 @@ function Propietarios() {
           onCancel={() => setIsOpen(false)}
         />
       </Modal>
-
       {/* Modal para editar un propietario */}
       <Modal isOpen={isEdit} onClose={() => setIsEdit(false)}>
         <div className="border-b pb-3 mb-6">
@@ -384,7 +385,6 @@ function Propietarios() {
           onCancel={() => setIsEdit(false)}
         />
       </Modal>
-
       {/* Modal para registrar un nuevo vehiculo */}
       <Modal isOpen={isVehiculoOpen} onClose={() => setIsVehiculoOpen(false)}>
         <div className="border-b pb-3 mb-6">
@@ -403,40 +403,56 @@ function Propietarios() {
           onCancel={() => setIsVehiculoOpen(false)}
         />
       </Modal>
-
-      {/* Modal para asociar con un vehiculo existente */}
+      {/* Modal para asociar vehiculo */}
       <Modal
         isOpen={isAsociarOpen}
         onClose={() => setIsAsociarOpen(false)}
         size="lg"
       >
-        {/* Contenedor con padding para el estilo minimalista/elegante */}
         <div className="p-8">
+          {/* ---------- Título ---------- */}
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
-            Asociar vehículo existente
+            Asociar Vehículo
           </h2>
 
-          {/* ---------- Input de búsqueda ---------- */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="relative mb-6"
-          >
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar por Placa, Marca o Modelo..."
-              value={filtroBusqueda}
-              onChange={(e) => setFiltroBusqueda(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-300 focus:outline-none transition-colors text-base"
-            />
-          </motion.div>
+          {/* ---------- Input + Botón alineados ---------- */}
+          <div className="flex items-center gap-4 mb-6">
+            {/* Input */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative flex-1"
+            >
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar por Placa, Marca o Modelo..."
+                value={filtroBusqueda}
+                onChange={(e) => setFiltroBusqueda(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl 
+                     focus:border-green-600 focus:ring-1 focus:ring-green-300 
+                     focus:outline-none transition-colors text-base"
+              />
+            </motion.div>
 
+            {/* Botón */}
+            <button
+              onClick={() => {
+                setIsVehiculoOpen(true);
+                setIsAsociarOpen(false);
+              }}
+              className="whitespace-nowrap bg-green-600 text-white px-4 py-3 rounded-xl 
+                   hover:bg-green-700 transition-all font-semibold shadow-sm"
+            >
+              + Nuevo Vehículo
+            </button>
+          </div>
+
+          {/* ---------- Tabla ---------- */}
           <TablaConPaginacion
             titulo=""
             mostrarControles={false}
-            // CAMBIO: Pasa los datos FILTRADOS
             datos={vehiculosFiltrados.map((v) => ({
               Placa: v.Placa_vehiculo,
               Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
@@ -460,8 +476,12 @@ function Propietarios() {
                       }
                     });
                   }}
-                  className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="bg-green-600 text-white px-3.5 py-1.5 rounded-lg 
+                       hover:bg-green-700 transition-all text-sm font-semibold 
+                       focus:outline-none focus:ring-2 focus:ring-green-300
+                       flex items-center gap-1.5"
                 >
+                  <Link size={16} />
                   Asociar
                 </button>
               ),
@@ -471,7 +491,6 @@ function Propietarios() {
           />
         </div>
       </Modal>
-
       {/* Modal informacion  */}
       <Modal
         isOpen={isInformationOpen}

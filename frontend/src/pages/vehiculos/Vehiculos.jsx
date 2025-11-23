@@ -72,6 +72,7 @@ function Vehiculos() {
             cargarPropietarios();
           }}
           className="mr-2 rounded-md bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-700 transition-all duration-200"
+          title="Vincular Propietario"
         >
           <Link size={18} />
         </button>
@@ -83,6 +84,7 @@ function Vehiculos() {
             console.log(i);
           }}
           className="ml-2 rounded-md bg-yellow-50 hover:bg-green-100 text-yellow-600 hover:text-yellow-700 transition-all duration-200"
+          title="Editar vehiculo"
         >
           <SquarePen size={18} />
         </button>
@@ -92,6 +94,7 @@ function Vehiculos() {
             eliminarVehiculo(i.idVehiculo);
           }}
           className="ml-4 rounded-md bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 transition-all duration-200"
+          title="Eliminar Vehiculo"
         >
           <Trash2 size={18} />
         </button>
