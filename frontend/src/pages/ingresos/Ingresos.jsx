@@ -6,16 +6,14 @@ import FiltrosFecha from "../../components/FiltrosFecha";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { generarPDFIngresos } from "../../utils/pdfGenerator";
 
 function Ingresos() {
   const [ingresos, setIngresos] = useState([]);
   const [cargando, setCargando] = useState(true);
-
   // Para la búsqueda
   const [busqueda, setBusqueda] = useState("");
-
   const [ingresosOriginales, setIngresosOriginales] = useState([]);
-
   // Filtros
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -25,7 +23,7 @@ function Ingresos() {
       .then((res) => {
         console.log(res.data);
         setIngresos(res.data);
-        setIngresosOriginales(res.data); // ← copia original
+        setIngresosOriginales(res.data);
         setCargando(false);
       })
       .catch((err) => console.error(err));
@@ -111,6 +109,20 @@ function Ingresos() {
     saveAs(data, "ingresos.xlsx");
   };
 
+  const exportarPDF = () => {
+    if (datosFiltrados.length === 0) {
+      Swal.fire({
+        title: "Sin datos",
+        text: "No hay datos para exportar.",
+        icon: "info",
+        confirmButtonText: "Entendido",
+      });
+      return;
+    }
+
+    generarPDFIngresos(datosFiltrados);
+  };
+
   return cargando ? (
     <Loader texto="Cargando ingresos..." />
   ) : (
@@ -168,7 +180,7 @@ function Ingresos() {
 
               {/* Botón PDF */}
               <button
-                onClick={() => console.log("Exportar PDF")}
+                onClick={exportarPDF}
                 className="
           bg-gray-200 text-gray-700 
           px-4 py-2 rounded-xl 

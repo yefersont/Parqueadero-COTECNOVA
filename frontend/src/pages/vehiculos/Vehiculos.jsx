@@ -336,12 +336,12 @@ function Vehiculos() {
       <Modal
         isOpen={isAsociarOpen}
         onClose={() => setIsAsociarOpen(false)}
-        size="mx"
+        size="lg"
       >
-        {/* Contenedor con padding para el estilo minimalista/elegante */}
         <div className="p-8">
+          {/* ---------- Título ---------- */}
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
-            Seleccionar propietario
+            Vincular Propietario
           </h2>
 
           {/* ---------- Input de búsqueda ---------- */}
@@ -349,7 +349,7 @@ function Vehiculos() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative max-w-lg ml-20 mt-5"
+            className="relative mb-6"
           >
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -357,11 +357,15 @@ function Vehiculos() {
               placeholder="Buscar por Cédula, Nombre o Rol..."
               value={filtroBusqueda}
               onChange={(e) => setFiltroBusqueda(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-300 focus:outline-none transition-colors text-base"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl 
+                   focus:border-green-600 focus:ring-1 focus:ring-green-300 
+                   focus:outline-none transition-colors text-base"
             />
           </motion.div>
-          {/* Tabla con datos filtrados */}
+
+          {/* ---------- Tabla ---------- */}
           <TablaConPaginacion
+            titulo=""
             mostrarControles={false}
             datos={propietariosFiltrados.map((p) => ({
               Cédula: p.Cedula_propietario,
@@ -373,10 +377,10 @@ function Vehiculos() {
                   onClick={() => {
                     console.log("Seleccionar propietario:", p.idPropietario);
                     Swal.fire({
-                      title: `¿Desea seleccionar a ${p.Nombre_propietario} ${p.Apellido_propietario}?`,
+                      title: `¿Asociar a ${p.Nombre_propietario} ${p.Apellido_propietario}?`,
                       icon: "question",
                       showCancelButton: true,
-                      confirmButtonText: "Sí, seleccionar",
+                      confirmButtonText: "Sí, asociar",
                       cancelButtonText: "Cancelar",
                       confirmButtonColor: "#27ae60",
                       cancelButtonColor: "#c0392b",
@@ -387,9 +391,13 @@ function Vehiculos() {
                       }
                     });
                   }}
-                  className="bg-blue-600 text-white px-3.5 py-1.5 rounded-lg hover:bg-blue-700 transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="bg-green-600 text-white px-3.5 py-1.5 rounded-lg 
+                       hover:bg-green-700 transition-all text-sm font-semibold 
+                       focus:outline-none focus:ring-2 focus:ring-green-300
+                       flex items-center gap-1.5"
                 >
-                  Seleccionar
+                  <Link size={16} />
+                  Asociar
                 </button>
               ),
             }))}

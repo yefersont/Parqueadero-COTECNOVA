@@ -12,12 +12,16 @@
   "dependencies": {
     "@heroui/react": "^2.8.5",
     "axios": "^1.12.2",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.23.15",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.1",
-    "sweetalert2": "^11.23.0"
+    "sweetalert2": "^11.23.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

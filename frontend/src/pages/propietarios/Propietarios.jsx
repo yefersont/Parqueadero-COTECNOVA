@@ -412,7 +412,7 @@ function Propietarios() {
         <div className="p-8">
           {/* ---------- Título ---------- */}
           <h2 className="text-2xl font-semibold text-gray-900 mb-6 border-b pb-2 border-gray-100">
-            Asociar Vehículo
+            Vincular Vehículo
           </h2>
 
           {/* ---------- Input + Botón alineados ---------- */}
