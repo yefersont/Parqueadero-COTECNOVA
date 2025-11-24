@@ -12,6 +12,7 @@ use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\VehiculoHasPropietarioController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EstadisticasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Crear ingresos y salidas (vigilantes pueden hacer esto)
     Route::post('/ingresos', [IngresoController::class, 'store']);
     Route::post('/salidas', [SalidaController::class, 'store']);
+
+    // Estadísticas del dashboard
+    Route::get('/estadisticas/dashboard', [EstadisticasController::class, 'dashboard']);
 });
 
 // Rutas solo para administradores (requieren auth + rol admin)

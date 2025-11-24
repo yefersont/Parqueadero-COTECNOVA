@@ -7,6 +7,7 @@ import Salidas from "./pages/salidas/Salidas";
 import Vehiculos from "./pages/vehiculos/Vehiculos";
 import Propietarios from "./pages/propietarios/Propietarios";
 import Inicio from "./pages/inicio/Inicio";
+import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/Login/Login";
 import { BusquedaProvider } from "./components/BusquedaContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -31,6 +32,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Inicio />} />
                       <Route path="/inicio" element={<Inicio />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/propietario" element={<Propietarios />} />
                       <Route path="/usuarios" element={<Usuarios />} />
                       <Route path="/vehiculos" element={<Vehiculos />} />

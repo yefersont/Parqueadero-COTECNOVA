@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx
+  // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { User, ChevronDown, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
@@ -30,6 +30,7 @@ function Navbar() {
 
   const menuItems = [
     { name: "Inicio", to: "/inicio" },
+    { name: "Dashboard", to: "/dashboard" },
     { name: "Propietarios", to: "/propietario" },
     { name: "Vehículos", to: "/vehiculos" },
     { name: "Ingresos", to: "/ingresos" },
