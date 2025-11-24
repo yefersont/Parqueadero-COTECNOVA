@@ -27,32 +27,81 @@ use App\Http\Controllers\AuthController;
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rutas protegidas
+// Rutas protegidas con autenticación (todos los usuarios autenticados)
 Route::middleware('auth:sanctum')->group(function () {
+    // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    // Consultas (GET) - Todos los usuarios autenticados pueden ver
+    Route::get('/propietarios/cedula/{cedula}', [PropietarioController::class, 'getByCedula']);
+    Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);
+    Route::get('/vehiculos/propietario/{id}', [VehiculoController::class, 'getPropietariosByVehiculo']);
+    Route::get('/ingresos/rango', [IngresoController::class, 'getIngresosPorRangoFechas']);
+    Route::get('/ingresos/hoy', [IngresoController::class, 'ShowToday']);
+    Route::get('/salidas/hoy', [SalidaController::class, 'ShowToday']);
+    Route::get('/reportes/ingresos', [ReporteController::class, 'descargarIngresos']);
+
+    // Solo lectura de recursos
+    Route::get('/usuarios', [UsuarioController::class, 'index']);
+    Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show']);
+    Route::get('/ingresos', [IngresoController::class, 'index']);
+    Route::get('/ingresos/{ingreso}', [IngresoController::class, 'show']);
+    Route::get('/salidas', [SalidaController::class, 'index']);
+    Route::get('/salidas/{salida}', [SalidaController::class, 'show']);
+    Route::get('/vehiculos', [VehiculoController::class, 'index']);
+    Route::get('/vehiculos/{vehiculo}', [VehiculoController::class, 'show']);
+    Route::get('/propietarios', [PropietarioController::class, 'index']);
+    Route::get('/propietarios/{propietario}', [PropietarioController::class, 'show']);
+    Route::get('/tp_vehiculos', [TipoVehiculoController::class, 'index']);
+    Route::get('/tp_vehiculos/{tp_vehiculo}', [TipoVehiculoController::class, 'show']);
+    Route::get('/marcavehiculos', [MarcaVehiculoController::class, 'index']);
+    Route::get('/marcavehiculos/{marcavehiculo}', [MarcaVehiculoController::class, 'show']);
+    Route::get('/asociar', [VehiculoHasPropietarioController::class, 'index']);
+    Route::get('/asociar/{asociar}', [VehiculoHasPropietarioController::class, 'show']);
+
+    // Crear ingresos y salidas (vigilantes pueden hacer esto)
+    Route::post('/ingresos', [IngresoController::class, 'store']);
+    Route::post('/salidas', [SalidaController::class, 'store']);
 });
-Route::get('/propietarios/cedula/{cedula}', [PropietarioController::class, 'getByCedula']);
-Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);
-Route::get('/vehiculos/propietario/{id}', [VehiculoController::class, 'getPropietariosByVehiculo']);
-Route::get('/ingresos/rango', [IngresoController::class, 'getIngresosPorRangoFechas']);
 
+// Rutas solo para administradores (requieren auth + rol admin)
+Route::middleware(['auth:sanctum', 'esAdmin'])->group(function () {
+    // Gestión completa de usuarios
+    Route::post('/usuarios', [UsuarioController::class, 'store']);
+    Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update']);
+    Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy']);
 
-Route::apiResource('usuarios', UsuarioController::class);
-Route::get('ingresos/hoy', [IngresoController::class, 'ShowToday']);
-Route::apiResource('ingresos', IngresoController::class);
-Route::get('/salidas/hoy', [SalidaController::class, 'ShowToday']);
-Route::apiResource('salidas', SalidaController::class);
+    // Modificación de ingresos y salidas
+    Route::put('/ingresos/{ingreso}', [IngresoController::class, 'update']);
+    Route::delete('/ingresos/{ingreso}', [IngresoController::class, 'destroy']);
+    Route::put('/salidas/{salida}', [SalidaController::class, 'update']);
+    Route::delete('/salidas/{salida}', [SalidaController::class, 'destroy']);
 
-Route::apiResource('vehiculos', VehiculoController::class);
+    // Gestión de vehículos
+    Route::post('/vehiculos', [VehiculoController::class, 'store']);
+    Route::put('/vehiculos/{vehiculo}', [VehiculoController::class, 'update']);
+    Route::delete('/vehiculos/{vehiculo}', [VehiculoController::class, 'destroy']);
 
-Route::apiResource('propietarios', PropietarioController::class);
-Route::apiResource('tp_vehiculos', TipoVehiculoController::class);
-Route::apiResource('marcavehiculos', MarcaVehiculoController::class);
-Route::delete('/asociar/{idVehiculo}/{idPropietario}', [VehiculoHasPropietarioController::class, 'destroy']);
-Route::apiResource('asociar',  VehiculoHasPropietarioController::class);
-Route::get('/reportes/ingresos', [ReporteController::class, 'descargarIngresos']);
+    // Gestión de propietarios
+    Route::post('/propietarios', [PropietarioController::class, 'store']);
+    Route::put('/propietarios/{propietario}', [PropietarioController::class, 'update']);
+    Route::delete('/propietarios/{propietario}', [PropietarioController::class, 'destroy']);
+
+    // Gestión de tipos y marcas de vehículos
+    Route::post('/tp_vehiculos', [TipoVehiculoController::class, 'store']);
+    Route::put('/tp_vehiculos/{tp_vehiculo}', [TipoVehiculoController::class, 'update']);
+    Route::delete('/tp_vehiculos/{tp_vehiculo}', [TipoVehiculoController::class, 'destroy']);
+    Route::post('/marcavehiculos', [MarcaVehiculoController::class, 'store']);
+    Route::put('/marcavehiculos/{marcavehiculo}', [MarcaVehiculoController::class, 'update']);
+    Route::delete('/marcavehiculos/{marcavehiculo}', [MarcaVehiculoController::class, 'destroy']);
+
+    // Asociación de vehículos y propietarios
+    Route::post('/asociar', [VehiculoHasPropietarioController::class, 'store']);
+    Route::put('/asociar/{asociar}', [VehiculoHasPropietarioController::class, 'update']);
+    Route::delete('/asociar/{idVehiculo}/{idPropietario}', [VehiculoHasPropietarioController::class, 'destroy']);
+});
+

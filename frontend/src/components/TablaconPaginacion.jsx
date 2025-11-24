@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 function TablaConPaginacion({
   columnas,
@@ -17,6 +18,7 @@ function TablaConPaginacion({
 }) {
   const [paginaActual, setPaginaActual] = useState(1);
   const [busquedaInput, setBusquedaInput] = useState("");
+  const { isAdmin } = useAuth();
 
   const indiceUltimo = paginaActual * porPagina;
   const indicePrimero = indiceUltimo - porPagina;
@@ -78,17 +80,18 @@ function TablaConPaginacion({
                   <Search size={15} />
                 </button>
               </div>
-
               {/* Botón Nuevo */}
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={onNuevo}
-                className="px-3.5 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 
-        transition text-xs shadow-sm whitespace-nowrap"
-              >
-                {textoBoton}
-              </motion.button>
+              {isAdmin() && (
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={onNuevo}
+                  className="px-3.5 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 
+      transition text-xs shadow-sm whitespace-nowrap"
+                >
+                  {textoBoton}
+                </motion.button>
+              )}
             </div>
 
             {/* DERECHA → Filtros extra */}

@@ -24,6 +24,9 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Cargar la relación del rol
+        $usuario->load('rol');
+
         $tokenResult = $usuario->createToken('auth_token');
         // Asignar expiración de 6 horas
         $tokenResult->accessToken->expires_at = now()->addHours(6);

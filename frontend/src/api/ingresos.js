@@ -1,16 +1,17 @@
-import axios from "axios";
+import api from "./axios";
 
-const API_URL = "http://127.0.0.1:8000/api/ingresos";
+const API_URL = "/ingresos";
 
-export const getIngresos = () => axios.get(API_URL);
-export const getIngreso = (id) => axios.get(`${API_URL}/${id}`);
-export const createIngreso = (data) => axios.post(API_URL, data);
-export const updateIngreso = (id, data) => axios.put(`${API_URL}/${id}`, data);
-export const deleteIngreso = (id) => axios.delete(`${API_URL}/${id}`);
-export const getIngresosHoy = () => axios.get(`${API_URL}/hoy`);
+export const getIngresos = () => api.get(API_URL);
+export const getIngreso = (id) => api.get(`${API_URL}/${id}`);
+export const createIngreso = (data) => api.post(API_URL, data);
+export const updateIngreso = (id, data) => api.put(`${API_URL}/${id}`, data);
+export const deleteIngreso = (id) => api.delete(`${API_URL}/${id}`);
+export const getIngresosHoy = () => api.get(`${API_URL}/hoy`);
 export const getIngresosPorFecha = (fecha) =>
-  axios.get(`${API_URL}/fecha/${fecha}`);
+  api.get(`${API_URL}/fecha/${fecha}`);
 export const getIngresosPorRangoFechas = (fechaInicio, fechaFin) =>
-  axios.get(`${API_URL}/rango`, {
+  api.get(`${API_URL}/rango`, {
     params: { inicio: fechaInicio, fin: fechaFin },
   });
+

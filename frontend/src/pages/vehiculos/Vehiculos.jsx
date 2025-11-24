@@ -16,6 +16,7 @@ import FormularioVehiculo from "../../components/FormularioVehiculo";
 import Loader from "../../components/Loader";
 import Swal from "sweetalert2";
 import { useRegistro } from "../../context/RegistroContext";
+import { useAuth } from "../../context/AuthContext";
 function Vehiculos() {
   // Estados para vehículos y cargado
   const [vehiculos, setVehiculos] = useState([]);
@@ -38,6 +39,9 @@ function Vehiculos() {
 
   // Guardamos el id  del vehiculo desde el contexto
   const { idVehiculo, setVehiculoPropietario } = useRegistro();
+
+  // Verificar si el usuario es administrador
+  const { isAdmin } = useAuth();
 
   // Cargar vehículos al montar el componente
   useEffect(() => {
@@ -62,7 +66,7 @@ function Vehiculos() {
     Marca: i.marca_vehiculo.Marca_vehiculo,
     Placa: i.Placa_vehiculo,
     Modelo: i.Modelo_vehiculo,
-    Acciones: (
+    Acciones: isAdmin() ? (
       <>
         <button
           onClick={(e) => {
@@ -99,6 +103,8 @@ function Vehiculos() {
           <Trash2 size={18} />
         </button>
       </>
+    ) : (
+      <span className="text-gray-400 text-sm italic">Solo lectura</span>
     ),
   }));
 
@@ -279,8 +285,8 @@ function Vehiculos() {
         datos={datosFiltrados}
         placeholderBusqueda="Buscar..."
         mostrarFiltrosFecha={false}
-        textoBoton="Nuevo vehículo"
-        onNuevo={() => setIsOpen(true)}
+        textoBoton={isAdmin() ? "Nuevo vehículo" : null}
+        onNuevo={isAdmin() ? () => setIsOpen(true) : null}
         onBuscar={(valor) => {
           setBusqueda(valor);
           console.log("Buscar propietario:", valor);

@@ -19,6 +19,7 @@ import {
 } from "../../api/vehiculohaspropietario";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
 
 function Propietarios() {
   const [propietarios, setPropietarios] = useState([]);
@@ -37,6 +38,9 @@ function Propietarios() {
   const [idPropietarioActual, setIdPropietarioActual] = useState(null);
 
   const { idPropietario, setIdPropietario } = useRegistro();
+
+  // Verificar si el usuario es administrador
+  const { isAdmin } = useAuth();
 
   // filtro para busqueda en modal asociar vehiculo
   const [filtroBusqueda, setFiltroBusqueda] = useState("");
@@ -64,7 +68,7 @@ function Propietarios() {
     Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
     Teléfono: i.Telefono_propietario,
     Rol: i.rol.Rol,
-    Acción: (
+    Acción: isAdmin() ? (
       <div className="flex items-center gap-2 justify-center">
         <button
           onClick={(e) => {
@@ -102,6 +106,8 @@ function Propietarios() {
           <Trash2 size={18} />
         </button>
       </div>
+    ) : (
+      <span className="text-gray-400 text-sm italic">Solo lectura</span>
     ),
   }));
 
@@ -332,8 +338,8 @@ function Propietarios() {
         columnas={columnas}
         datos={datosFiltrados}
         placeholderBusqueda="Buscar propietario..."
-        textoBoton="Nuevo propietario"
-        onNuevo={() => setIsOpen(true)}
+        textoBoton={"Nuevo propietario"}
+        onNuevo={isAdmin() ? () => setIsOpen(true) : null}
         onBuscar={(valor) => {
           setBusqueda(valor);
           console.log("Buscar propietario:", valor);
@@ -516,25 +522,21 @@ function Propietarios() {
               Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
               Modelo: v.Modelo_vehiculo,
               Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
-              Acción: (
+
+              Acción: isAdmin() ? (
                 <button
                   onClick={() => desligarVehiculo(v.idVehiculo)}
                   className="
-    ml-2 
-    rounded-md 
-    bg-red-50 
-    hover:bg-red-100 
-    text-red-600 
-    hover:text-red-700 
-    transition-all 
-    duration-200 
-    flex items-center gap-1 px-2 py-1
-  "
+      ml-2 rounded-md bg-red-50 hover:bg-red-100
+      text-red-600 hover:text-red-700 transition-all duration-200
+      flex items-center gap-1 px-2 py-1
+    "
                 >
-                  {" "}
                   <span>Desligar</span>
                   <Link2Off className="w-4 h-4" />
                 </button>
+              ) : (
+                <span> Solo lectura </span>
               ),
             }))}
             porPagina={3}

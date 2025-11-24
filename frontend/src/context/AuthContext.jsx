@@ -126,6 +126,11 @@ export const AuthProvider = ({ children }) => {
     return <Loader texto="Iniciando sesión..." />;
   }
 
+  // Función para verificar si el usuario es administrador
+  const isAdmin = () => {
+    return user?.rol?.Rol === 'Administrativo';
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -136,6 +141,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         errors,
         loading,
+        isAdmin,
       }}
     >
       {children}
