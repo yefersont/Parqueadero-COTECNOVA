@@ -21,7 +21,13 @@ const NavLink = ({ to, name }) => (
   </Link>
 );
 
+import { useAuth } from "../context/AuthContext";
+
+// ... imports ...
+
 function Navbar() {
+  const { user, logout } = useAuth();
+
   const menuItems = [
     { name: "Inicio", to: "/inicio" },
     { name: "Propietarios", to: "/propietario" },
@@ -40,6 +46,7 @@ function Navbar() {
           to="/inicio"
           className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg p-1 -m-1"
         >
+          {/* ... logo content ... */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -84,7 +91,7 @@ function Navbar() {
               className={`flex items-center gap-2 text-white font-semibold text-base px-3 py-1 rounded-lg ${BRAND_ACCENT} hover:bg-green-700 transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white`}
             >
               <User className="w-4 h-4" />
-              <span className="hidden md:inline">Usuario</span>
+              <span className="hidden md:inline">{user?.Nombres || "Usuario"}</span>
               <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
             </button>
 
@@ -101,13 +108,13 @@ function Navbar() {
                 <span>Mi Perfil</span>
               </Link>
               <div className="border-t border-gray-100"></div>
-              <Link
-                to="/login"
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-lg transition"
+              <button
+                onClick={() => logout()}
+                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-b-lg transition w-full text-left"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Cerrar sesión</span>
-              </Link>
+              </button>
             </div>
           </div>
         </nav>

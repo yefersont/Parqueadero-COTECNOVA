@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Usuarios from "./pages/usuarios/Usuarios";
@@ -9,35 +9,43 @@ import Propietarios from "./pages/propietarios/Propietarios";
 import Inicio from "./pages/inicio/Inicio";
 import Login from "./pages/Login/Login";
 import { BusquedaProvider } from "./components/BusquedaContext";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <Routes>
-      {/* Ruta de login sin layout */}
-      <Route path="/login" element={<Login />} />
+    <AuthProvider>
+      <BusquedaProvider>
+        <Routes>
+          {/* Ruta de login pública */}
+          <Route path="/login" element={<Login />} />
 
-      {/* Rutas con layout (navbar y footer) */}
-      <Route
-        path="*"
-        element={
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow overflow-auto min-h-0">
-              <Routes>
-                <Route path="/" element={<Inicio />} />
-                <Route path="/inicio" element={<Inicio />} />
-                <Route path="/propietario" element={<Propietarios />} />
-                <Route path="/usuarios" element={<Usuarios />} />
-                <Route path="/vehiculos" element={<Vehiculos />} />
-                <Route path="/ingresos" element={<Ingresos />} />
-                {/* <Route path="/salidas" element={<Salidas />} /> */}
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        }
-      />
-    </Routes>
+          {/* Rutas protegidas */}
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="*"
+              element={
+                <div className="flex flex-col min-h-screen">
+                  <Navbar />
+                  <main className="flex-grow overflow-auto min-h-0">
+                    <Routes>
+                      <Route path="/" element={<Inicio />} />
+                      <Route path="/inicio" element={<Inicio />} />
+                      <Route path="/propietario" element={<Propietarios />} />
+                      <Route path="/usuarios" element={<Usuarios />} />
+                      <Route path="/vehiculos" element={<Vehiculos />} />
+                      <Route path="/ingresos" element={<Ingresos />} />
+                      {/* <Route path="/salidas" element={<Salidas />} /> */}
+                    </Routes>
+                  </main>
+                  <Footer />
+                </div>
+              }
+            />
+          </Route>
+        </Routes>
+      </BusquedaProvider>
+    </AuthProvider>
   );
 }
 

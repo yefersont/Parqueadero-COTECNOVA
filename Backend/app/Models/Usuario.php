@@ -1,38 +1,34 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-/**
- * Class Usuario
- * 
- * @property int $idUsuario
- * @property int $Cedula_usuario
- * @property string $Nombres
- * @property string $user_usuario
- * @property string $Contraseña_usuario
- *
- * @package App\Models
- */
-class Usuario extends Model
+class Usuario extends Authenticatable
 {
-	protected $table = 'usuario';
-	protected $primaryKey = 'idUsuario';
-	public $timestamps = false;
+    use HasApiTokens, HasFactory, Notifiable;
 
-	protected $casts = [
-		'Cedula_usuario' => 'int'
-	];
+    protected $table = 'usuario';
+    protected $primaryKey = 'idUsuario';
 
-	protected $fillable = [
-		'Cedula_usuario',
-		'Nombres',
-		'user_usuario',
-		'Contraseña_usuario'
-	];
+    protected $fillable = [
+        'Cedula_usuario',
+        'Nombres',
+        'email',
+        'user_usuario',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }

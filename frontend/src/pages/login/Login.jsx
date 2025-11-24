@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 import { Card, CardBody, Button } from "@heroui/react";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
@@ -10,13 +11,20 @@ function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  
+  const { signin, isAuthenticated, errors: loginErrors } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/inicio");
+    }
+  }, [isAuthenticated, navigate]);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ email, password, rememberMe });
-    navigate("/inicio");
+    signin({ email, password });
   };
 
   return (
@@ -52,6 +60,11 @@ function Login() {
           </div>
 
           {/* Login Form */}
+          {loginErrors.map((error, i) => (
+            <div className="bg-red-100 text-red-500 p-3 rounded-lg mb-4 text-sm text-center" key={i}>
+              {error}
+            </div>
+          ))}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
             <div className="relative">

@@ -11,6 +11,8 @@ use App\Http\Controllers\TipoVehiculoController;
 use App\Http\Controllers\MarcaVehiculoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\VehiculoHasPropietarioController;
+use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,8 +24,17 @@ use App\Http\Controllers\VehiculoHasPropietarioController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Rutas públicas
+Route::post('/login', [AuthController::class, 'login']);
+
+// Rutas protegidas
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+    
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
 Route::get('/propietarios/cedula/{cedula}', [PropietarioController::class, 'getByCedula']);
 Route::get('/propietarios/vehiculos/{id}', [PropietarioController::class, 'getVehiculosByPropietario']);

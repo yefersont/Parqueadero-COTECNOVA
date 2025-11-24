@@ -13,10 +13,12 @@ import { createIngreso, getIngresosHoy } from "../../api/ingresos";
 import { getSalidasHoy, createSalida } from "../../api/salidas";
 import Modal from "../../components/Modal";
 import Swal from "sweetalert2";
+import Loader from "../../components/Loader";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
 function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
+  const [cargando, setCargado] = useState(false);
   const [vehiculosIngreso, setVehiculosIngreso] = useState([]);
   const [vehiculoSeleccionadoIngreso, setVehiculoSeleccionadoIngreso] =
     useState("");
@@ -249,7 +251,9 @@ function Home() {
     window.open("http://127.0.0.1:8000/api/reportes/ingresos", "_blank");
   };
 
-  return (
+  return cargando ? (
+    <Loader texto="Cargando inicio...." />
+  ) : (
     <div className="relative bg-gradient-to-r from-green-50 to-gray-100 min-h-[85vh] flex flex-col items-center justify-center px-6 py-10">
       {/* -------------------- Notificación de error -------------------- */}
       {errorNotification && (
