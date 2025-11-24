@@ -16,6 +16,7 @@ class Usuario extends Authenticatable
 
     protected $fillable = [
         'Cedula_usuario',
+        'idRol',
         'Nombres',
         'email',
         'user_usuario',
@@ -31,4 +32,10 @@ class Usuario extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Relación con Rol
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'idRol', 'idRol');
+    }
 }

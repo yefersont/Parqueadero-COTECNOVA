@@ -141,7 +141,7 @@ function Login() {
             {/* Login Button */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 py-4"
               size="lg"
             >
               Iniciar Sesión

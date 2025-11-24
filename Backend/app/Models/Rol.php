@@ -33,4 +33,9 @@ class Rol extends Model
 	{
 		return $this->hasMany(Propietario::class, 'Rol');
 	}
+
+	public function usuarios()
+	{
+		return $this->hasMany(Usuario::class, 'idRol', 'idRol');
+	}
 }
