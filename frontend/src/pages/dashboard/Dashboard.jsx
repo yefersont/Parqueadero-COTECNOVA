@@ -106,7 +106,7 @@ function Dashboard() {
         >
           <div className="flex items-center gap-4 mb-3">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <BarChart3 className="w-6 h-6 text-white" strokeWidth={2.5} />
+              <BarChart3 className="w-5 h-5 text-white" strokeWidth={2.5} />
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
@@ -124,28 +124,28 @@ function Dashboard() {
           <MetricCard
             title="Vehículos Actuales"
             value={stats?.vehiculos_actuales || 0}
-            icon={<Car className="w-8 h-8 text-white" strokeWidth={2.5} />}
+            icon={<Car className="w-6 h-6 text-white" strokeWidth={2.5} />}
             color="green"
             subtitle="En el parqueadero"
           />
           <MetricCard
             title="Ingresos Hoy"
             value={stats?.ingresos_hoy || 0}
-            icon={<LogIn className="w-8 h-8 text-white" strokeWidth={2.5} />}
+            icon={<LogIn className="w-6 h-6 text-white" strokeWidth={2.5} />}
             color="blue"
             subtitle="Registros de entrada"
           />
           <MetricCard
             title="Salidas Hoy"
             value={stats?.salidas_hoy || 0}
-            icon={<LogOut className="w-8 h-8 text-white" strokeWidth={2.5} />}
+            icon={<LogOut className="w-6 h-6 text-white" strokeWidth={2.5} />}
             color="orange"
             subtitle="Registros de salida"
           />
           <MetricCard
             title="Tiempo Promedio"
             value={formatearTiempo(stats?.tiempo_promedio_minutos || 0)}
-            icon={<Clock className="w-8 h-8 text-white" strokeWidth={2.5} />}
+            icon={<Clock className="w-6 h-6 text-white" strokeWidth={2.5} />}
             color="purple"
             subtitle="Estadía promedio"
           />
@@ -167,7 +167,7 @@ function Dashboard() {
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30">
                   <TrendingUp
-                    className="w-5 h-5 text-white"
+                    className="w-4 h-4 text-white"
                     strokeWidth={2.5}
                   />
                 </div>
@@ -234,7 +234,7 @@ function Dashboard() {
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30">
-                  <Car className="w-5 h-5 text-white" strokeWidth={2.5} />
+                  <Car className="w-4 h-4 text-white" strokeWidth={2.5} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">
@@ -283,7 +283,7 @@ function Dashboard() {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/30">
-                <Users className="w-5 h-5 text-white" strokeWidth={2.5} />
+                <Users className="w-4 h-4 text-white" strokeWidth={2.5} />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900">

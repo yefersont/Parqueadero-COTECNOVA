@@ -40,17 +40,27 @@ class EstadisticasController extends Controller
                 ->values();
 
             // 6. Ingresos por día (últimos 7 días)
+            $diasSemana = [
+                'Mon' => 'Lun',
+                'Tue' => 'Mar',
+                'Wed' => 'Mié',
+                'Thu' => 'Jue',
+                'Fri' => 'Vie',
+                'Sat' => 'Sáb',
+                'Sun' => 'Dom'
+            ];
+            
             $ingresosPorDia = [];
             for ($i = 6; $i >= 0; $i--) {
                 $fecha = Carbon::today()->subDays($i);
                 $cantidad = Ingreso::whereDate('fecha_ingreso', $fecha)->count();
                 
-                // Configurar locale a español para nombres de días
-                $fecha->locale('es');
+                $diaIngles = $fecha->format('D');
+                $diaEspanol = $diasSemana[$diaIngles] ?? $diaIngles;
                 
                 $ingresosPorDia[] = [
                     'fecha' => $fecha->format('Y-m-d'),
-                    'dia' => ucfirst($fecha->formatLocalized('%a')), // Lun, Mar, Mié, etc.
+                    'dia' => $diaEspanol,
                     'cantidad' => $cantidad
                 ];
             }
