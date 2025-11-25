@@ -13,7 +13,7 @@ class CreateAdminUser extends Command
      *
      * @var string
      */
-    protected $signature = 'crear:usuario {nombre} {email} {password} {cedula?}';
+    protected $signature = 'crear:usuario {nombre} {email} {password} {cedula?} {idRol?}';
 
     /**
      * The console command description.
@@ -31,6 +31,7 @@ class CreateAdminUser extends Command
         $email = $this->argument('email');
         $password = $this->argument('password');
         $cedula = $this->argument('cedula') ?? rand(1000000, 9999999);
+        $idRol = $this->argument('idRol');
 
         // Verificar si el email ya existe
         if (Usuario::where('email', $email)->exists()) {
@@ -44,6 +45,9 @@ class CreateAdminUser extends Command
         $usuario->password = $password; // El mutador del modelo se encargará del hash
         $usuario->Cedula_usuario = $cedula;
         $usuario->user_usuario = explode('@', $email)[0];
+        if ($idRol) {
+            $usuario->idRol = $idRol;
+        }
         // $usuario->Contraseña_usuario = $password; // Eliminado por seguridad
         
         $usuario->save();
@@ -51,5 +55,8 @@ class CreateAdminUser extends Command
         $this->info("Usuario {$nombre} creado exitosamente.");
         $this->info("Email: {$email}");
         $this->info("Password: {$password}");
+        if ($idRol) {
+            $this->info("Rol: {$idRol}");
+        }
     }
 }
