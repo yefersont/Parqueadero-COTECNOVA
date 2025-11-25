@@ -32,7 +32,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Inicio />} />
                       <Route path="/inicio" element={<Inicio />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/estadisticas" element={<Dashboard />} />
                       <Route path="/propietario" element={<Propietarios />} />
                       <Route path="/usuarios" element={<Usuarios />} />
                       <Route path="/vehiculos" element={<Vehiculos />} />

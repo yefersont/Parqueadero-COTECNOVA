@@ -46,7 +46,7 @@ function MetricCard({ title, value, icon, color = "blue", subtitle }) {
         relative group
         bg-white/80 backdrop-blur-sm
         rounded-2xl shadow-xl border border-gray-100
-        p-6 
+        p-4 
         hover:shadow-2xl transition-all duration-300
         overflow-hidden
         ${currentColor.shadow} ${currentColor.glow}
@@ -63,21 +63,21 @@ function MetricCard({ title, value, icon, color = "blue", subtitle }) {
       {/* Contenido */}
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+          <p className="text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
             {title}
           </p>
-          <h3 className="text-4xl font-bold text-gray-900 mb-1 tabular-nums">
+          <h3 className="text-3xl font-bold text-gray-900 mb-1 tabular-nums">
             {value}
           </h3>
           {subtitle && (
-            <p className="text-xs text-gray-500 font-medium mt-2">{subtitle}</p>
+            <p className="text-xs text-gray-500 font-medium mt-1">{subtitle}</p>
           )}
         </div>
         <motion.div
           whileHover={{ rotate: 10, scale: 1.1 }}
           transition={{ type: "spring", stiffness: 300 }}
           className={`
-            w-16 h-16 
+            w-12 h-12 
             bg-gradient-to-br ${currentColor.gradient}
             rounded-2xl 
             flex items-center justify-center 

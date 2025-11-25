@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import { getDashboardStats } from "../../api/estadisticas";
-import MetricCard from "../../components/MetricCard";
-import Loader from "../../components/Loader";
 import { motion } from "framer-motion";
+import { getDashboardStats } from "../../api/estadisticas";
+import { getIngresosHoy } from "../../api/ingresos";
+import { getSalidasHoy } from "../../api/salidas";
+import Loader from "../../components/Loader";
+import MetricCard from "../../components/MetricCard";
+import Modal from "../../components/Modal";
+import TablaConPaginacion from "../../components/TablaconPaginacion";
 import {
   Car,
   LogIn,
@@ -33,6 +37,10 @@ import {
 function Dashboard() {
   const [stats, setStats] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [isModalIngresos, setIsModalIngresos] = useState(false);
+  const [isModalSalidas, setIsModalSalidas] = useState(false);
+  const [ingresosHoy, setIngresosHoy] = useState([]);
+  const [salidasHoy, setSalidasHoy] = useState([]);
 
   useEffect(() => {
     cargarEstadisticas();
@@ -48,10 +56,16 @@ function Dashboard() {
     try {
       const response = await getDashboardStats();
       setStats(response.data);
-      setCargando(false);
-      console.log("📊 Estadísticas cargadas:", response.data);
+      
+      // Cargar ingresos y salidas para modales
+      const ingresosRes = await getIngresosHoy();
+      setIngresosHoy(ingresosRes.data);
+      
+      const salidasRes = await getSalidasHoy();
+      setSalidasHoy(salidasRes.data);
     } catch (error) {
-      console.error("❌ Error al cargar estadísticas:", error);
+      console.error("Error cargando estadísticas:", error);
+    } finally {
       setCargando(false);
     }
   };
@@ -90,108 +104,215 @@ function Dashboard() {
     return null;
   };
 
-  if (cargando) {
-    return <Loader texto="Cargando estadísticas..." />;
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Premium */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-10"
-        >
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <BarChart3 className="w-5 h-5 text-white" strokeWidth={2.5} />
+  return cargando ? (
+    <Loader texto="Cargando estadísticas..." />
+  ) : (
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* KPI Cards - Glassmorphism Effect */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <MetricCard
+              title="Vehículos Actuales"
+              value={stats?.vehiculos_actuales || 0}
+              icon={<Car className="w-6 h-6 text-white" strokeWidth={2.5} />}
+              color="green"
+              subtitle="En el parqueadero"
+            />
+            <div onClick={() => setIsModalIngresos(true)} className="cursor-pointer">
+              <MetricCard
+                title="Ingresos Hoy"
+                value={stats?.ingresos_hoy || 0}
+                icon={<LogIn className="w-6 h-6 text-white" strokeWidth={2.5} />}
+                color="blue"
+                subtitle="Registros de entrada"
+              />
             </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                Estadisticas
-              </h1>
-              <p className="text-gray-600 text-sm md:text-base mt-1 font-medium">
-                Métricas en tiempo real
-              </p>
+            <div onClick={() => setIsModalSalidas(true)} className="cursor-pointer">
+              <MetricCard
+                title="Salidas Hoy"
+                value={stats?.salidas_hoy || 0}
+                icon={<LogOut className="w-6 h-6 text-white" strokeWidth={2.5} />}
+                color="orange"
+                subtitle="Registros de salida"
+              />
             </div>
+            <MetricCard
+              title="Tiempo Promedio"
+              value={formatearTiempo(stats?.tiempo_promedio_minutos || 0)}
+              icon={<Clock className="w-6 h-6 text-white" strokeWidth={2.5} />}
+              color="purple"
+              subtitle="Estadía promedio"
+            />
           </div>
-        </motion.div>
 
-        {/* KPI Cards - Glassmorphism Effect */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          <MetricCard
-            title="Vehículos Actuales"
-            value={stats?.vehiculos_actuales || 0}
-            icon={<Car className="w-6 h-6 text-white" strokeWidth={2.5} />}
-            color="green"
-            subtitle="En el parqueadero"
-          />
-          <MetricCard
-            title="Ingresos Hoy"
-            value={stats?.ingresos_hoy || 0}
-            icon={<LogIn className="w-6 h-6 text-white" strokeWidth={2.5} />}
-            color="blue"
-            subtitle="Registros de entrada"
-          />
-          <MetricCard
-            title="Salidas Hoy"
-            value={stats?.salidas_hoy || 0}
-            icon={<LogOut className="w-6 h-6 text-white" strokeWidth={2.5} />}
-            color="orange"
-            subtitle="Registros de salida"
-          />
-          <MetricCard
-            title="Tiempo Promedio"
-            value={formatearTiempo(stats?.tiempo_promedio_minutos || 0)}
-            icon={<Clock className="w-6 h-6 text-white" strokeWidth={2.5} />}
-            color="purple"
-            subtitle="Estadía promedio"
-          />
-        </div>
+          {/* Gráficas Premium */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Gráfica de Ingresos - Área con gradiente */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
+            >
+              {/* Efecto de brillo sutil */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-        {/* Gráficas Premium */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Gráfica de Ingresos - Área con gradiente */}
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30">
+                    <TrendingUp
+                      className="w-4 h-4 text-white"
+                      strokeWidth={2.5}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Tendencia de Ingresos
+                    </h3>
+                    <p className="text-xs text-gray-500 font-medium">
+                      Últimos 7 días
+                    </p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={280}>
+                  <AreaChart data={stats?.ingresos_por_dia || []}>
+                    <defs>
+                      <linearGradient
+                        id="colorIngresos"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      strokeOpacity={0.5}
+                    />
+                    <XAxis
+                      dataKey="dia"
+                      stroke="#9ca3af"
+                      style={{ fontSize: "12px", fontWeight: "500" }}
+                    />
+                    <YAxis
+                      stroke="#9ca3af"
+                      style={{ fontSize: "12px", fontWeight: "500" }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="cantidad"
+                      stroke="#3b82f6"
+                      strokeWidth={3}
+                      fill="url(#colorIngresos)"
+                      name="Ingresos"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+
+            {/* Gráfica de Distribución */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30">
+                    <Car className="w-4 h-4 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Distribución por Tipo
+                    </h3>
+                    <p className="text-xs text-gray-500 font-medium">
+                      Vehículos actuales
+                    </p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie
+                      data={stats?.distribucion_tipos || []}
+                      dataKey="cantidad"
+                      nameKey="tipo"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={90}
+                      label={({ tipo, cantidad }) => `${tipo}: ${cantidad}`}
+                      labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
+                    >
+                      {(stats?.distribucion_tipos || []).map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Gráfica de Propietarios Frecuentes - Full Width */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden mb-8"
           >
-            {/* Efecto de brillo sutil */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30">
-                  <TrendingUp
-                    className="w-4 h-4 text-white"
-                    strokeWidth={2.5}
-                  />
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/30">
+                  <Users className="w-4 h-4 text-white" strokeWidth={2.5} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">
-                    Tendencia de Ingresos
+                    Propietarios Más Frecuentes
                   </h3>
                   <p className="text-xs text-gray-500 font-medium">
-                    Últimos 7 días
+                    Top 15 usuarios del parqueadero
                   </p>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={280}>
-                <AreaChart data={stats?.ingresos_por_dia || []}>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={stats?.propietarios_frecuentes || []}>
                   <defs>
                     <linearGradient
-                      id="colorIngresos"
+                      id="colorVisitas"
                       x1="0"
                       y1="0"
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={1} />
+                      <stop
+                        offset="95%"
+                        stopColor="#10b981"
+                        stopOpacity={0.7}
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -200,7 +321,7 @@ function Dashboard() {
                     strokeOpacity={0.5}
                   />
                   <XAxis
-                    dataKey="dia"
+                    dataKey="nombre"
                     stroke="#9ca3af"
                     style={{ fontSize: "12px", fontWeight: "500" }}
                   />
@@ -209,126 +330,63 @@ function Dashboard() {
                     style={{ fontSize: "12px", fontWeight: "500" }}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    type="monotone"
-                    dataKey="cantidad"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fill="url(#colorIngresos)"
-                    name="Ingresos"
+                  <Bar
+                    dataKey="visitas"
+                    fill="url(#colorVisitas)"
+                    name="Visitas"
+                    radius={[12, 12, 0, 0]}
                   />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Gráfica de Distribución */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30">
-                  <Car className="w-4 h-4 text-white" strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Distribución por Tipo
-                  </h3>
-                  <p className="text-xs text-gray-500 font-medium">
-                    Vehículos actuales
-                  </p>
-                </div>
-              </div>
-              <ResponsiveContainer width="100%" height={280}>
-                <PieChart>
-                  <Pie
-                    data={stats?.distribucion_tipos || []}
-                    dataKey="cantidad"
-                    nameKey="tipo"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    label={({ tipo, cantidad }) => `${tipo}: ${cantidad}`}
-                    labelLine={{ stroke: "#9ca3af", strokeWidth: 1 }}
-                  >
-                    {(stats?.distribucion_tipos || []).map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
         </div>
-
-        {/* Gráfica de Propietarios Frecuentes - Full Width */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300 group overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/30">
-                <Users className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">
-                  Propietarios Más Frecuentes
-                </h3>
-                <p className="text-xs text-gray-500 font-medium">
-                  Top 15 usuarios del parqueadero
-                </p>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats?.propietarios_frecuentes || []}>
-                <defs>
-                  <linearGradient id="colorVisitas" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={1} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.7} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#e5e7eb"
-                  strokeOpacity={0.5}
-                />
-                <XAxis
-                  dataKey="nombre"
-                  stroke="#9ca3af"
-                  style={{ fontSize: "12px", fontWeight: "500" }}
-                />
-                <YAxis
-                  stroke="#9ca3af"
-                  style={{ fontSize: "12px", fontWeight: "500" }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="visitas"
-                  fill="url(#colorVisitas)"
-                  name="Visitas"
-                  radius={[12, 12, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
       </div>
-    </div>
+
+      {/* Modales */}
+      {isModalIngresos && (
+        <Modal
+          isOpen={isModalIngresos}
+          onClose={() => setIsModalIngresos(false)}
+          size="xl"
+        >
+          <TablaConPaginacion
+            titulo="Ingresos Hoy"
+            columnas={["Propietario", "Teléfono", "Vehículo", "Fecha", "Hora"]}
+            datos={ingresosHoy.registros?.map((i) => ({
+              Propietario: `${i.propietario.Nombre_propietario} ${i.propietario.Apellido_propietario}`,
+              Teléfono: i.propietario.Telefono_propietario,
+              Vehículo: i.vehiculo.Placa_vehiculo,
+              Fecha: i.fecha_ingreso,
+              Hora: i.hora_ingreso,
+            })) || []}
+            mostrarControles={false}
+          />
+        </Modal>
+      )}
+
+      {isModalSalidas && (
+        <Modal
+          isOpen={isModalSalidas}
+          onClose={() => setIsModalSalidas(false)}
+          size="xl"
+        >
+          <TablaConPaginacion
+            titulo="Salidas Hoy"
+            columnas={["Propietario", "Cédula", "Teléfono", "Vehículo", "Fecha y hora ingreso", "Fecha y hora Salida"]}
+            datos={salidasHoy?.registros?.map((s) => ({
+              Propietario: `${s.ingreso.propietario.Nombre_propietario} ${s.ingreso.propietario.Apellido_propietario}`,
+              Cédula: s.ingreso.propietario.Cedula_propietario,
+              Teléfono: s.ingreso.propietario.Telefono_propietario,
+              Vehículo: s.ingreso.vehiculo.Placa_vehiculo,
+              "Fecha Ingreso": `${s.ingreso.fecha_ingreso} ${s.ingreso.hora_ingreso}`,
+              "Fecha Salida": `${s.fecha_salida} ${s.hora_salida}`,
+            })) || []}
+            mostrarControles={false}
+          />
+        </Modal>
+      )}
+    </>
   );
 }
 

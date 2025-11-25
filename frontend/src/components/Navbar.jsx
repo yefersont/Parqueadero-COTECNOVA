@@ -1,4 +1,4 @@
-  // src/components/Navbar.jsx
+// src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { User, ChevronDown, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
@@ -30,7 +30,7 @@ function Navbar() {
 
   const menuItems = [
     { name: "Inicio", to: "/inicio" },
-    { name: "Dashboard", to: "/dashboard" },
+    { name: "Estadisticas", to: "/estadisticas" },
     { name: "Propietarios", to: "/propietario" },
     { name: "Vehículos", to: "/vehiculos" },
     { name: "Ingresos", to: "/ingresos" },
@@ -92,7 +92,9 @@ function Navbar() {
               className={`flex items-center gap-2 text-white font-semibold text-base px-3 py-1 rounded-lg ${BRAND_ACCENT} hover:bg-green-700 transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white`}
             >
               <User className="w-4 h-4" />
-              <span className="hidden md:inline">{user?.Nombres || "Usuario"}</span>
+              <span className="hidden md:inline">
+                {user?.Nombres || "Usuario"}
+              </span>
               <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
             </button>
 

@@ -37,157 +37,198 @@ function TablaConPaginacion({
     if (onBuscar) onBuscar(busquedaInput);
   };
 
-  return (
-    <div className="flex justify-center mt-6">
+  return (  
+    <div className="flex justify-center mt-4">
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-[95%] max-w-6xl bg-white p-4 rounded-xl shadow-sm border border-gray-200"
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        className="w-[95%] max-w-7xl bg-white rounded-2xl shadow-lg border border-gray-200/60 overflow-hidden"
       >
+        {/* Header Section */}
         {titulo && (
-          <motion.h1
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.3 }}
-            className="text-xl font-semibold mb-4 text-gray-900 tracking-tight"
-          >
-            {titulo}
-          </motion.h1>
+          <div className="px-6 pt-5 pb-4 border-b border-gray-100 bg-gradient-to-br from-gray-50/50 to-white">
+            <motion.h1
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="text-xl font-bold text-gray-900 tracking-tight"
+            >
+              {titulo}
+            </motion.h1>
+          </div>
         )}
 
-        {mostrarControles && (
-          <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-            {/* IZQUIERDA → Búsqueda + Botón */}
-            <div className="flex items-center gap-2 flex-wrap mt-1">
-              {/* Barra de búsqueda */}
-              <div className="relative w-56">
-                <input
-                  type="text"
-                  placeholder={placeholderBusqueda}
-                  value={busquedaInput}
-                  onChange={(e) => {
-                    setBusquedaInput(e.target.value);
-                    if (onBuscar) onBuscar(e.target.value);
-                  }}
-                  className="w-full px-3 py-1.5 rounded-md border border-gray-300 bg-white text-xs shadow-sm 
-    focus:outline-none focus:ring-1 focus:ring-green-500"
-                />
-                <button
-                  onClick={HandleBuscar}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 hover:text-green-700"
-                >
-                  <Search size={15} />
-                </button>
+        {/* Controls Section */}
+        <div className="px-6 py-3">
+          {mostrarControles && (
+            <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
+              {/* Search and Button */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Search Input */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder={placeholderBusqueda}
+                    value={busquedaInput}
+                    onChange={(e) => {
+                      setBusquedaInput(e.target.value);
+                      if (onBuscar) onBuscar(e.target.value);
+                    }}
+                    className="w-56 pl-9 pr-4 py-2 rounded-xl border border-gray-300 bg-white text-sm 
+                    focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
+                    placeholder:text-gray-400 transition-all duration-200 shadow-sm"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                </div>
+
+                {/* New Button */}
+                {isAdmin() && onNuevo && (
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={onNuevo}
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 
+                    hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl 
+                    font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 
+                    whitespace-nowrap"
+                  >
+                    {textoBoton}
+                  </motion.button>
+                )}
               </div>
-              {/* Botón Nuevo */}
-              {isAdmin() && (
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={onNuevo}
-                  className="px-3.5 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 
-      transition text-xs shadow-sm whitespace-nowrap"
-                >
-                  {textoBoton}
-                </motion.button>
+
+              {/* Extra Controls */}
+              {extraControls && (
+                <div className="flex items-center gap-2">
+                  {extraControls}
+                </div>
               )}
             </div>
+          )}
 
-            {/* DERECHA → Filtros extra */}
-            {extraControls && (
-              <div className="flex items-center gap-2 text-xs">
-                {extraControls}
-              </div>
-            )}
-          </div>
-        )}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm text-gray-600 mb-3 font-medium"
+          >
+            Mostrando <span className="text-emerald-600 font-semibold">{datosPagina.length}</span> de{" "}
+            <span className="text-gray-900 font-semibold">{datos.length}</span> registros
+          </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-xs text-gray-600 mb-1 text-right"
-        >
-          Mostrando {datosPagina.length} de {datos.length} registros
-        </motion.p>
+          {/* Table */}
+          <div className="overflow-hidden rounded-xl border border-gray-200">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                  <tr>
+                    {columnas.map((col, idx) => (
+                      <th
+                        key={idx}
+                        className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                      >
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
 
-        <div className="overflow-x-auto rounded-lg">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-100 text-xs text-gray-700 uppercase border-b border-gray-300">
-              <tr>
-                {columnas.map((col, idx) => (
-                  <th key={idx} className="px-4 py-2 text-left font-semibold">
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+                <tbody className="bg-white divide-y divide-gray-100">
+                  <AnimatePresence mode="sync">
+                    {datosPagina.map((fila, idx) => (
+                      <motion.tr
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, delay: idx * 0.02 }}
+                        className="hover:bg-emerald-50/50 cursor-pointer transition-colors duration-150 group"
+                        onClick={() => onRowClick && onRowClick(fila)}
+                      >
+                        {Object.entries(fila).map(([key, valor], i) =>
+                          key !== "idPropietario" && key !== "idVehiculo" ? (
+                            <td
+                              key={i}
+                              className="px-4 py-2 text-sm text-gray-800 whitespace-nowrap group-hover:text-gray-900 transition-colors"
+                            >
+                              {valor}
+                            </td>
+                          ) : null
+                        )}
+                      </motion.tr>
+                    ))}
 
-            <tbody className="bg-white">
-              <AnimatePresence mode="sync">
-                {datosPagina.map((fila, idx) => (
-                  <motion.tr
-                    key={idx}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.15 }}
-                    className="hover:bg-green-50 cursor-pointer transition"
-                    onClick={() => onRowClick && onRowClick(fila)}
-                  >
-                    {Object.entries(fila).map(([key, valor], i) =>
-                      key !== "idPropietario" && key !== "idVehiculo" ? (
-                        <td key={i} className="px-4 py-2 text-gray-700">
-                          {valor}
+                    {datos.length === 0 && (
+                      <motion.tr
+                        key="no-data"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <td
+                          colSpan={columnas.length}
+                          className="text-center py-7 text-gray-400 text-sm"
+                        >
+                          <div className="flex flex-col items-center gap-2">
+                            <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                            <span className="font-medium text-sm">No hay registros para mostrar</span>
+                          </div>
                         </td>
-                      ) : null
+                      </motion.tr>
                     )}
-                  </motion.tr>
-                ))}
-
-                {datos.length === 0 && (
-                  <motion.tr
-                    key="no-data"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <td
-                      colSpan={columnas.length}
-                      className="text-center py-5 text-gray-400 italic"
-                    >
-                      No hay registros
-                    </td>
-                  </motion.tr>
-                )}
-              </AnimatePresence>
-            </tbody>
-          </table>
-        </div>
-
-        {datos.length > porPagina && (
-          <div className="flex justify-between items-center mt-3 text-sm">
-            <button
-              onClick={anteriorPagina}
-              disabled={paginaActual === 1}
-              className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50"
-            >
-              Anterior
-            </button>
-
-            <span className="text-gray-700">
-              Página {paginaActual} de {totalPaginas}
-            </span>
-
-            <button
-              onClick={siguientePagina}
-              disabled={paginaActual === totalPaginas}
-              className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50"
-            >
-              Siguiente
-            </button>
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
+
+          {/* Pagination */}
+          {datos.length > porPagina && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100"
+            >
+              <button
+                onClick={anteriorPagina}
+                disabled={paginaActual === 1}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 
+                hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed
+                rounded-lg text-sm font-medium text-gray-700 transition-all duration-200 
+                shadow-sm hover:shadow disabled:shadow-none"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Anterior
+              </button>
+
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600">
+                  Página <span className="font-bold text-gray-900">{paginaActual}</span> de{" "}
+                  <span className="font-bold text-gray-900">{totalPaginas}</span>
+                </span>
+              </div>
+
+              <button
+                onClick={siguientePagina}
+                disabled={paginaActual === totalPaginas}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 
+                hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed
+                rounded-lg text-sm font-medium text-gray-700 transition-all duration-200 
+                shadow-sm hover:shadow disabled:shadow-none"
+              >
+                Siguiente
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </motion.div>
+          )}
+        </div>
       </motion.div>
     </div>
   );
