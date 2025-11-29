@@ -18,11 +18,58 @@ class AuthController extends Controller
 
         $usuario = Usuario::where('email', $request->email)->first();
 
-        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+        // Verificar si el usuario existe
+        if (!$usuario) {
+            // Log de intento fallido sin usuario
+            \Log::warning('Intento de login fallido - Usuario no existe', [
+                'email' => $request->email,
+                'ip' => $request->ip(),
+                'timestamp' => now()
+            ]);
+            
             return response()->json([
                 'message' => 'Credenciales incorrectas'
             ], 401);
         }
+
+        // Verificar si la cuenta está bloqueada
+        if ($usuario->isLocked()) {
+            $minutosRestantes = now()->diffInMinutes($usuario->locked_until);
+            
+            \Log::warning('Intento de login en cuenta bloqueada', [
+                'usuario_id' => $usuario->idUsuario,
+                'email' => $usuario->email,
+                'ip' => $request->ip(),
+                'intentos_fallidos' => $usuario->failed_attempts,
+                'bloqueado_hasta' => $usuario->locked_until,
+                'timestamp' => now()
+            ]);
+            
+            return response()->json([
+                'message' => 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ' . $minutosRestantes . ' minutos.'
+            ], 403);
+        }
+
+        // Verificar contraseña
+        if (!Hash::check($request->password, $usuario->password)) {
+            // Incrementar intentos fallidos
+            $usuario->incrementFailedAttempts();
+            
+            \Log::warning('Intento de login fallido - Contraseña incorrecta', [
+                'usuario_id' => $usuario->idUsuario,
+                'email' => $usuario->email,
+                'ip' => $request->ip(),
+                'intentos_fallidos' => $usuario->failed_attempts,
+                'timestamp' => now()
+            ]);
+            
+            return response()->json([
+                'message' => 'Credenciales incorrectas'
+            ], 401);
+        }
+
+        // Login exitoso - resetear intentos fallidos
+        $usuario->resetFailedAttempts();
 
         // Cargar la relación del rol
         $usuario->load('rol');
@@ -32,6 +79,15 @@ class AuthController extends Controller
         $tokenResult->accessToken->expires_at = now()->addHours(6);
         $tokenResult->accessToken->save();
         $token = $tokenResult->plainTextToken;
+
+        // Log de login exitoso
+        \Log::info('Login exitoso', [
+            'usuario_id' => $usuario->idUsuario,
+            'email' => $usuario->email,
+            'rol' => $usuario->rol->Descripcion,
+            'ip' => $request->ip(),
+            'timestamp' => now()
+        ]);
 
         return response()->json([
             'message' => 'Login exitoso',

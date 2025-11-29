@@ -24,33 +24,85 @@ class IngresoController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'Propietario_idPropietario' => 'required|integer',
-                'Vehiculo_idVehiculo' => 'required|integer',
+            // Validación estricta con mensajes personalizados
+            $validated = $request->validate([
+                'Propietario_idPropietario' => 'required|integer|min:1|exists:propietario,idPropietario',
+                'Vehiculo_idVehiculo' => 'required|integer|min:1|exists:vehiculo,idVehiculo',
+            ], [
+                'Propietario_idPropietario.required' => 'El ID del propietario es requerido',
+                'Propietario_idPropietario.integer' => 'El ID del propietario debe ser un número entero',
+                'Propietario_idPropietario.min' => 'El ID del propietario debe ser mayor a 0',
+                'Propietario_idPropietario.exists' => 'El propietario no existe en el sistema',
+                'Vehiculo_idVehiculo.required' => 'El ID del vehículo es requerido',
+                'Vehiculo_idVehiculo.integer' => 'El ID del vehículo debe ser un número entero',
+                'Vehiculo_idVehiculo.min' => 'El ID del vehículo debe ser mayor a 0',
+                'Vehiculo_idVehiculo.exists' => 'El vehículo no existe en el sistema',
             ]);
-            $ingresoPendiente = Ingreso::where('Propietario_idPropietario', $request->Propietario_idPropietario)
+
+            // Verificar ingresos pendientes
+            $ingresoPendiente = Ingreso::where('Propietario_idPropietario', $validated['Propietario_idPropietario'])
                 ->whereDoesntHave('salidas')
                 ->latest('fecha_ingreso')
                 ->first();
+                
             if ($ingresoPendiente) {
+                \Log::warning('Intento de crear ingreso con ingreso pendiente', [
+                    'propietario_id' => $validated['Propietario_idPropietario'],
+                    'vehiculo_id' => $validated['Vehiculo_idVehiculo'],
+                    'ingreso_pendiente_id' => $ingresoPendiente->idIngreso,
+                    'usuario' => auth()->user()->idUsuario ?? 'No autenticado',
+                    'ip' => $request->ip(),
+                    'timestamp' => now()
+                ]);
+                
                 return response()->json([
                     'error' => 'Ingreso pendiente',
                     'message' => 'El propietario ya tiene un ingreso sin salida registrada.'
                 ], 422);
             }
+            
             $ingreso = Ingreso::create([
-                'Propietario_idPropietario' => $request->Propietario_idPropietario,
-                'Vehiculo_idVehiculo' => $request->Vehiculo_idVehiculo,
+                'Propietario_idPropietario' => $validated['Propietario_idPropietario'],
+                'Vehiculo_idVehiculo' => $validated['Vehiculo_idVehiculo'],
                 'fecha_ingreso' => Carbon::now()->toDateString(),
                 'hora_ingreso' => Carbon::now()->format('H:i:s'),
             ]);
+
+            // Log de ingreso creado exitosamente
+            \Log::info('Ingreso vehicular registrado', [
+                'ingreso_id' => $ingreso->idIngreso,
+                'propietario_id' => $validated['Propietario_idPropietario'],
+                'vehiculo_id' => $validated['Vehiculo_idVehiculo'],
+                'fecha' => $ingreso->fecha_ingreso,
+                'hora' => $ingreso->hora_ingreso,
+                'usuario' => auth()->user()->idUsuario ?? 'No autenticado',
+                'ip' => $request->ip(),
+                'timestamp' => now()
+            ]);
+
             return response()->json($ingreso, 201);
+            
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::warning('Validación fallida al crear ingreso', [
+                'errores' => $e->errors(),
+                'datos_recibidos' => $request->all(),
+                'ip' => $request->ip(),
+                'timestamp' => now()
+            ]);
+            
             return response()->json([
                 'error' => 'Datos inválidos',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'errores' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            \Log::error('Error al registrar ingreso', [
+                'error' => $e->getMessage(),
+                'datos_recibidos' => $request->all(),
+                'ip' => $request->ip(),
+                'timestamp' => now()
+            ]);
+            
             return response()->json([
                 'error' => 'Error al registrar el ingreso',
                 'message' => $e->getMessage()

@@ -21,6 +21,14 @@ export const AuthProvider = ({ children }) => {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
 
+  // Estados para timeout de sesión (ISO 27001)
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [timeoutCountdown, setTimeoutCountdown] = useState(2); // minutos restantes
+
+  // Timeout de sesión: 30 minutos de inactividad
+  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutos en milisegundos
+  const WARNING_TIME = 2 * 60 * 1000; // Advertencia 2 minutos antes
+
   // Función de registro (si se implementa en el futuro)
   const signup = async (user) => {
     // Implementar si es necesario
@@ -84,6 +92,89 @@ export const AuthProvider = ({ children }) => {
       }, 500);
     }
   };
+
+  // Timeout de sesión por inactividad (ISO 27001)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let timeoutId;
+    let warningId;
+    let countdownInterval;
+
+    const resetTimer = () => {
+      // Limpiar timers anteriores
+      clearTimeout(timeoutId);
+      clearTimeout(warningId);
+      clearInterval(countdownInterval);
+      setShowTimeoutWarning(false);
+
+      // Advertencia a los 28 minutos (2 minutos antes de cerrar sesión)
+      warningId = setTimeout(() => {
+        setShowTimeoutWarning(true);
+        let countdown = 120; // 2 minutos en segundos
+        setTimeoutCountdown(2);
+
+        // Actualizar countdown cada segundo
+        countdownInterval = setInterval(() => {
+          countdown -= 1;
+          setTimeoutCountdown(Math.ceil(countdown / 60));
+
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+      }, SESSION_TIMEOUT - WARNING_TIME);
+
+      // Cerrar sesión a los 30 minutos
+      timeoutId = setTimeout(() => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Sesión expirada',
+          text: 'Su sesión ha expirado por inactividad',
+          confirmButtonColor: '#d33',
+        });
+        logout();
+      }, SESSION_TIMEOUT);
+    };
+
+    // Eventos que detectan actividad del usuario
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+
+    events.forEach(event => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    // Iniciar timer al montar el componente
+    resetTimer();
+
+    // Cleanup al desmontar
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(warningId);
+      clearInterval(countdownInterval);
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [isAuthenticated]);
+
+  // Mostrar advertencia de timeout
+  useEffect(() => {
+    if (showTimeoutWarning) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sesión por expirar',
+        html: `Su sesión expirará en <strong>${timeoutCountdown}</strong> minuto(s) por inactividad.<br/>Mueva el mouse o presione cualquier tecla para continuar.`,
+        confirmButtonText: 'Continuar sesión',
+        confirmButtonColor: '#16a34a',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setShowTimeoutWarning(false);
+        }
+      });
+    }
+  }, [showTimeoutWarning, timeoutCountdown]);
 
   // Verificar token al cargar la app
   useEffect(() => {
