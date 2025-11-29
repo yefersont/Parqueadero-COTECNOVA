@@ -341,7 +341,7 @@ Los logs se almacenan en `backend/storage/logs/laravel.log` e incluyen:
 **Institución:** Corporación de Estudios Tecnológicos del Norte del Valle - COTECNOVA
 
 **Desarrolladores:**
-- Yeferson Tobar - [@yefersont](https://github.com/yefersont)
+- Yeferson Tello - [@yefersont](https://github.com/yefersont)
 
 **Repositorio:** [https://github.com/yefersont/Parqueadero-COTECNOVA](https://github.com/yefersont/Parqueadero-COTECNOVA)
 
