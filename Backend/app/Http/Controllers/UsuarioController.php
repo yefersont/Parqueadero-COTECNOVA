@@ -49,14 +49,14 @@ class UsuarioController extends Controller
             $usuario = Usuario::create($validated);
 
             // Log de creación exitosa
-            \Log::info('Usuario creado exitosamente', [
-                'usuario_id' => $usuario->idUsuario,
-                'email' => $usuario->email,
-                'rol_id' => $usuario->idRol,
-                'creado_por' => auth()->user()->idUsuario ?? 'Sistema',
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::info('Usuario creado exitosamente', [
+            //     'usuario_id' => $usuario->idUsuario,
+            //     'email' => $usuario->email,
+            //     'rol_id' => $usuario->idRol,
+            //     'creado_por' => auth()->user()->idUsuario ?? 'Sistema',
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'message' => 'Usuario creado exitosamente',
@@ -64,12 +64,12 @@ class UsuarioController extends Controller
             ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::warning('Validación fallida al crear usuario', [
-                'errores' => $e->errors(),
-                'datos_recibidos' => $request->except('password'),
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::warning('Validación fallida al crear usuario', [
+            //     'errores' => $e->errors(),
+            //     'datos_recibidos' => $request->except('password'),
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'error' => 'Datos inválidos',
@@ -77,11 +77,11 @@ class UsuarioController extends Controller
                 'errores' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al crear usuario', [
-                'error' => $e->getMessage(),
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::error('Error al crear usuario', [
+            //     'error' => $e->getMessage(),
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'error' => 'Error al crear el usuario',
@@ -130,14 +130,14 @@ class UsuarioController extends Controller
             $usuario->update($validated);
 
             // Log de actualización exitosa
-            \Log::info('Usuario actualizado exitosamente', [
-                'usuario_id' => $usuario->idUsuario,
-                'email' => $usuario->email,
-                'actualizado_por' => auth()->user()->idUsuario ?? 'Sistema',
-                'cambios' => array_keys($validated),
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::info('Usuario actualizado exitosamente', [
+            //     'usuario_id' => $usuario->idUsuario,
+            //     'email' => $usuario->email,
+            //     'actualizado_por' => auth()->user()->idUsuario ?? 'Sistema',
+            //     'cambios' => array_keys($validated),
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'message' => 'Usuario actualizado exitosamente',
@@ -145,12 +145,12 @@ class UsuarioController extends Controller
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::warning('Validación fallida al actualizar usuario', [
-                'usuario_id' => $usuario->idUsuario,
-                'errores' => $e->errors(),
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::warning('Validación fallida al actualizar usuario', [
+            //     'usuario_id' => $usuario->idUsuario,
+            //     'errores' => $e->errors(),
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'error' => 'Datos inválidos',
@@ -158,12 +158,12 @@ class UsuarioController extends Controller
                 'errores' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al actualizar usuario', [
-                'usuario_id' => $usuario->idUsuario,
-                'error' => $e->getMessage(),
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::error('Error al actualizar usuario', [
+            //     'usuario_id' => $usuario->idUsuario,
+            //     'error' => $e->getMessage(),
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json([
                 'error' => 'Error al actualizar el usuario',

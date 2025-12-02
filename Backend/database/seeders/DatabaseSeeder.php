@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         // Crear usuarios de prueba
         $this->call([
             UsuarioSeeder::class,
+            PropietarioSeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();

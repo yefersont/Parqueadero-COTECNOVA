@@ -163,11 +163,11 @@ class PropietarioController extends Controller
         try {
             // Validación estricta para prevenir SQL injection
             if (!preg_match('/^[0-9]{6,12}$/', $cedula)) {
-                \Log::warning('Intento de búsqueda con cédula inválida', [
-                    'cedula' => $cedula,
-                    'ip' => request()->ip(),
-                    'timestamp' => now()
-                ]);
+                // \Log::warning('Intento de búsqueda con cédula inválida', [
+                //     'cedula' => $cedula,
+                //     'ip' => request()->ip(),
+                //     'timestamp' => now()
+                // ]);
                 
                 return response()->json([
                     'message' => 'Formato de cédula inválido. Solo se permiten números de 6 a 12 dígitos.'
@@ -189,22 +189,22 @@ class PropietarioController extends Controller
             }
 
             // Log de búsqueda exitosa
-            \Log::info('Búsqueda de propietario por cédula exitosa', [
-                'cedula' => $cedula,
-                'propietario_id' => $propietario->idPropietario,
-                'ip' => request()->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::info('Búsqueda de propietario por cédula exitosa', [
+            //     'cedula' => $cedula,
+            //     'propietario_id' => $propietario->idPropietario,
+            //     'ip' => request()->ip(),
+            //     'timestamp' => now()
+            // ]);
 
             return response()->json($propietario, 200);
 
         } catch (\Exception $e) {
-            \Log::error('Error al buscar propietario por cédula', [
-                'cedula' => $cedula,
-                'error' => $e->getMessage(),
-                'ip' => request()->ip(),
-                'timestamp' => now()
-            ]);
+            // \Log::error('Error al buscar propietario por cédula', [
+            //     'cedula' => $cedula,
+            //     'error' => $e->getMessage(),
+            //     'ip' => request()->ip(),
+            //     'timestamp' => now()
+            // ]);
             
             return response()->json([
                 'error' => 'Error al buscar el propietario',

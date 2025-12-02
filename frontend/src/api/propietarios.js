@@ -13,8 +13,8 @@ export const getVehiculosByPropietario = (id) =>
 export const getPropietarioByCedula = (cedula) =>
   api.get(`${API_URL}/cedula/${cedula}`, {
     headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    }
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
   });

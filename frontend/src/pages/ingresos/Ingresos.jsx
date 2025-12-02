@@ -129,6 +129,7 @@ function Ingresos() {
     <div className="flex flex-col gap-4">
       <TablaConPaginacion
         titulo="Ingresos"
+        porPagina={8}
         columnas={columnas}
         datos={datosFiltrados}
         placeholderBusqueda="Buscar ingreso..."

@@ -21,12 +21,12 @@ class AuthController extends Controller
         // Verificar si el usuario existe
         if (!$usuario) {
             // Log de intento fallido sin usuario
-            \Log::warning('Intento de login fallido - Usuario no existe', [
-                'email' => $request->email,
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
-            
+            // \Log::warning('Intento de login fallido - Usuario no existe', [
+            //     'email' => $request->email,
+            //     'ip' => $request->ip(),
+            //     'timestamp' => now()
+            // ]);
+
             return response()->json([
                 'message' => 'Credenciales incorrectas'
             ], 401);
@@ -35,7 +35,7 @@ class AuthController extends Controller
         // Verificar si la cuenta está bloqueada
         if ($usuario->isLocked()) {
             $minutosRestantes = now()->diffInMinutes($usuario->locked_until);
-            
+
             \Log::warning('Intento de login en cuenta bloqueada', [
                 'usuario_id' => $usuario->idUsuario,
                 'email' => $usuario->email,
@@ -44,7 +44,7 @@ class AuthController extends Controller
                 'bloqueado_hasta' => $usuario->locked_until,
                 'timestamp' => now()
             ]);
-            
+
             return response()->json([
                 'message' => 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ' . $minutosRestantes . ' minutos.'
             ], 403);
@@ -54,7 +54,7 @@ class AuthController extends Controller
         if (!Hash::check($request->password, $usuario->password)) {
             // Incrementar intentos fallidos
             $usuario->incrementFailedAttempts();
-            
+
             \Log::warning('Intento de login fallido - Contraseña incorrecta', [
                 'usuario_id' => $usuario->idUsuario,
                 'email' => $usuario->email,
@@ -62,7 +62,7 @@ class AuthController extends Controller
                 'intentos_fallidos' => $usuario->failed_attempts,
                 'timestamp' => now()
             ]);
-            
+
             return response()->json([
                 'message' => 'Credenciales incorrectas'
             ], 401);
@@ -108,6 +108,8 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+
+        $user = $request->user()->load('rol');
+        return response()->json($user);
     }
 }
