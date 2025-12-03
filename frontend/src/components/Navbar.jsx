@@ -1,7 +1,8 @@
 // src/components/Navbar.jsx
 import { Link } from "react-router-dom";
-import { User, ChevronDown, LogOut } from "lucide-react";
-import { motion } from "framer-motion";
+import { User, ChevronDown, LogOut, X, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 // Definición de colores clave
 const BRAND_BG = "bg-green-800";
@@ -9,9 +10,10 @@ const BRAND_ACCENT = "bg-green-600";
 const BRAND_TEXT = "text-white";
 
 // --- Subcomponente para los enlaces del menú ---
-const NavLink = ({ to, name }) => (
+const NavLink = ({ to, name, onClick }) => (
   <Link
     to={to}
+    onClick={onClick}
     className="text-white font-semibold text-base relative group transition-colors duration-200 hover:text-green-200"
   >
     {name}
@@ -27,6 +29,7 @@ import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
     { name: "Inicio", to: "/inicio" },
@@ -36,6 +39,14 @@ function Navbar() {
     { name: "Ingresos", to: "/ingresos" },
     // { name: "Salidas", to: "/salidas" },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <header
@@ -80,7 +91,7 @@ function Navbar() {
           </motion.div>
         </Link>
 
-        {/* Menú principal */}
+        {/* Menú principal - Desktop */}
         <nav className="hidden lg:flex items-center gap-8">
           {menuItems.map((item) => (
             <NavLink key={item.to} {...item} />
@@ -124,23 +135,124 @@ function Navbar() {
 
         {/* Botón de hamburguesa para móviles */}
         <div className="lg:hidden">
-          <button className="text-white p-2 rounded-md hover:bg-green-700 transition">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              ></path>
-            </svg>
+          <button
+            onClick={toggleMobileMenu}
+            className="text-white p-2 rounded-md hover:bg-green-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
+
+      {/* Menú móvil */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={closeMobileMenu}
+            />
+
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-full w-72 bg-gradient-to-br from-green-800 via-green-900 to-emerald-900 shadow-2xl z-50 lg:hidden overflow-y-auto backdrop-blur-md"
+            >
+              <div className="flex flex-col min-h-full relative">
+                {/* Decorative gradient orbs */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 left-0 w-32 h-32 bg-green-400/20 rounded-full blur-2xl"></div>
+                
+                {/* Header del menú móvil */}
+                <div className="relative flex items-center justify-between p-6 border-b border-white/10 backdrop-blur-sm bg-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-white/20 backdrop-blur-md p-2 rounded-lg">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-white font-bold text-sm block">
+                        {user?.Nombres || "Usuario"}
+                      </span>
+                      <span className="text-green-200 text-xs">
+                        {user?.rol?.Descripcion || ""}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={closeMobileMenu}
+                    className="text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-200 active:scale-95"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Links del menú */}
+                <nav className="flex-1 px-4 py-6 space-y-1 relative">
+                  {menuItems.map((item, index) => (
+                    <motion.div
+                      key={item.to}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Link
+                        to={item.to}
+                        onClick={closeMobileMenu}
+                        className="group block px-4 py-3.5 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-200 relative overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 to-emerald-500/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                        <span className="relative flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                          {item.name}
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
+
+                {/* Footer del menú móvil */}
+                <div className="relative p-6 pb-24 border-t border-white/10 space-y-2 bg-gradient-to-t from-black/20 to-transparent backdrop-blur-sm">
+                  <Link
+                    to="/perfil"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-200 group"
+                  >
+                    <div className="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition-colors">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <span className="font-medium">Mi Perfil</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      closeMobileMenu();
+                      logout();
+                    }}
+                    className="flex items-center gap-3 px-4 py-3 text-red-200 hover:text-white hover:bg-red-500/20 rounded-xl transition-all duration-200 w-full text-left group"
+                  >
+                    <div className="bg-red-500/20 p-2 rounded-lg group-hover:bg-red-500/30 transition-colors">
+                      <LogOut className="w-4 h-4" />
+                    </div>
+                    <span className="font-medium">Cerrar sesión</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
