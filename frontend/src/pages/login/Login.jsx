@@ -9,7 +9,6 @@ function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   
   const { signin, isAuthenticated, errors: loginErrors } = useAuth();
@@ -117,26 +116,7 @@ function Login() {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-2 border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer transition-colors"
-                />
-                <span className="text-sm text-gray-600 select-none">
-                  Recuérdame
-                </span>
-              </label>
-              <button
-                type="button"
-                className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
-              >
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
+
 
             {/* Login Button */}
             <Button
