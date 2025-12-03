@@ -26,7 +26,7 @@ use App\Http\Controllers\EstadisticasController;
 */
 
 // Rutas públicas
-Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Rutas protegidas con autenticación (todos los usuarios autenticados)
 Route::middleware('auth:sanctum')->group(function () {

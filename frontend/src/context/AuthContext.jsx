@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signin = async (user) => {
+    setErrors([]); // Limpiar errores previos
     setLoginLoading(true);
     try {
       const res = await loginRequest(user);
@@ -52,24 +53,9 @@ export const AuthProvider = ({ children }) => {
       } else {
         setErrors([error.response?.data?.message || error.message || "Error de conexión"]);
       }
-      
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de autenticación',
-        text: error.response?.data?.message || error.message || 'Credenciales incorrectas',
-        confirmButtonColor: '#d33',
-      });
-      setLoginLoading(false); // Solo desactivar si hay error, si es éxito redirige
     } finally {
-        // Si es exitoso, el loading se quita cuando el componente se desmonta o redirige
-        // Pero por seguridad, si no redirige inmediatamente:
-        if (!isAuthenticated) { 
-            // setLoginLoading(false); // No, mejor dejarlo en el catch o manejarlo con un timeout si es necesario
-        }
-        // Para asegurar que se quite el loader si algo falla o para dar tiempo a la redirección
-        setTimeout(() => {
-            setLoginLoading(false);
-        }, 1000); 
+      // Siempre desactivar loading después de la petición
+      setLoginLoading(false);
     }
   };
 

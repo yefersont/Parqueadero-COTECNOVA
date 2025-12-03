@@ -34,7 +34,8 @@ class AuthController extends Controller
 
         // Verificar si la cuenta está bloqueada
         if ($usuario->isLocked()) {
-            $minutosRestantes = now()->diffInMinutes($usuario->locked_until);
+            // Calcular minutos restantes correctamente
+            $minutosRestantes = max(1, ceil(now()->diffInMinutes($usuario->locked_until, false)));
 
             \Log::warning('Intento de login en cuenta bloqueada', [
                 'usuario_id' => $usuario->idUsuario,
@@ -46,7 +47,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ' . $minutosRestantes . ' minutos.'
+                'message' => 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ' . $minutosRestantes . ' minuto(s).'
             ], 403);
         }
 
@@ -64,7 +65,7 @@ class AuthController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Credenciales incorrectas'
+                'message' => 'Contraseña incorrecta'
             ], 401);
         }
 

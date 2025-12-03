@@ -69,9 +69,9 @@ class Usuario extends Authenticatable
     {
         $this->failed_attempts++;
         
-        // Bloquear después de 5 intentos fallidos por 15 minutos
-        if ($this->failed_attempts >= 5) {
-            $this->locked_until = now()->addMinutes(15);
+        // Bloquear después de 10 intentos fallidos por 5 minutos
+        if ($this->failed_attempts >= 10) {
+            $this->locked_until = now()->addMinutes(5);
         }
         
         $this->save();
