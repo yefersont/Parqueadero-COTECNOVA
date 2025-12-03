@@ -1,4 +1,4 @@
-# Sistema de Gestión de Parqueaderos - COTECNOVA
+# Sistema de Gestión Vehicular - COTECNOVA
 
 ## Descripción
 

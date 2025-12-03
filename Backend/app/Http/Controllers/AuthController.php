@@ -21,11 +21,11 @@ class AuthController extends Controller
         // Verificar si el usuario existe
         if (!$usuario) {
             // Log de intento fallido sin usuario
-            // \Log::warning('Intento de login fallido - Usuario no existe', [
-            //     'email' => $request->email,
-            //     'ip' => $request->ip(),
-            //     'timestamp' => now()
-            // ]);
+            \Log::warning('Intento de login fallido - Usuario no existe', [
+                'email' => $request->email,
+                'ip' => $request->ip(),
+                'timestamp' => now()
+            ]);
 
             return response()->json([
                 'message' => 'Credenciales incorrectas'
