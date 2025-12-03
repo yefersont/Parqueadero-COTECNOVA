@@ -26,10 +26,10 @@ class PropietarioController extends Controller
         
         try {
             $request->validate([
-                'Cedula_propietario' => 'required|unique:propietario,Cedula_propietario',
-                'Nombre_propietario' => 'required|string|max:100',
-                'Apellido_propietario' => 'required|string|max:100',
-                'Telefono_propietario' => 'required|string|max:15',
+                'Cedula_propietario' => 'required|numeric|digits_between:6,10|unique:propietario,Cedula_propietario',
+                'Nombre_propietario' => 'required|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'Apellido_propietario' => 'required|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'Telefono_propietario' => 'required|numeric|digits:10',
                 'Rol' => 'required|exists:rol,idRol',
             ]);
 
@@ -82,10 +82,10 @@ class PropietarioController extends Controller
 
             // Validar campos
             $request->validate([
-                'Cedula_propietario' => 'required|unique:propietario,Cedula_propietario,' . $id . ',idPropietario',
-                'Nombre_propietario' => 'required|string|max:100',
-                'Apellido_propietario' => 'required|string|max:100',
-                'Telefono_propietario' => 'required|string|max:15',
+                'Cedula_propietario' => 'required|numeric|digits_between:6,10|unique:propietario,Cedula_propietario,' . $id . ',idPropietario',
+                'Nombre_propietario' => 'required|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'Apellido_propietario' => 'required|string|max:100|regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/',
+                'Telefono_propietario' => 'required|numeric|digits:10',
                 'Rol' => 'required|exists:rol,idRol',
             ]);
 

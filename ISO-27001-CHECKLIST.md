@@ -146,10 +146,16 @@
   - [ ] Documentar justificación de permisos
 
 ### 8. A.14.2.5 - Validación y Sanitización
-- [ ] **Validación de entrada en backend**
-  - [ ] Validar tipo de datos
-  - [ ] Validar rangos y formatos
-  - [ ] Rechazar caracteres peligrosos
+- [x] **Validación de entrada en backend** ✅ *Implementado 2025-12-03*
+  - [x] Validar tipo de datos (numeric, string, email, date)
+  - [x] Validar rangos y formatos (digits, max, min, regex)
+  - [x] Validar unicidad (unique) y existencia (exists)
+  - [x] Validación de cédula (6-10 dígitos numéricos)
+  - [x] Validación de teléfono (10 dígitos)
+  - [x] Validación de nombres (solo letras y espacios)
+  - [x] Validación de placas (formato colombiano ABC123)
+  - [x] Validación de fechas (formato Y-m-d)
+  - [x] Validación de contraseñas (política robusta ISO 27001)
   
 - [ ] **Sanitización de salida**
   - [ ] Escapar HTML en outputs

@@ -26,8 +26,8 @@ class VehiculoController extends Controller
             $request->validate([
                 'Tipo_vehiculo' => 'required|exists:tipo_vehiculo,idTipo_vehiculo',
                 'Marca_vehiculo' => 'required|exists:marca_vehiculo,idMarca_vehiculo',
-                'Placa_vehiculo' => 'required|string|max:45|unique:vehiculo,Placa_vehiculo',
-                'Modelo_vehiculo' => 'required|string|max:45'
+                'Placa_vehiculo' => 'required|string|regex:/^[A-Z0-9]{6}$/|unique:vehiculo,Placa_vehiculo',
+                'Modelo_vehiculo' => 'required|string|max:45|regex:/^[a-zA-Z0-9\s-]+$/'
             ]);
             $vehiculo = Vehiculo::create($request->all());
             return response()->json([
@@ -58,8 +58,8 @@ class VehiculoController extends Controller
             $request->validate([
                 'Tipo_vehiculo' => 'required|exists:tipo_vehiculo,idTipo_vehiculo',
                 'Marca_vehiculo' => 'required|exists:marca_vehiculo,idMarca_vehiculo',
-                'Placa_vehiculo' => 'required|string|max:45|unique:vehiculo,Placa_vehiculo,' . $vehiculo->idVehiculo . ',idVehiculo',
-                'Modelo_vehiculo' => 'required|string|max:45'
+                'Placa_vehiculo' => 'required|string|regex:/^[A-Z0-9]{6}$/|unique:vehiculo,Placa_vehiculo,' . $vehiculo->idVehiculo . ',idVehiculo',
+                'Modelo_vehiculo' => 'required|string|max:45|regex:/^[a-zA-Z0-9\s-]+$/'
             ]);
             // Actualizar los campos
             $vehiculo->update([

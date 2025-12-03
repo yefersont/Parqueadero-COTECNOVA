@@ -163,14 +163,23 @@ class IngresoController extends Controller
     public function getIngresosPorRangoFechas(Request $request)
     {
         try {
-            $fechaInicio = $request->query('inicio');
-            $fechaFin = $request->query('fin');
+            // Validar formato de fechas (ISO 27001: A.14.2.5 - Validación de entrada)
+            $validated = $request->validate([
+                'inicio' => 'required|date|date_format:Y-m-d',
+                'fin' => 'required|date|date_format:Y-m-d|after_or_equal:inicio',
+            ]);
 
             $Ingresos = Ingreso::with('propietario.rol', 'vehiculo', 'salidas')
-                ->whereBetween('fecha_ingreso', [$fechaInicio, $fechaFin])
+                ->whereBetween('fecha_ingreso', [$validated['inicio'], $validated['fin']])
                 ->get();
 
             return response()->json($Ingresos);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Datos inválidos',
+                'message' => 'Las fechas deben estar en formato YYYY-MM-DD y la fecha fin debe ser posterior o igual a la fecha inicio',
+                'errores' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al obtener los ingresos por rango de fechas',
