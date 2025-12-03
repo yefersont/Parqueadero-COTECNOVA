@@ -316,9 +316,9 @@ Los logs se almacenan en `backend/storage/logs/laravel.log` e incluyen:
 
 ### Ejemplos NO Válidos
 
-- ❌ `admin123` (falta mayúscula y símbolo)
-- ❌ `ADMIN123!` (falta minúscula)
-- ❌ `Admin!` (muy corta)
+-  `admin123` (falta mayúscula y símbolo)
+-  `ADMIN123!` (falta minúscula)
+-  `Admin!` (muy corta)
 
 ---
 
