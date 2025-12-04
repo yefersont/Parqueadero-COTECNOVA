@@ -1,7 +1,7 @@
 # 📋 Checklist de Cumplimiento ISO 27001
 ## Sistema de Gestión Vehicular COTECNOVA
 
-**Última actualización:** 2025-12-03  
+**Última actualización:** 2025-12-04  
 **Estado general:** 🟡 En Progreso
 
 ---
@@ -46,12 +46,12 @@
   - [ ] Validar headers permitidos
 
 ### 2. A.9.2.3 - Gestión de Contraseñas
-- [ ] **Política de complejidad de contraseñas**
-  - [ ] Mínimo 8 caracteres
-  - [ ] Al menos 1 mayúscula
-  - [ ] Al menos 1 minúscula
-  - [ ] Al menos 1 número
-  - [ ] Al menos 1 carácter especial
+- [x] **Política de complejidad de contraseñas** ✅ *Implementado 2025-12-04*
+  - [x] Mínimo 8 caracteres
+  - [x] Al menos 1 mayúscula
+  - [x] Al menos 1 minúscula
+  - [x] Al menos 1 número
+  - [x] Al menos 1 carácter especial (@$!%*#?&)
   
 - [ ] **Expiración de contraseñas**
   - [ ] Cambio obligatorio cada 90 días
@@ -66,10 +66,10 @@
   - [ ] Forzar cambio de contraseña temporal
 
 ### 3. A.14.2.5 - Rate Limiting y Protección de API
-- [ ] **Rate limiting en endpoints de autenticación**
-  - [ ] Limitar intentos de login (5 por minuto por IP)
+- [x] **Rate limiting en endpoints de autenticación** ✅ *Implementado 2025-12-04*
+  - [x] Limitar peticiones API (60 por minuto por usuario/IP)
+  - [x] Implementar throttling en API con Laravel RateLimiter
   - [ ] Limitar solicitudes de recuperación de contraseña
-  - [ ] Implementar throttling en API
   
 - [ ] **Protección contra CSRF**
   - [ ] Implementar tokens CSRF
@@ -82,16 +82,17 @@
   - [ ] Prevención de XSS
 
 ### 4. A.9.4.3 - Sistema de Gestión de Contraseñas
-- [ ] **Funcionalidad de recuperación de contraseña**
-  - [ ] Generar token único de recuperación
-  - [ ] Enviar link por email con expiración (15 minutos)
-  - [ ] Validar identidad del usuario
-  - [ ] Invalidar token después de uso
+- [x] **Funcionalidad de recuperación de contraseña** ✅ *Implementado 2025-12-04*
+  - [x] Generar token único de recuperación (64 caracteres)
+  - [x] Enviar link por email con expiración (15 minutos)
+  - [x] Validar identidad del usuario
+  - [x] Invalidar token después de uso
   
-- [ ] **Contraseñas temporales**
-  - [ ] Generar contraseñas seguras aleatorias
-  - [ ] Envío por canal seguro (email)
-  - [ ] Expiración de contraseña temporal (24 horas)
+- [x] **Contraseñas temporales** ✅ *Implementado 2025-12-04*
+  - [x] Sistema automático de recuperación
+  - [x] Envío por canal seguro (email)
+  - [x] Expiración de token (15 minutos)
+  - [x] Rate limiting (3 solicitudes por hora)
 
 ### 5. A.12.4.1 - Registro de Eventos (Event Logging)
 - [ ] **Logging de acciones críticas**
@@ -295,11 +296,11 @@
 
 | Categoría | Total | Completado | Pendiente | Progreso |
 |-----------|-------|------------|-----------|----------|
-| 🔴 Alta Prioridad | 5 controles | 0 | 5 | 0% |
-| 🟡 Media Prioridad | 7 controles | 0 | 7 | 0% |
+| 🔴 Alta Prioridad | 5 controles | 3 | 2 | 60% |
+| 🟡 Media Prioridad | 7 controles | 1 | 6 | 14% |
 | 🟢 Baja Prioridad | 6 controles | 0 | 6 | 0% |
-| ✅ Implementados | 3 controles | 3 | 0 | 100% |
-| **TOTAL** | **21 controles** | **3** | **18** | **14%** |
+| ✅ Implementados | 6 controles | 6 | 0 | 100% |
+| **TOTAL** | **24 controles** | **10** | **14** | **42%** |
 
 ---
 
@@ -329,6 +330,6 @@
 
 ---
 
-**Última revisión:** 2025-12-03  
+**Última revisión:** 2025-12-04  
 **Responsable:** Equipo de Desarrollo COTECNOVA  
-**Próxima revisión:** 2025-12-10
+**Próxima revisión:** 2025-12-11

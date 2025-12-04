@@ -9,6 +9,8 @@ import Propietarios from "./pages/propietarios/Propietarios";
 import Inicio from "./pages/inicio/Inicio";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/Login/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { BusquedaProvider } from "./components/BusquedaContext";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -20,6 +22,10 @@ function App() {
         <Routes>
           {/* Ruta de login pública */}
           <Route path="/login" element={<Login />} />
+          
+          {/* Rutas de recuperación de contraseña (ISO 27001 A.9.4.3) */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           {/* Rutas protegidas */}
           <Route element={<ProtectedRoute />}>
