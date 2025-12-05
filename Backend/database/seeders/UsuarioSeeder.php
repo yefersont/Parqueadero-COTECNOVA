@@ -21,7 +21,7 @@ class UsuarioSeeder extends Seeder
                 'Cedula_usuario' => '1000000001',
                 'idRol' => 3,
                 'user_usuario' => 'admin',
-                'password' => 'Admin123!', // El modelo se encarga del hash
+                'password' => 'YeferTello10.@', // El modelo se encarga del hash
             ]
         );
 
@@ -33,12 +33,12 @@ class UsuarioSeeder extends Seeder
                 'Cedula_usuario' => '1000000002',
                 'idRol' => 4,
                 'user_usuario' => 'trabajador',
-                'password' => 'Trabajador123!', // El modelo se encarga del hash
+                'password' => 'AngieRico10.@', // El modelo se encarga del hash
             ]
         );
 
         $this->command->info('Usuarios de prueba creados exitosamente:');
-        $this->command->info('- Admin: admin@cotecnova.edu.co / Admin123!');
-        $this->command->info('- Trabajador: trabajador@cotecnova.edu.co / Trabajador123!');
+        $this->command->info('- Admin: admin@cotecnova.edu.co / YeferTello10.@');
+        $this->command->info('- Trabajador: trabajador@cotecnova.edu.co / AngieRico10.@');
     }
 }
