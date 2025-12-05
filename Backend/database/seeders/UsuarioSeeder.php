@@ -37,8 +37,32 @@ class UsuarioSeeder extends Seeder
             ]
         );
 
+        Usuario::updateOrCreate(
+            ['email' => 'arvey@cotecnova.edu.co'],
+            [
+                'Nombres' => 'Arvey',
+                'Cedula_usuario' => '1000000003',
+                'idRol' => 4,
+                'user_usuario' => 'arvey',
+                'password' => 'ArveyBarahona10.@', // El modelo se encarga del hash
+            ]
+        );
+
+        Usuario::updateOrCreate(
+            ['email' => 'brayant@cotecnova.edu.co'],
+            [
+                'Nombres' => 'Brayan',
+                'Cedula_usuario' => '1000000004',
+                'idRol' => 4,
+                'user_usuario' => 'brayant',
+                'password' => 'BrayanTello10.@', // El modelo se encarga del hash
+            ]
+        );
+
         $this->command->info('Usuarios de prueba creados exitosamente:');
         $this->command->info('- Admin: admin@cotecnova.edu.co / YeferTello10.@');
         $this->command->info('- Trabajador: trabajador@cotecnova.edu.co / AngieRico10.@');
+        $this->command->info('- Trabajador: arvey@cotecnova.edu.co / ArveyBarahona10.@');
+        $this->command->info('- Trabajador: brayant@cotecnova.edu.co / BrayanTello10.@');
     }
 }
