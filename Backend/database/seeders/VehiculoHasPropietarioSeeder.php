@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class VehiculoPropietarioSeeder extends Seeder
+class VehiculoHasPropietarioSeeder extends Seeder
 {
     public function run()
     {
@@ -14,8 +14,8 @@ class VehiculoPropietarioSeeder extends Seeder
         // Generamos relaciones 1-1 del 1 al 15
         for ($i = 1; $i <= 15; $i++) {
             $data[] = [
-                'idPropietario' => $i,
-                'idVehiculo'    => $i,
+                'Propietario_idPropietario' => $i,
+                'Vehiculo_idVehiculo'    => $i,
             ];
         }
 

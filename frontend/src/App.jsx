@@ -8,7 +8,7 @@ import Vehiculos from "./pages/vehiculos/Vehiculos";
 import Propietarios from "./pages/propietarios/Propietarios";
 import Inicio from "./pages/inicio/Inicio";
 import Dashboard from "./pages/dashboard/Dashboard";
-import Login from "./pages/Login/Login";
+import Login from "./pages/login/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { BusquedaProvider } from "./components/BusquedaContext";

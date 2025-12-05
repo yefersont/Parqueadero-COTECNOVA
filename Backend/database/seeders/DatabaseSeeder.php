@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             RolSeeder::class,
             VehiculoSeeder::class,
             PropietarioSeeder::class,
-            VehiculoHasPropietarioSeeder::class,
+            VehiculoHasPropietario::class,
             UsuarioSeeder::class,
         ]);
 

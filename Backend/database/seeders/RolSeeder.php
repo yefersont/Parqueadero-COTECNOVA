@@ -9,7 +9,7 @@ class RolSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('rol')->insert([
+        DB::table('rol')->updateOrInsert([
             ['idRol' => 1, 'Rol' => 'Estudiante'],
             ['idRol' => 2, 'Rol' => 'Docente'],
             ['idRol' => 3, 'Rol' => 'Administrativo'],
