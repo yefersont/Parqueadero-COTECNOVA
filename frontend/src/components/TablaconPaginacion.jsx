@@ -62,7 +62,7 @@ function TablaConPaginacion({
         {/* Controls Section */}
         <div className="px-6 py-3">
           {mostrarControles && (
-            <div className="flex flex-wrap justify-between items-center gap-2 mt-0 mb-0">
+            <div className="flex flex-wrap justify-between items-center gap-2 my-4">
               {/* Search and Button */}
               <div className="flex items-center gap-2 flex-wrap">
                 {/* Search Input */}
