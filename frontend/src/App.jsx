@@ -36,7 +36,7 @@ function App() {
                   <Navbar />
                   <main className="flex-grow overflow-auto min-h-0">
                     <Routes>
-                      <Route path="/" element={<Inicio />} />
+                      {/* <Route path="/" element={<Inicio />} /> */}
                       <Route path="/inicio" element={<Inicio />} />
                       <Route path="/estadisticas" element={<Dashboard />} />
                       <Route path="/propietario" element={<Propietarios />} />
