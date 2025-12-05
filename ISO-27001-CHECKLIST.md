@@ -92,7 +92,7 @@
   - [x] Sistema automático de recuperación
   - [x] Envío por canal seguro (email)
   - [x] Expiración de token (15 minutos)
-  - [x] Rate limiting (3 solicitudes por hora)
+  - [x] Rate limiting (10 solicitudes por hora)
 
 ### 5. A.12.4.1 - Registro de Eventos (Event Logging)
 - [ ] **Logging de acciones críticas**

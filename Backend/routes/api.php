@@ -26,11 +26,12 @@ use App\Http\Controllers\EstadisticasController;
 */
 
 // Rutas públicas
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])
+ ->middleware('throttle:10,4');
 
 // Recuperación de contraseña (ISO 27001 A.9.4.3)
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
-    ->middleware('throttle:10,60'); // Máximo 3 intentos por hora
+    ->middleware('throttle:10,60'); // Máximo 10 intentos por hora
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/verify-reset-token', [AuthController::class, 'verifyResetToken']);
 
