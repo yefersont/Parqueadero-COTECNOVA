@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Propietario;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivity;
 use Exception;
 
 class PropietarioController extends Controller
 {
+    use LogsActivity;
     /**
      * Display a listing of the resource.
      */
@@ -34,6 +36,16 @@ class PropietarioController extends Controller
             ]);
 
             $propietario = Propietario::create($request->all());
+            
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'CREATE',
+                model: 'Propietario',
+                modelId: $propietario->idPropietario,
+                newValues: $propietario->toArray(),
+                description: "Propietario creado: {$propietario->Nombre_propietario} {$propietario->Apellido_propietario}"
+            );
+            
             return response()->json([
                 'message' => 'Propietario creado exitosamente',
                 'idPropietario' => $propietario->idPropietario
@@ -89,8 +101,21 @@ class PropietarioController extends Controller
                 'Rol' => 'required|exists:rol,idRol',
             ]);
 
+            // Guardar valores anteriores para audit log
+            $oldValues = $propietario->getOriginal();
+            
             // Actualizar propietario
             $propietario->update($request->all());
+            
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'UPDATE',
+                model: 'Propietario',
+                modelId: $propietario->idPropietario,
+                oldValues: $oldValues,
+                newValues: $propietario->toArray(),
+                description: "Propietario actualizado: {$propietario->Nombre_propietario} {$propietario->Apellido_propietario}"
+            );
 
             return response()->json([
                 'message' => 'Propietario actualizado exitosamente',
@@ -116,8 +141,20 @@ class PropietarioController extends Controller
     {
         //
         try {
-
+            // Guardar datos antes de eliminar para audit log
+            $propietarioData = $propietario->toArray();
+            
             $propietario->delete();
+            
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'DELETE',
+                model: 'Propietario',
+                modelId: $propietarioData['idPropietario'],
+                oldValues: $propietarioData,
+                description: "Propietario eliminado: {$propietarioData['Nombre_propietario']} {$propietarioData['Apellido_propietario']}"
+            );
+            
             return response()->json(['message' => 'Propieatario eliminado exitosamente']);
         } catch (Exception $e) {
 

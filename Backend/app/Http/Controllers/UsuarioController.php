@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivity;
 
 class UsuarioController extends Controller
 {
+    use LogsActivity;
     /**
      * Display a listing of the resource.
      */
@@ -48,15 +50,14 @@ class UsuarioController extends Controller
             // Crear usuario
             $usuario = Usuario::create($validated);
 
-            // Log de creación exitosa
-            // \Log::info('Usuario creado exitosamente', [
-            //     'usuario_id' => $usuario->idUsuario,
-            //     'email' => $usuario->email,
-            //     'rol_id' => $usuario->idRol,
-            //     'creado_por' => auth()->user()->idUsuario ?? 'Sistema',
-            //     'ip' => $request->ip(),
-            //     'timestamp' => now()
-            // ]);
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'USER_CREATED',
+                model: 'Usuario',
+                modelId: $usuario->idUsuario,
+                newValues: array_merge($usuario->toArray(), ['password' => '[REDACTED]']),
+                description: "Usuario creado: {$usuario->email} (Rol: {$usuario->idRol})"
+            );
 
             return response()->json([
                 'message' => 'Usuario creado exitosamente',
@@ -126,18 +127,22 @@ class UsuarioController extends Controller
                 'password.regex' => 'La contraseña debe contener al menos una may úscula, una minúscula, un número y un símbolo especial (@$!%*#?&)',
             ]);
 
+            // Guardar valores anteriores para audit log
+            $oldValues = $usuario->getOriginal();
+            $cambiosRealizados = array_keys($validated);
+            
             // Actualizar usuario
             $usuario->update($validated);
 
-            // Log de actualización exitosa
-            // \Log::info('Usuario actualizado exitosamente', [
-            //     'usuario_id' => $usuario->idUsuario,
-            //     'email' => $usuario->email,
-            //     'actualizado_por' => auth()->user()->idUsuario ?? 'Sistema',
-            //     'cambios' => array_keys($validated),
-            //     'ip' => $request->ip(),
-            //     'timestamp' => now()
-            // ]);
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'USER_UPDATED',
+                model: 'Usuario',
+                modelId: $usuario->idUsuario,
+                oldValues: array_merge($oldValues, ['password' => '[REDACTED]']),
+                newValues: array_merge($usuario->toArray(), ['password' => '[REDACTED]']),
+                description: "Usuario actualizado: {$usuario->email} (Cambios: " . implode(', ', $cambiosRealizados) . ")"
+            );
 
             return response()->json([
                 'message' => 'Usuario actualizado exitosamente',
@@ -177,6 +182,29 @@ class UsuarioController extends Controller
      */
     public function destroy(Usuario $usuario)
     {
-        //
+        try {
+            // Guardar datos antes de eliminar
+            $usuarioData = $usuario->toArray();
+            
+            $usuario->delete();
+            
+            // Registrar en audit log
+            $this->logActivity(
+                action: 'USER_DELETED',
+                model: 'Usuario',
+                modelId: $usuarioData['idUsuario'],
+                oldValues: array_merge($usuarioData, ['password' => '[REDACTED]']),
+                description: "Usuario eliminado: {$usuarioData['email']}"
+            );
+            
+            return response()->json([
+                'message' => 'Usuario eliminado exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al eliminar el usuario',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

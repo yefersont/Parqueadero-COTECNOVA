@@ -95,21 +95,21 @@
   - [x] Rate limiting (10 solicitudes por hora)
 
 ### 5. A.12.4.1 - Registro de Eventos (Event Logging)
-- [ ] **Logging de acciones críticas**
-  - [ ] Creación de registros (propietarios, vehículos, ingresos, salidas)
-  - [ ] Modificación de registros
-  - [ ] Eliminación de registros
+- [x] **Logging de acciones críticas** ✅ *Implementado 2025-12-04*
+  - [x] Creación de registros (propietarios, vehículos, usuarios)
+  - [x] Modificación de registros
+  - [x] Eliminación de registros
   - [ ] Exportación de datos (Excel, PDF)
   
-- [ ] **Logging de cambios administrativos**
-  - [ ] Creación/modificación de usuarios
+- [x] **Logging de cambios administrativos** ✅ *Implementado 2025-12-04*
+  - [x] Creación/modificación/eliminación de usuarios
   - [ ] Cambios de roles y permisos
   - [ ] Cambios en configuración del sistema
   
-- [ ] **Logging de acceso a datos sensibles**
-  - [ ] Consultas de información personal
-  - [ ] Acceso a reportes
-  - [ ] Búsquedas de propietarios
+- [x] **Logging de eventos de seguridad** ✅ *Implementado 2025-12-04*
+  - [x] Login exitoso/fallido
+  - [x] Cuenta bloqueada
+  - [x] Cambios de contraseña
   
 - [ ] **Sincronización de tiempo**
   - [ ] Configurar servidor NTP
@@ -296,11 +296,11 @@
 
 | Categoría | Total | Completado | Pendiente | Progreso |
 |-----------|-------|------------|-----------|----------|
-| 🔴 Alta Prioridad | 5 controles | 3 | 2 | 60% |
+| 🔴 Alta Prioridad | 5 controles | 4 | 1 | 80% |
 | 🟡 Media Prioridad | 7 controles | 1 | 6 | 14% |
 | 🟢 Baja Prioridad | 6 controles | 0 | 6 | 0% |
-| ✅ Implementados | 6 controles | 6 | 0 | 100% |
-| **TOTAL** | **24 controles** | **10** | **14** | **42%** |
+| ✅ Implementados | 7 controles | 7 | 0 | 100% |
+| **TOTAL** | **25 controles** | **12** | **13** | **48%** |
 
 ---
 

@@ -10,9 +10,11 @@ use App\Models\PasswordResetToken;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Traits\LogsActivity;
 
 class AuthController extends Controller
 {
+    use LogsActivity;
     public function login(Request $request)
     {
         $request->validate([
@@ -24,12 +26,12 @@ class AuthController extends Controller
 
         // Verificar si el usuario existe
         if (!$usuario) {
-            // Log de intento fallido sin usuario
-            \Log::warning('Intento de login fallido - Usuario no existe', [
-                'email' => $request->email,
-                'ip' => $request->ip(),
-                'timestamp' => now()
-            ]);
+            // Registrar intento fallido en audit log
+            $this->logActivity(
+                action: 'LOGIN_FAILED',
+                model: 'Usuario',
+                description: "Intento de login fallido - Usuario no existe: {$request->email}"
+            );
 
             return response()->json([
                 'message' => 'Credenciales incorrectas'
@@ -41,14 +43,13 @@ class AuthController extends Controller
             // Calcular minutos restantes correctamente
             $minutosRestantes = max(1, ceil(now()->diffInMinutes($usuario->locked_until, false)));
 
-            \Log::warning('Intento de login en cuenta bloqueada', [
-                'usuario_id' => $usuario->idUsuario,
-                'email' => $usuario->email,
-                'ip' => $request->ip(),
-                'intentos_fallidos' => $usuario->failed_attempts,
-                'bloqueado_hasta' => $usuario->locked_until,
-                'timestamp' => now()
-            ]);
+            // Registrar intento en cuenta bloqueada
+            $this->logActivity(
+                action: 'LOGIN_BLOCKED',
+                model: 'Usuario',
+                modelId: $usuario->idUsuario,
+                description: "Intento de login en cuenta bloqueada: {$usuario->email} ({$minutosRestantes} min restantes)"
+            );
 
             return response()->json([
                 'message' => 'Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intente nuevamente en ' . $minutosRestantes . ' minuto(s).'
@@ -60,13 +61,13 @@ class AuthController extends Controller
             // Incrementar intentos fallidos
             $usuario->incrementFailedAttempts();
 
-            \Log::warning('Intento de login fallido - Contraseña incorrecta', [
-                'usuario_id' => $usuario->idUsuario,
-                'email' => $usuario->email,
-                'ip' => $request->ip(),
-                'intentos_fallidos' => $usuario->failed_attempts,
-                'timestamp' => now()
-            ]);
+            // Registrar intento fallido
+            $this->logActivity(
+                action: 'LOGIN_FAILED',
+                model: 'Usuario',
+                modelId: $usuario->idUsuario,
+                description: "Contraseña incorrecta: {$usuario->email} (Intentos: {$usuario->failed_attempts})"
+            );
 
             return response()->json([
                 'message' => 'Contraseña incorrecta'
@@ -85,14 +86,13 @@ class AuthController extends Controller
         $tokenResult->accessToken->save();
         $token = $tokenResult->plainTextToken;
 
-        // Log de login exitoso
-        \Log::info('Login exitoso', [
-            'usuario_id' => $usuario->idUsuario,
-            'email' => $usuario->email,
-            'rol' => $usuario->rol->Descripcion,
-            'ip' => $request->ip(),
-            'timestamp' => now()
-        ]);
+        // Registrar login exitoso en audit log
+        $this->logActivity(
+            action: 'LOGIN_SUCCESS',
+            model: 'Usuario',
+            modelId: $usuario->idUsuario,
+            description: "Login exitoso: {$usuario->email} (Rol: {$usuario->rol->Descripcion})"
+        );
 
         return response()->json([
             'message' => 'Login exitoso',
