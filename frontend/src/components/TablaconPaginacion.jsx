@@ -109,7 +109,7 @@ function TablaConPaginacion({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-sm text-gray-600 mb-3 font-medium"
+            className="text-sm text-gray-600 mb-3 font-medium text-right"
           >
             Mostrando{" "}
             <span className="text-emerald-600 font-semibold">
