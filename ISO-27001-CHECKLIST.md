@@ -1,7 +1,7 @@
 # 📋 Checklist de Cumplimiento ISO 27001
 ## Sistema de Gestión Vehicular COTECNOVA
 
-**Última actualización:** 2025-12-05  
+**Última actualización:** 2025-12-04  
 **Estado general:** 🟡 En Progreso
 
 ---
@@ -27,10 +27,10 @@
 ## 🔴 ALTA PRIORIDAD (Crítico)
 
 ### 1. A.13.1.1 - Controles de Red y Seguridad de Comunicaciones
-- [x] **HTTPS obligatorio en producción** ✅ *Implementado 2025-12-05*
-  - [x] Certificado SSL/TLS (automático en Vercel y Railway)
-  - [x] Redirección HTTP → HTTPS (automática en Vercel y Railway)
-  - [x] Configurar HSTS (HTTP Strict Transport Security)
+- [ ] **HTTPS obligatorio en producción**
+  - [ ] Configurar certificado SSL/TLS
+  - [ ] Forzar redirección HTTP → HTTPS
+  - [ ] Configurar HSTS (HTTP Strict Transport Security)
   
 - [x] **Headers de seguridad HTTP** ✅ *Implementado 2025-12-03*
   - [x] Content-Security-Policy (CSP)
@@ -39,7 +39,6 @@
   - [x] Referrer-Policy: strict-origin-when-cross-origin
   - [x] Permissions-Policy
   - [x] X-XSS-Protection
-  - [x] Strict-Transport-Security (HSTS)
 
 - [ ] **Configuración CORS restrictiva**
   - [ ] Limitar orígenes permitidos
@@ -297,11 +296,11 @@
 
 | Categoría | Total | Completado | Pendiente | Progreso |
 |-----------|-------|------------|-----------|----------|
-| 🔴 Alta Prioridad | 5 controles | 5 | 0 | 100% ✅ |
+| 🔴 Alta Prioridad | 5 controles | 4 | 1 | 80% |
 | 🟡 Media Prioridad | 7 controles | 1 | 6 | 14% |
 | 🟢 Baja Prioridad | 6 controles | 0 | 6 | 0% |
-| ✅ Implementados | 8 controles | 8 | 0 | 100% |
-| **TOTAL** | **26 controles** | **14** | **12** | **54%** |
+| ✅ Implementados | 7 controles | 7 | 0 | 100% |
+| **TOTAL** | **25 controles** | **12** | **13** | **48%** |
 
 ---
 
@@ -331,6 +330,6 @@
 
 ---
 
-**Última revisión:** 2025-12-05  
+**Última revisión:** 2025-12-04  
 **Responsable:** Equipo de Desarrollo COTECNOVA  
-**Próxima revisión:** 2025-12-12
+**Próxima revisión:** 2025-12-11

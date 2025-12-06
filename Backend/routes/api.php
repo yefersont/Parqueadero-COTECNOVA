@@ -27,14 +27,15 @@ use App\Http\Controllers\EstadisticasController;
 
 // Rutas públicas
 Route::post('/login', [AuthController::class, 'login'])
- ->middleware('throttle:10,4');
+    ->middleware('throttle:10,4');
 // Recuperación de contraseña (ISO 27001 A.9.4.3)
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
     ->middleware('throttle:10,60'); // Máximo 10 intentos por hora
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/verify-reset-token', [AuthController::class, 'verifyResetToken']);
+
 // Rutas protegidas con autenticación (todos los usuarios autenticados)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(callback: function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -80,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Rutas solo para administradores (requieren auth + rol admin)
 Route::middleware(['auth:sanctum', 'esAdmin'])->group(function () {
     // Gestión completa de usuarios
+    Route::get('/usuarios', [UsuarioController::class, 'index']);
     Route::post('/usuarios', [UsuarioController::class, 'store']);
     Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update']);
     Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy']);
@@ -113,4 +115,3 @@ Route::middleware(['auth:sanctum', 'esAdmin'])->group(function () {
     Route::put('/asociar/{asociar}', [VehiculoHasPropietarioController::class, 'update']);
     Route::delete('/asociar/{idVehiculo}/{idPropietario}', [VehiculoHasPropietarioController::class, 'destroy']);
 });
-

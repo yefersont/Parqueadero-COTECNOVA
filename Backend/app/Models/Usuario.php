@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class Usuario extends Authenticatable
 {
@@ -23,6 +24,8 @@ class Usuario extends Authenticatable
         'password',
         'failed_attempts',
         'locked_until',
+        'last_access_at',
+
     ];
 
     protected $hidden = [
@@ -36,6 +39,9 @@ class Usuario extends Authenticatable
         'locked_until' => 'datetime',
     ];
 
+    protected $appends = ['last_access_at_format'];
+
+
     // Relación con Rol
     public function rol()
     {
@@ -43,7 +49,7 @@ class Usuario extends Authenticatable
     }
 
     // Métodos de seguridad ISO 27001
-    
+
     /**
      * Verifica si la cuenta está bloqueada
      */
@@ -52,13 +58,13 @@ class Usuario extends Authenticatable
         if ($this->locked_until === null) {
             return false;
         }
-        
+
         // Si la fecha de desbloqueo ya pasó, desbloquear automáticamente
         if (now()->greaterThan($this->locked_until)) {
             $this->unlockAccount();
             return false;
         }
-        
+
         return true;
     }
 
@@ -68,12 +74,12 @@ class Usuario extends Authenticatable
     public function incrementFailedAttempts()
     {
         $this->failed_attempts++;
-        
+
         // Bloquear después de 10 intentos fallidos por 5 minutos
         if ($this->failed_attempts >= 10) {
             $this->locked_until = now()->addMinutes(5);
         }
-        
+
         $this->save();
     }
 
@@ -86,7 +92,6 @@ class Usuario extends Authenticatable
         $this->locked_until = null;
         $this->save();
     }
-
     /**
      * Desbloquea la cuenta manualmente
      */
@@ -95,5 +100,13 @@ class Usuario extends Authenticatable
         $this->locked_until = null;
         $this->failed_attempts = 0;
         $this->save();
+    }
+    public function getLastAccessAtFormatAttribute()
+    {
+        if (!$this->last_access_at) {
+            return null;
+        }
+
+        return Carbon::parse($this->last_access_at)->format('Y-m-d H:i');
     }
 }

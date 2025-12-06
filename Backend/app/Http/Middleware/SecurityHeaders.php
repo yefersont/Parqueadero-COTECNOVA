@@ -29,11 +29,6 @@ class SecurityHeaders
         // Protección XSS para navegadores antiguos
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
-        // HSTS - Forzar HTTPS (solo en producción)
-        if (config('app.env') === 'production') {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-        }
-
         // Política de permisos (desactivar features no usadas)
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 

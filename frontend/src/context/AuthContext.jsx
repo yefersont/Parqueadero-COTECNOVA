@@ -42,16 +42,17 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data.user);
       setIsAuthenticated(true);
       localStorage.setItem("token", res.data.access_token);
-      
+
       // Configurar token por defecto para futuras peticiones si usas una instancia global de axios
       // axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
-      
     } catch (error) {
       console.log(error);
       if (Array.isArray(error.response?.data)) {
         setErrors(error.response.data);
       } else {
-        setErrors([error.response?.data?.message || error.message || "Error de conexión"]);
+        setErrors([
+          error.response?.data?.message || error.message || "Error de conexión",
+        ]);
       }
     } finally {
       // Siempre desactivar loading después de la petición
@@ -114,19 +115,19 @@ export const AuthProvider = ({ children }) => {
       // Cerrar sesión a los 30 minutos
       timeoutId = setTimeout(() => {
         Swal.fire({
-          icon: 'warning',
-          title: 'Sesión expirada',
-          text: 'Su sesión ha expirado por inactividad',
-          confirmButtonColor: '#d33',
+          icon: "warning",
+          title: "Sesión expirada",
+          text: "Su sesión ha expirado por inactividad",
+          confirmButtonColor: "#d33",
         });
         logout();
       }, SESSION_TIMEOUT);
     };
 
     // Eventos que detectan actividad del usuario
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    const events = ["mousedown", "keydown", "scroll", "touchstart", "click"];
 
-    events.forEach(event => {
+    events.forEach((event) => {
       window.addEventListener(event, resetTimer);
     });
 
@@ -138,7 +139,7 @@ export const AuthProvider = ({ children }) => {
       clearTimeout(timeoutId);
       clearTimeout(warningId);
       clearInterval(countdownInterval);
-      events.forEach(event => {
+      events.forEach((event) => {
         window.removeEventListener(event, resetTimer);
       });
     };
@@ -148,11 +149,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (showTimeoutWarning) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Sesión por expirar',
+        icon: "warning",
+        title: "Sesión por expirar",
         html: `Su sesión expirará en <strong>${timeoutCountdown}</strong> minuto(s) por inactividad.<br/>Mueva el mouse o presione cualquier tecla para continuar.`,
-        confirmButtonText: 'Continuar sesión',
-        confirmButtonColor: '#16a34a',
+        confirmButtonText: "Continuar sesión",
+        confirmButtonColor: "#16a34a",
         allowOutsideClick: false,
       }).then((result) => {
         if (result.isConfirmed) {
@@ -166,7 +167,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkLogin = async () => {
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         setIsAuthenticated(false);
         setLoading(false);
@@ -191,7 +192,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("token");
       }
     };
-    
+
     checkLogin();
   }, []);
 
@@ -205,7 +206,7 @@ export const AuthProvider = ({ children }) => {
 
   // Función para verificar si el usuario es administrador
   const isAdmin = () => {
-    return user?.rol?.Rol === 'Administrativo';
+    return user?.rol?.Rol === "Administrativo";
   };
 
   return (

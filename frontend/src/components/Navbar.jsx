@@ -3,31 +3,28 @@ import { Link } from "react-router-dom";
 import { User, ChevronDown, LogOut, X, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-
-// Definición de colores clave
-const BRAND_BG = "bg-green-800";
-const BRAND_ACCENT = "bg-green-600";
-const BRAND_TEXT = "text-white";
-
-// --- Subcomponente para los enlaces del menú ---
-const NavLink = ({ to, name, onClick }) => (
-  <Link
-    to={to}
-    onClick={onClick}
-    className="text-white font-semibold text-base relative group transition-colors duration-200 hover:text-green-200"
-  >
-    {name}
-    <span
-      className={`absolute left-0 -bottom-1 w-0 h-0.5 ${BRAND_ACCENT} transition-all duration-300 group-hover:w-full rounded-full`}
-    ></span>
-  </Link>
-);
-
 import { useAuth } from "../context/AuthContext";
 
-// ... imports ...
-
 function Navbar() {
+  // Definición de colores clave
+  const BRAND_BG = "bg-green-800";
+  const BRAND_ACCENT = "bg-green-600";
+  const BRAND_TEXT = "text-white";
+  // --- Subcomponente para los enlaces del menú ---
+  const NavLink = ({ to, name, onClick }) => (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="text-white font-semibold text-base relative group transition-colors duration-200 hover:text-green-200"
+    >
+      {name}
+      <span
+        className={`absolute left-0 -bottom-1 w-0 h-0.5 ${BRAND_ACCENT} transition-all duration-300 group-hover:w-full rounded-full`}
+      ></span>
+    </Link>
+  );
+  // --- Estado y lógica del Navbar ---
+  const { isAdmin } = useAuth();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -37,6 +34,9 @@ function Navbar() {
     { name: "Propietarios", to: "/propietario" },
     { name: "Vehículos", to: "/vehiculos" },
     { name: "Ingresos", to: "/ingresos" },
+    isAdmin() ? { name: "Usuarios", to: "/usuarios" } : null,
+
+    // { name: "Usuarios", to: "/usuarios" },
 
     // { name: "Salidas", to: "/salidas" },
   ];
@@ -94,7 +94,7 @@ function Navbar() {
 
         {/* Menú principal - Desktop */}
         <nav className="hidden lg:flex items-center gap-8">
-          {menuItems.map((item) => (
+          {menuItems.filter(Boolean).map((item) => (
             <NavLink key={item.to} {...item} />
           ))}
 
@@ -202,7 +202,7 @@ function Navbar() {
 
                 {/* Links del menú */}
                 <nav className="flex-1 px-4 py-6 space-y-1 relative">
-                  {menuItems.map((item, index) => (
+                  {menuItems.filter(Boolean).map((item, index) => (
                     <motion.div
                       key={item.to}
                       initial={{ opacity: 0, x: 20 }}

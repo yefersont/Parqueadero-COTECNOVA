@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.5",
+    "@nextui-org/react": "^2.6.11",
     "axios": "^1.12.2",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.23.15",

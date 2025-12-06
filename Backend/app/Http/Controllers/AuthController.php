@@ -11,6 +11,7 @@ use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Traits\LogsActivity;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -94,6 +95,8 @@ class AuthController extends Controller
             description: "Login exitoso: {$usuario->email} (Rol: {$usuario->rol->Descripcion})"
         );
 
+        $usuario->last_access_at = Carbon::now()->format('Y-m-d H:i');
+        $usuario->save();
         return response()->json([
             'message' => 'Login exitoso',
             'access_token' => $token,
@@ -164,7 +167,6 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Si el correo existe en nuestro sistema, recibirás un enlace de recuperación.'
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al procesar solicitud de recuperación', [
                 'error' => $e->getMessage(),
@@ -250,7 +252,6 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Contraseña restablecida exitosamente. Ya puedes iniciar sesión.'
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'error' => 'Datos inválidos',

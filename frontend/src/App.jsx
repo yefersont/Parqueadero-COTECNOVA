@@ -9,6 +9,7 @@ import Propietarios from "./pages/propietarios/Propietarios";
 import Inicio from "./pages/inicio/Inicio";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/login/Login";
+import Perfil from "./pages/perfil/Perfil";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { BusquedaProvider } from "./components/BusquedaContext";
@@ -22,7 +23,7 @@ function App() {
         <Routes>
           {/* Ruta de login pública */}
           <Route path="/login" element={<Login />} />
-          
+
           {/* Rutas de recuperación de contraseña (ISO 27001 A.9.4.3) */}
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -44,6 +45,7 @@ function App() {
                       <Route path="/vehiculos" element={<Vehiculos />} />
                       <Route path="/ingresos" element={<Ingresos />} />
                       {/* <Route path="/salidas" element={<Salidas />} /> */}
+                      <Route path="/perfil" element={<Perfil />} />
                     </Routes>
                   </main>
                   <Footer />

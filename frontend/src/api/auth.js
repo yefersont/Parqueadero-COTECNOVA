@@ -1,14 +1,13 @@
-import api from './axios';
+import api from "./axios";
 
 export const loginRequest = async (credentials) => {
-  return await api.post('/login', credentials, { withCredentials: true });
+  return await api.post("/login", credentials, { withCredentials: true });
 };
 
 export const logoutRequest = async () => {
-  return await api.post('/logout');
+  return await api.post("/logout");
 };
 
 export const verifyTokenRequest = async (token) => {
-  return await api.get('/me');
+  return await api.get("/me");
 };
-

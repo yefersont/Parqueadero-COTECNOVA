@@ -63,7 +63,6 @@ class UsuarioController extends Controller
                 'message' => 'Usuario creado exitosamente',
                 'usuario' => $usuario
             ], 201);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // \Log::warning('Validación fallida al crear usuario', [
             //     'errores' => $e->errors(),
@@ -130,7 +129,7 @@ class UsuarioController extends Controller
             // Guardar valores anteriores para audit log
             $oldValues = $usuario->getOriginal();
             $cambiosRealizados = array_keys($validated);
-            
+
             // Actualizar usuario
             $usuario->update($validated);
 
@@ -148,7 +147,6 @@ class UsuarioController extends Controller
                 'message' => 'Usuario actualizado exitosamente',
                 'usuario' => $usuario
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             // \Log::warning('Validación fallida al actualizar usuario', [
             //     'usuario_id' => $usuario->idUsuario,
@@ -185,9 +183,9 @@ class UsuarioController extends Controller
         try {
             // Guardar datos antes de eliminar
             $usuarioData = $usuario->toArray();
-            
+
             $usuario->delete();
-            
+
             // Registrar en audit log
             $this->logActivity(
                 action: 'USER_DELETED',
@@ -196,7 +194,7 @@ class UsuarioController extends Controller
                 oldValues: array_merge($usuarioData, ['password' => '[REDACTED]']),
                 description: "Usuario eliminado: {$usuarioData['email']}"
             );
-            
+
             return response()->json([
                 'message' => 'Usuario eliminado exitosamente'
             ], 200);

@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../api/axios";
+import Loader from "../components/Loader";
 import { Card, CardBody, Button } from "@heroui/react";
 import { Lock, Eye, EyeOff } from "lucide-react";
 
@@ -14,7 +15,6 @@ export default function ResetPassword() {
   const { token } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -25,6 +25,7 @@ export default function ResetPassword() {
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
     useState(false);
 
+  const [Cargando, setCargando] = useState(true);
   // Requisitos de contraseña
   const passwordRequirements = {
     minLength: password.length >= 8,
@@ -35,6 +36,13 @@ export default function ResetPassword() {
   };
 
   const allRequirementsMet = Object.values(passwordRequirements).every(Boolean);
+
+  useEffect(() => {
+    const loadTimeout = setTimeout(() => {
+      setCargando(false);
+    }, 200);
+    return () => clearTimeout(loadTimeout);
+  }, []);
 
   useEffect(() => {
     const emailParam = searchParams.get("email");
@@ -162,9 +170,10 @@ export default function ResetPassword() {
   if (!tokenValid) {
     return null;
   }
-
   // --- UI principal de ResetPassword ---
-  return (
+  return Cargando ? (
+    <Loader texto="Cargando..." />
+  ) : (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Decorative background elements (Opacidad reducida: opacity-40) */}
       <div className="absolute inset-0 overflow-hidden">
