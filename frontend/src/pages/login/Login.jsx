@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
 import { Card, CardBody, Button } from "@heroui/react";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
+import Loader from "../../components/Loader";
 
 function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,9 +12,19 @@ function Login() {
   // 1. Estado de carga agregado para el botón
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
   // Se asume que useAuth provee el estado de errores y la función signin
   const { signin, isAuthenticated, errors: loginErrors } = useAuth();
+
+  const [Cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    // Definimos el temporizador que desactiva el loader después de 1 segundo (1000 ms)
+    const loadTimeout = setTimeout(() => {
+      setCargando(false);
+    }, 200); // 1000 ms = 1 segundo
+
+    return () => clearTimeout(loadTimeout);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -39,7 +49,9 @@ function Login() {
     setIsLoading(false);
   };
 
-  return (
+  return Cargando ? (
+    <Loader texto="Cargando..." />
+  ) : (
     <div
       className="
         min-h-dvh w-full 

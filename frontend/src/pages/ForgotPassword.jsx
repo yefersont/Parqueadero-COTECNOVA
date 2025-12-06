@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../api/axios";
 import { Card, CardBody, Button } from "@heroui/react";
 import { Mail } from "lucide-react";
+import Loader from "../components/Loader";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [Cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    const loadTimeout = setTimeout(() => {
+      setCargando(false);
+    }, 200); // 500 ms = 0.5 segundo
+
+    return () => clearTimeout(loadTimeout);
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,7 +73,9 @@ export default function ForgotPassword() {
     }
   };
 
-  return (
+  return Cargando ? (
+    <Loader texto="Cargando..." />
+  ) : (
     <div className="min-h-dvh w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Decorative background elements (Opacidad reducida: opacity-40) */}
       <div className="absolute inset-0 overflow-hidden">
