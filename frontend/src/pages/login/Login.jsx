@@ -10,7 +10,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
+
   const { signin, isAuthenticated, errors: loginErrors } = useAuth();
 
   useEffect(() => {
@@ -27,7 +27,15 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+    <div
+      className="
+    min-h-dvh w-full 
+    flex items-center justify-center 
+    relative overflow-hidden 
+    bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50
+    px-4 
+  "
+    >
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
@@ -60,7 +68,10 @@ function Login() {
 
           {/* Login Form */}
           {loginErrors.map((error, i) => (
-            <div className="bg-red-100 text-red-500 p-3 rounded-lg mb-4 text-sm text-center" key={i}>
+            <div
+              className="bg-red-100 text-red-500 p-3 rounded-lg mb-4 text-sm text-center"
+              key={i}
+            >
               {error}
             </div>
           ))}
@@ -125,7 +136,6 @@ function Login() {
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
-
 
             {/* Login Button */}
             <Button
