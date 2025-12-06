@@ -67,7 +67,7 @@ function Navbar() {
             className="relative flex-shrink-0"
           >
             <img
-              src="/cotecnova.png"
+              src="/cotecnova1.png"
               alt="Logo Cotecnova"
               className="h-10 w-auto drop-shadow-lg transition-transform duration-300 group-hover:scale-[1.03]"
             />
@@ -86,7 +86,7 @@ function Navbar() {
               COTECNOVA
             </h1>
             <span className="text-xs font-light text-green-300 -mt-1 tracking-wide">
-              Gestión de Tráfico
+              Sistema de gestion vehicular{" "}
             </span>
             <div className="w-10 h-0.5 bg-green-700 rounded-full mt-1 transition-all duration-300 group-hover:w-16"></div>
           </motion.div>
