@@ -27,7 +27,7 @@ function Footer() {
 
   return (
     <>
-      <footer className="fixed bottom-0 left-0 w-full bg-[#000000] text-white shadow-md py-3 z-50">
+      <footer className="hidden lg:flex fixed bottom-0 left-0 w-full bg-[#000000] text-white shadow-md py-3 z-50">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between text-sm">
           {/* Texto principal */}
           <p className="text-center sm:text-left font-medium tracking-wide">
