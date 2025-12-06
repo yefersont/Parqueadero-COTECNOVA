@@ -182,10 +182,10 @@ export default function ForgotPassword() {
           </form>
 
           {/* Info */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
             <div className="flex items-start">
               <svg
-                className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0"
+                className="w-5 h-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -195,12 +195,19 @@ export default function ForgotPassword() {
                   clipRule="evenodd"
                 />
               </svg>
-              <div className="text-sm text-blue-800">
+
+              <div className="text-sm text-yellow-800">
                 <p className="font-semibold mb-1">Información de seguridad:</p>
-                <ul className="list-disc list-inside space-y-1 text-blue-700">
-                  <li>El enlace expirará en **15 minutos**</li>
-                  <li>Solo puedes solicitar **3 enlaces por hora**</li>
-                  <li>El enlace solo se puede usar **una vez**</li>
+                <ul className="list-disc list-inside space-y-1 text-yellow-700">
+                  <li>
+                    El enlace expirará en <b>15 minutos</b>
+                  </li>
+                  <li>
+                    Solo puedes solicitar <b>3 enlaces por hora</b>
+                  </li>
+                  <li>
+                    El enlace solo se puede usar <b>una vez</b>
+                  </li>
                 </ul>
               </div>
             </div>
