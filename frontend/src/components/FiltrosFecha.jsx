@@ -58,8 +58,8 @@ function FiltrosFecha({
 
       {/* Botón Filtrar */}
       <button
-  onClick={onFiltrar}
-  className="
+        onClick={onFiltrar}
+        className="
     bg-gray-200 text-gray-700 
     px-3 py-2 rounded-xl 
     hover:bg-gray-300 
@@ -68,24 +68,24 @@ function FiltrosFecha({
     gap-2
     mt-[22px]
   "
-  title="Aplicar filtros"
->
-  Filtrar <Funnel size={15} />
-</button>
-
+        title="Aplicar filtros"
+      >
+        Filtrar <Funnel size={15} />
+      </button>
 
       {/* Botón Limpiar */}
       <button
         onClick={() => onReset()}
         className="
-          bg-gray-200 text-gray-700 
-          px-3 py-2 rounded-xl 
-          hover:bg-gray-300 
-          transition-all shadow
-          flex items-center justify-center
-          mt-[22px]
-          ml-1
-        "
+    bg-gray-200 text-gray-700 
+    px-3 py-2 rounded-xl 
+    hover:bg-gray-300 
+    transition-all shadow
+    flex items-center justify-center
+    gap-2
+    mt-[22px]
+    ml-1
+  "
         title="Limpiar filtros"
       >
         <BrushCleaning size={15} />

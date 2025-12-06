@@ -37,6 +37,7 @@ function Navbar() {
     { name: "Propietarios", to: "/propietario" },
     { name: "Vehículos", to: "/vehiculos" },
     { name: "Ingresos", to: "/ingresos" },
+
     // { name: "Salidas", to: "/salidas" },
   ];
 
@@ -175,7 +176,7 @@ function Navbar() {
                 {/* Decorative gradient orbs */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-20 left-0 w-32 h-32 bg-green-400/20 rounded-full blur-2xl"></div>
-                
+
                 {/* Header del menú móvil */}
                 <div className="relative flex items-center justify-between p-6 border-b border-white/10 backdrop-blur-sm bg-white/5">
                   <div className="flex items-center gap-3">
@@ -224,7 +225,17 @@ function Navbar() {
                 </nav>
 
                 {/* Footer del menú móvil */}
-                <div className="relative p-6 pb-24 border-t border-white/10 space-y-2 bg-gradient-to-t from-black/20 to-transparent backdrop-blur-sm">
+                <div
+                  className="
+  relative 
+  p-6 pb-8 
+  border-t border-white/10 
+  space-y-2 
+  bg-gradient-to-t from-black/20 to-transparent 
+  backdrop-blur-sm
+  mt-20 
+"
+                >
                   <Link
                     to="/perfil"
                     onClick={closeMobileMenu}

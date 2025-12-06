@@ -38,7 +38,7 @@ function TablaConPaginacion({
   };
 
   return (
-    <div className="flex justify-center my-8">
+    <div className="flex justify-center mt-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -62,9 +62,9 @@ function TablaConPaginacion({
         {/* Controls Section */}
         <div className="px-6 py-3">
           {mostrarControles && (
-            <div className="flex flex-wrap justify-between items-center gap-2 my-4">
+            <div className="flex flex-wrap justify-between items-center gap-2 mt-1 mb-0">
               {/* Search and Button */}
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap mt-1">
                 {/* Search Input */}
                 <div className="relative">
                   <input
@@ -77,9 +77,9 @@ function TablaConPaginacion({
                     }}
                     className="w-56 pl-9 pr-4 py-2 rounded-xl border border-gray-300 bg-white text-sm 
                     focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
-                    placeholder:text-gray-400 transition-all duration-200 shadow-sm"
+                    placeholder:text-gray-400 transition-all duration-200 shadow-sm mt-5"
                   />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 mt-3" />
                 </div>
 
                 {/* New Button */}
@@ -91,7 +91,7 @@ function TablaConPaginacion({
                     className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 
                     hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl 
                     font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 
-                    whitespace-nowrap"
+                    whitespace-nowrap mt-5"
                   >
                     {textoBoton}
                   </motion.button>
@@ -104,19 +104,28 @@ function TablaConPaginacion({
               )}
             </div>
           )}
-
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-sm text-gray-600 mb-3 font-medium text-right"
+            className="
+    text-right 
+    text-[13px]
+    text-gray-500 
+    mb-4 
+    font-semibold
+    tracking-wide 
+    italic
+  "
           >
             Mostrando{" "}
-            <span className="text-emerald-600 font-semibold">
+            <span className="text-emerald-600 font-bold not-italic">
               {datosPagina.length}
             </span>{" "}
             de{" "}
-            <span className="text-gray-900 font-semibold">{datos.length}</span>{" "}
+            <span className="text-gray-800 font-bold not-italic">
+              {datos.length}
+            </span>{" "}
             registros
           </motion.p>
 

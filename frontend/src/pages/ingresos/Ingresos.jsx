@@ -149,7 +149,7 @@ function Ingresos() {
             />
 
             {/* Botones de exportación a la derecha */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-5">
               {/* Botón Excel */}
               <button
                 onClick={exportarExcel}
