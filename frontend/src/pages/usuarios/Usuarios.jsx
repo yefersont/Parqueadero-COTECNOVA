@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { getUsuarios } from "../../api/usuarios";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
+import Loader from "../../components/Loader";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [Cargando, setCargando] = useState(true);
 
   useEffect(() => {
     getUsuarios()
       .then((res) => {
         setUsuarios(res.data);
+        setCargando(false);
       })
       .catch((err) => console.error(err));
 
@@ -66,7 +69,9 @@ function Usuarios() {
     return normalRow;
   });
 
-  return (
+  return Cargando ? (
+    <Loader texto="Cargando usuarios..." />
+  ) : (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <TablaConPaginacion
         titulo="Usuarios"
