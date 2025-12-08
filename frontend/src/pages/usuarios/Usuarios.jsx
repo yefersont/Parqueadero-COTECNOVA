@@ -18,10 +18,6 @@ function Usuarios() {
   const [isMobile, setIsMobile] = useState(false);
   const [Cargando, setCargando] = useState(true);
 
-  // ===============================
-  // 🔹 Funciones internas del componente
-  // ===============================
-
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
     try {
@@ -75,56 +71,85 @@ function Usuarios() {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        className="p-5 rounded-xl bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all"
+        className="
+    w-full max-w-full
+    p-4 md:p-5 
+    rounded-xl 
+    bg-white 
+    border border-gray-200 
+    shadow-lg hover:shadow-xl 
+    transition-all
+    mx-0 md:mx-auto
+  "
       >
-        {/* Header */}
-        <div className="flex justify-between items-start pb-4 border-b border-gray-100 mb-3">
-          <div>
-            <h3 className="text-lg font-bold text-gray-800">{u.Nombres}</h3>
-            <span
-              className={`px-3 py-1 mt-1 inline-block text-xs font-semibold rounded-full bg-${role.color}-100 text-${role.color}-800`}
-            >
-              {role.name}
-            </span>
-          </div>
+        {/* Header sin flex horizontal */}
+        <div className="w-full pb-3 border-b border-gray-100 mb-3 space-y-2">
+          <h3 className="text-base sm:text-lg font-bold text-gray-800 break-words">
+            {u.Nombres}
+          </h3>
+
+          <span
+            className={`
+        px-3 py-1 inline-block 
+        text-xs font-semibold 
+        rounded-full 
+        bg-${role.color}-100 
+        text-${role.color}-800
+      `}
+          >
+            {role.name}
+          </span>
 
           {isLocked ? (
-            <div className="flex items-center text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded-full">
+            <div className="flex items-center w-fit text-xs font-semibold text-red-600 bg-red-100 px-2 py-1 rounded-full">
               <Lock className="w-4 h-4 mr-1" />
               Bloqueado
             </div>
           ) : (
-            <div className="flex items-center text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">
+            <div className="flex items-center w-fit text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">
               <CalendarCheck className="w-4 h-4 mr-1" />
               Activo
             </div>
           )}
         </div>
 
-        {/* Detalles */}
-        <div className="space-y-1.5">
-          <DetailRow icon={Briefcase} label="Usuario" value={u.user_usuario} />
-          <DetailRow icon={Mail} label="Email" value={u.email} />
-          <DetailRow icon={Hash} label="Cédula" value={u.Cedula_usuario} />
+        <div className="w-full space-y-1 text-sm md:text-base">
+          <DetailRow
+            icon={Briefcase}
+            label="Usu."
+            value={u.user_usuario}
+            iconSize="w-3 h-3"
+          />
+          <DetailRow
+            icon={Mail}
+            label="Email"
+            value={u.email}
+            iconSize="w-3 h-3"
+          />
+          <DetailRow
+            icon={Hash}
+            label="Céd."
+            value={u.Cedula_usuario}
+            iconSize="w-3 h-3"
+          />
           <DetailRow
             icon={Clock}
-            label="Último acceso"
+            label="Acceso"
             value={formatDate(u.last_access_at_format)}
+            iconSize="w-3 h-3"
           />
           <DetailRow
             icon={Lock}
-            label="Intentos fallidos"
+            label="Fallos"
             value={u.failed_attempts}
             color={u.failed_attempts > 0 ? "text-red-500" : "text-gray-500"}
+            iconSize="w-3 h-3"
           />
         </div>
       </motion.div>
     );
   };
 
-  // ===============================
-  // 🔹 Carga inicial
-  // ===============================
   useEffect(() => {
     getUsuarios()
       .then((res) => {
@@ -140,16 +165,10 @@ function Usuarios() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ===============================
-  // 🔹 Columnas de tabla
-  // ===============================
   const columnas = isMobile
     ? [""]
     : ["ID", "Nombres", "Usuario", "Email", "Cédula", "Rol", "Último Acceso"];
 
-  // ===============================
-  // 🔹 Datos para tabla
-  // ===============================
   const data = usuarios.map((u) => {
     if (isMobile) return { Usuario: <UserMobileCard u={u} /> };
 
@@ -172,7 +191,7 @@ function Usuarios() {
   return Cargando ? (
     <Loader texto="Cargando usuarios..." />
   ) : (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-6xl mx-auto px-0 md:px-6 py-2 md:py-10">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
