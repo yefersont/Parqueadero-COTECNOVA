@@ -15,7 +15,7 @@ class UsuarioController extends Controller
     public function index()
     {
         //
-        $usuario = Usuario::all();
+        $usuario = Usuario::with('rol')->get();
         return response()->json($usuario);
     }
 
