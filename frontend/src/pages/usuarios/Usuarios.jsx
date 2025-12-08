@@ -17,6 +17,22 @@ function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [Cargando, setCargando] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
+
+  useEffect(() => {
+    getUsuarios()
+      .then((res) => {
+        setUsuarios(res.data);
+        setCargando(false);
+      })
+      .catch(() => setCargando(false));
+
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
@@ -46,9 +62,16 @@ function Usuarios() {
     return { name: rol.Rol, color };
   };
 
-  // ===============================
-  // 🔹 Componente interno: Tarjeta móvil
-  // ===============================
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const texto = busqueda.toLowerCase();
+    return (
+      u.Nombres.toLowerCase().includes(texto) ||
+      u.user_usuario.toLowerCase().includes(texto) ||
+      u.email.toLowerCase().includes(texto) ||
+      String(u.Cedula_usuario).includes(texto)
+    );
+  });
+
   const UserMobileCard = ({ u }) => {
     const isLocked = u.locked_until !== null;
     const role = getRoleInfo(u.rol);
@@ -150,26 +173,11 @@ function Usuarios() {
     );
   };
 
-  useEffect(() => {
-    getUsuarios()
-      .then((res) => {
-        setUsuarios(res.data);
-        setCargando(false);
-      })
-      .catch(() => setCargando(false));
-
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const columnas = isMobile
     ? [""]
     : ["ID", "Nombres", "Usuario", "Email", "Cédula", "Rol", "Último Acceso"];
 
-  const data = usuarios.map((u) => {
+  const data = usuariosFiltrados.map((u) => {
     if (isMobile) return { Usuario: <UserMobileCard u={u} /> };
 
     const role = getRoleInfo(u.rol);
@@ -185,9 +193,6 @@ function Usuarios() {
     };
   });
 
-  // ===============================
-  // 🔹 Render
-  // ===============================
   return Cargando ? (
     <Loader texto="Cargando usuarios..." />
   ) : (
@@ -202,6 +207,7 @@ function Usuarios() {
           datos={data}
           placeholderBusqueda="Buscar usuario..."
           deshabilitarFechas={true}
+          onBuscar={(texto) => setBusqueda(texto)}
         />
       </motion.div>
     </div>
