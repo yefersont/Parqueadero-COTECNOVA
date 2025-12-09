@@ -15,6 +15,7 @@ import Modal from "../../components/Modal";
 import Swal from "sweetalert2";
 import Loader from "../../components/Loader";
 import TablaConPaginacion from "../../components/TablaconPaginacion";
+import { generarPDFIngresos } from "../../utils/pdfGenerator";
 function Home() {
   const [ccIngreso, setCcIngreso] = useState("");
   const [ccSalida, setCcSalida] = useState("");
@@ -266,9 +267,33 @@ function Home() {
     "Fecha Salida": s.fecha_salida + "   " + s.hora_salida,
   }));
 
+  const mostrarAlertaSinDatos = () => {
+    Swal.fire({
+      title: "Sin datos",
+      text: "No hay ingresos registrados hoy para exportar.",
+      icon: "info",
+      confirmButtonText: "Entendido",
+    });
+  };
+
   // Llama a la funcion para crear el pdf
   const handleDescargarPDF = () => {
-    window.open("http://127.0.0.1:8000/api/reportes/ingresos", "_blank");
+    if (!ingresosHoy.registros || ingresosHoy.registros.length === 0) {
+      mostrarAlertaSinDatos();
+      return;
+    }
+
+    const datosParaPDF = ingresosHoy.registros.map((i) => ({
+      Propietario: `${i.propietario.Nombre_propietario} ${i.propietario.Apellido_propietario}`,
+      Cedula: i.propietario.Cedula_propietario,
+      Vehículo: i.vehiculo?.Placa_vehiculo || "N/A",
+      Fecha: i.fecha_ingreso,
+      Hora: i.hora_ingreso,
+      FechaSalida: "--/--/--",
+      HoraSalida: "--:--",
+    }));
+
+    generarPDFIngresos(datosParaPDF);
   };
 
   return cargando ? (
