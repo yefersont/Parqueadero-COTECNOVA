@@ -31,7 +31,7 @@ function Home() {
   const [errorNotification, setErrorNotification] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenSalidas, setIsModalOpenSalidas] = useState(false);
-  
+
   // Ref para el botón de registrar ingreso
   const btnRegistrarIngresoRef = useRef(null);
 
@@ -95,9 +95,11 @@ function Home() {
         if (propietario.vehiculos && propietario.vehiculos.length > 0) {
           setIdPropietarioIngreso(propietario.idPropietario);
           setVehiculosIngreso(propietario.vehiculos);
-          
+
           if (propietario.vehiculos.length === 1) {
-            setVehiculoSeleccionadoIngreso(propietario.vehiculos[0].idVehiculo.toString());
+            setVehiculoSeleccionadoIngreso(
+              propietario.vehiculos[0].idVehiculo.toString()
+            );
             // Mover el foco al botón después de un pequeño delay
             setTimeout(() => {
               btnRegistrarIngresoRef.current?.focus();
@@ -147,11 +149,11 @@ function Home() {
       console.log(" Ingreso registrado:", data);
       mostrarAlertaIngreso();
       fetchIngresosHoy();
-      fetchSalidasHoy(); 
+      fetchSalidasHoy();
       setCcIngresoInput("");
       setVehiculoSeleccionadoIngreso("");
       setVehiculosIngreso([]);
-      setIdPropietarioIngreso(""); 
+      setIdPropietarioIngreso("");
     } catch (error) {
       console.error("❌ Error registrando ingreso:", error);
       const errorMsg =
@@ -226,6 +228,7 @@ function Home() {
 
   const columnasIngresos = [
     "Propietario",
+    "Cedula",
     "Telefono",
     "Vehículo",
     "Fecha",
@@ -237,6 +240,7 @@ function Home() {
       i.propietario.Nombre_propietario +
       " " +
       i.propietario.Apellido_propietario,
+    Cedula: i.propietario.Cedula_propietario,
     Telefono: i.propietario.Telefono_propietario,
     Vehículo: i.vehiculo.Placa_vehiculo,
     Fecha: i.fecha_ingreso,
