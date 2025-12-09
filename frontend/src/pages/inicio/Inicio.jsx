@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Car,
   LogIn,
@@ -31,6 +31,9 @@ function Home() {
   const [errorNotification, setErrorNotification] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenSalidas, setIsModalOpenSalidas] = useState(false);
+  
+  // Ref para el botón de registrar ingreso
+  const btnRegistrarIngresoRef = useRef(null);
 
   useEffect(() => {
     fetchIngresosHoy();
@@ -95,6 +98,10 @@ function Home() {
           
           if (propietario.vehiculos.length === 1) {
             setVehiculoSeleccionadoIngreso(propietario.vehiculos[0].idVehiculo.toString());
+            // Mover el foco al botón después de un pequeño delay
+            setTimeout(() => {
+              btnRegistrarIngresoRef.current?.focus();
+            }, 100);
           } else {
             setVehiculoSeleccionadoIngreso("");
           }
@@ -329,6 +336,7 @@ function Home() {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
+                e.preventDefault();
                 // Si ya hay un vehículo seleccionado, registrar ingreso
                 if (vehiculoSeleccionadoIngreso) {
                   handleRegistrarIngreso();
@@ -382,6 +390,7 @@ function Home() {
 
           {/* Botón principal */}
           <motion.button
+            ref={btnRegistrarIngresoRef}
             onClick={
               vehiculosIngreso.length > 0
                 ? handleRegistrarIngreso

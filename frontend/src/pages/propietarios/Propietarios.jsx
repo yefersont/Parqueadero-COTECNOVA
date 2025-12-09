@@ -60,13 +60,17 @@ function Propietarios() {
   };
 
   // Campos para la tabla propietarios
-  const columnas = ["Cédula", "Nombre", "Teléfono", "Rol", "Acción"];
+  const columnas = ["Nombre", "Cédula", "Teléfono", "Rol", "Acción"];
 
   // Datos para la tabla propietarios (ISO 27001 A.14.2.5 - Sanitización XSS)
   const datos = propietarios.map((i) => ({
     idPropietario: i.idPropietario,
+    Nombre:
+      sanitizeText(i.Nombre_propietario) +
+      "  " +
+      sanitizeText(i.Apellido_propietario),
     Cédula: sanitizeNumber(i.Cedula_propietario),
-    Nombre: sanitizeText(i.Nombre_propietario) + "  " + sanitizeText(i.Apellido_propietario),
+
     Teléfono: sanitizeNumber(i.Telefono_propietario),
     Rol: sanitizeText(i.rol.Rol),
     Acción: isAdmin() ? (
