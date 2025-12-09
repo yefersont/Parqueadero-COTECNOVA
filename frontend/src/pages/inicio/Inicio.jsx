@@ -92,15 +92,23 @@ function Home() {
         if (propietario.vehiculos && propietario.vehiculos.length > 0) {
           setIdPropietarioIngreso(propietario.idPropietario);
           setVehiculosIngreso(propietario.vehiculos);
-          setCcIngreso(""); // limpia el error
+          
+          if (propietario.vehiculos.length === 1) {
+            setVehiculoSeleccionadoIngreso(propietario.vehiculos[0].idVehiculo.toString());
+          } else {
+            setVehiculoSeleccionadoIngreso("");
+          }
+          setCcIngreso("");
         } else {
           setIdPropietarioIngreso(propietario.idPropietario);
           setVehiculosIngreso([]);
+          setVehiculoSeleccionadoIngreso("");
           setCcIngreso("El propietario no tiene vehículos registrados");
         }
       } catch (error) {
         setIdPropietarioIngreso("");
         setVehiculosIngreso([]);
+        setVehiculoSeleccionadoIngreso("");
         if (error.response?.status === 404) {
           setCcIngreso("Identificación no encontrada");
         } else {
@@ -110,6 +118,7 @@ function Home() {
     } else {
       setIdPropietarioIngreso("");
       setVehiculosIngreso([]);
+      setVehiculoSeleccionadoIngreso("");
       setCcIngreso("");
     }
   };
@@ -128,14 +137,14 @@ function Home() {
 
     try {
       const { data } = await createIngreso(ingresoData);
-      console.log("✅ Ingreso registrado:", data);
+      console.log(" Ingreso registrado:", data);
       mostrarAlertaIngreso();
       fetchIngresosHoy();
-      fetchSalidasHoy(); // Actualizar también salidas para mantener sincronizado el estado
+      fetchSalidasHoy(); 
       setCcIngresoInput("");
       setVehiculoSeleccionadoIngreso("");
       setVehiculosIngreso([]);
-      setIdPropietarioIngreso(""); // Limpiar el ID del propietario
+      setIdPropietarioIngreso(""); 
     } catch (error) {
       console.error("❌ Error registrando ingreso:", error);
       const errorMsg =
@@ -318,7 +327,17 @@ function Home() {
               const value = e.target.value;
               if (/^\d*$/.test(value)) setCcIngresoInput(value);
             }}
-            onKeyDown={(e) => e.key === "Enter" && handleBuscarIngreso()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                // Si ya hay un vehículo seleccionado, registrar ingreso
+                if (vehiculoSeleccionadoIngreso) {
+                  handleRegistrarIngreso();
+                } else {
+                  // Si no hay vehículo seleccionado, buscar propietario
+                  handleBuscarIngreso();
+                }
+              }
+            }}
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none mb-4 transition-colors"
             whileFocus={{ scale: 1.02 }}
           />
