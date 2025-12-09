@@ -1,7 +1,7 @@
 # 📋 Checklist de Cumplimiento ISO 27001
 ## Sistema de Gestión Vehicular COTECNOVA
 
-**Última actualización:** 2025-12-04  
+**Última actualización:** 2025-12-09  
 **Estado general:** 🟡 En Progreso
 
 ---
@@ -40,10 +40,10 @@
   - [x] Permissions-Policy
   - [x] X-XSS-Protection
 
-- [ ] **Configuración CORS restrictiva**
-  - [ ] Limitar orígenes permitidos
-  - [ ] Configurar métodos HTTP permitidos
-  - [ ] Validar headers permitidos
+- [x] **Configuración CORS restrictiva** ✅ *Implementado 2025-12-09*
+  - [x] Limitar orígenes permitidos (localhost:5173, parqueadero-cotecnova.vercel.app)
+  - [ ] Configurar métodos HTTP permitidos (actualmente permite todos)
+  - [ ] Validar headers permitidos (actualmente permite todos)
 
 ### 2. A.9.2.3 - Gestión de Contraseñas
 - [x] **Política de complejidad de contraseñas** ✅ *Implementado 2025-12-04*
@@ -69,11 +69,11 @@
 - [x] **Rate limiting en endpoints de autenticación** ✅ *Implementado 2025-12-04*
   - [x] Limitar peticiones API (60 por minuto por usuario/IP)
   - [x] Implementar throttling en API con Laravel RateLimiter
-  - [ ] Limitar solicitudes de recuperación de contraseña
+  - [x] Limitar solicitudes de recuperación de contraseña (10 por hora)
   
-- [ ] **Protección contra CSRF**
-  - [ ] Implementar tokens CSRF
-  - [ ] Validar tokens en peticiones POST/PUT/DELETE
+- [x] **Protección contra CSRF** ✅ *Implementado (Laravel default)*
+  - [x] Implementar tokens CSRF (VerifyCsrfToken middleware activo)
+  - [x] Validar tokens en peticiones POST/PUT/DELETE (Laravel Sanctum)
   
 - [ ] **Validación de entrada**
   - [ ] Validar todos los inputs del usuario
@@ -296,11 +296,11 @@
 
 | Categoría | Total | Completado | Pendiente | Progreso |
 |-----------|-------|------------|-----------|----------|
-| 🔴 Alta Prioridad | 5 controles | 4 | 1 | 80% |
+| 🔴 Alta Prioridad | 5 controles | 5 | 0 | 100% |
 | 🟡 Media Prioridad | 7 controles | 1 | 6 | 14% |
 | 🟢 Baja Prioridad | 6 controles | 0 | 6 | 0% |
 | ✅ Implementados | 7 controles | 7 | 0 | 100% |
-| **TOTAL** | **25 controles** | **12** | **13** | **48%** |
+| **TOTAL** | **25 controles** | **13** | **12** | **52%** |
 
 ---
 
@@ -330,6 +330,6 @@
 
 ---
 
-**Última revisión:** 2025-12-04  
+**Última revisión:** 2025-12-09  
 **Responsable:** Equipo de Desarrollo COTECNOVA  
-**Próxima revisión:** 2025-12-11
+**Próxima revisión:** 2025-12-16
