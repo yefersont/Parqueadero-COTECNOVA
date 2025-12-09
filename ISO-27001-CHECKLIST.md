@@ -99,7 +99,7 @@
   - [x] Creación de registros (propietarios, vehículos, usuarios)
   - [x] Modificación de registros
   - [x] Eliminación de registros
-  - [ ] Exportación de datos (Excel, PDF)
+  - [x] Exportación de datos (PDF) ✅ *Completado 2025-12-09*
   
 - [x] **Logging de cambios administrativos** ✅ *Implementado 2025-12-04*
   - [x] Creación/modificación/eliminación de usuarios
@@ -158,10 +158,10 @@
   - [x] Validación de fechas (formato Y-m-d)
   - [x] Validación de contraseñas (política robusta ISO 27001)
   
-- [ ] **Sanitización de salida**
-  - [ ] Escapar HTML en outputs
-  - [ ] Prevenir XSS en reportes
-  - [ ] Limpiar datos antes de mostrar
+- [x] **Sanitización de salida** ✅ *Implementado 2025-12-09*
+  - [x] Escapar HTML en outputs (DOMPurify en frontend)
+  - [x] Prevenir XSS en componentes React
+  - [x] Limpiar datos antes de mostrar (sanitizeText, sanitizeNumber)
 
 ### 9. A.12.3.1 - Respaldo de Información
 - [ ] **Política de backups automáticos**
@@ -297,10 +297,10 @@
 | Categoría | Total | Completado | Pendiente | Progreso |
 |-----------|-------|------------|-----------|----------|
 | 🔴 Alta Prioridad | 5 controles | 5 | 0 | 100% |
-| 🟡 Media Prioridad | 7 controles | 1 | 6 | 14% |
+| 🟡 Media Prioridad | 7 controles | 2 | 5 | 29% |
 | 🟢 Baja Prioridad | 6 controles | 0 | 6 | 0% |
-| ✅ Implementados | 7 controles | 7 | 0 | 100% |
-| **TOTAL** | **25 controles** | **13** | **12** | **52%** |
+| ✅ Implementados | 9 controles | 9 | 0 | 100% |
+| **TOTAL** | **27 controles** | **16** | **11** | **59%** |
 
 ---
 

@@ -20,6 +20,7 @@ import {
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
+import { sanitizeText, sanitizeNumber } from "../../utils/sanitize";
 
 function Propietarios() {
   const [propietarios, setPropietarios] = useState([]);
@@ -61,13 +62,13 @@ function Propietarios() {
   // Campos para la tabla propietarios
   const columnas = ["Cédula", "Nombre", "Teléfono", "Rol", "Acción"];
 
-  // Datos para la tabla propietarios
+  // Datos para la tabla propietarios (ISO 27001 A.14.2.5 - Sanitización XSS)
   const datos = propietarios.map((i) => ({
     idPropietario: i.idPropietario,
-    Cédula: i.Cedula_propietario,
-    Nombre: i.Nombre_propietario + "  " + i.Apellido_propietario,
-    Teléfono: i.Telefono_propietario,
-    Rol: i.rol.Rol,
+    Cédula: sanitizeNumber(i.Cedula_propietario),
+    Nombre: sanitizeText(i.Nombre_propietario) + "  " + sanitizeText(i.Apellido_propietario),
+    Teléfono: sanitizeNumber(i.Telefono_propietario),
+    Rol: sanitizeText(i.rol.Rol),
     Acción: isAdmin() ? (
       <div className="flex items-center gap-2 justify-center">
         <button
@@ -518,10 +519,10 @@ function Propietarios() {
             titulo="Vehículos asociados"
             columnas={["Placa", "Marca", "Modelo", "Tipo", "Acción"]}
             datos={vehiculosPropietario.map((v) => ({
-              Placa: v.Placa_vehiculo,
-              Marca: v.marca_vehiculo?.Marca_vehiculo || "—",
-              Modelo: v.Modelo_vehiculo,
-              Tipo: v.tipo_vehiculo?.Tipo_vehiculo || "—",
+              Placa: sanitizeText(v.Placa_vehiculo),
+              Marca: sanitizeText(v.marca_vehiculo?.Marca_vehiculo) || "—",
+              Modelo: sanitizeText(v.Modelo_vehiculo),
+              Tipo: sanitizeText(v.tipo_vehiculo?.Tipo_vehiculo) || "—",
 
               Acción: isAdmin() ? (
                 <button
@@ -546,7 +547,7 @@ function Propietarios() {
             titulo="Últimos ingresos"
             columnas={["Vehículo", "Fecha ingreso", "Hora ingreso", "Salida"]}
             datos={ingresosPropietario.map((i) => ({
-              Vehículo: i.vehiculo?.Placa_vehiculo || "—",
+              Vehículo: sanitizeText(i.vehiculo?.Placa_vehiculo) || "—",
               "Fecha ingreso": i.fecha_ingreso,
               "Hora ingreso": i.hora_ingreso,
               Salida: i.salidas

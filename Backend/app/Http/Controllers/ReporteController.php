@@ -7,11 +7,16 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Ingreso;
 use App\Models\Salida;
 use Carbon\Carbon;
+use App\Traits\LogsActivity;
 
 class ReporteController extends Controller
 {
-    //
-    public function descargarIngresos()
+    use LogsActivity;
+
+    /**
+     * Descargar reporte de ingresos en PDF (ISO 27001 A.12.4.1)
+     */
+    public function descargarIngresos(Request $request)
     {
         $ingresos = Ingreso::with(['propietario', 'vehiculo', 'salidas'])
             ->whereDate('fecha_ingreso', Carbon::today())
@@ -29,6 +34,14 @@ class ReporteController extends Controller
                     'hora_salida' => $ingreso->salidas->hora_salida ?? '',
                 ];
             });
+
+        // Registrar exportación en audit log (ISO 27001 A.12.4.1)
+        $this->logActivity(
+            action: 'EXPORT_PDF',
+            model: 'Ingreso',
+            description: "Exportación de reporte PDF de ingresos - Fecha: " . Carbon::today()->format('Y-m-d') . " - Total registros: " . $ingresos->count(),
+            userId: $request->user()?->idUsuario
+        );
 
         $pdf = Pdf::loadView('reportes.ingresos', compact('ingresos'));
         return $pdf->stream('reporte_ingresos.pdf');

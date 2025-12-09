@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { generarPDFIngresos } from "../../utils/pdfGenerator";
+import { sanitizeText, sanitizeNumber } from "../../utils/sanitize";
 
 function Ingresos() {
   const [ingresos, setIngresos] = useState([]);
@@ -40,13 +41,14 @@ function Ingresos() {
     "Hora Salida",
   ];
 
+  // Datos de ingresos con sanitización (ISO 27001 A.14.2.5 - Prevención XSS)
   const datos = ingresos.map((i) => ({
-    Propietario: `${i.propietario?.Nombre_propietario ?? ""} ${
+    Propietario: sanitizeText(`${i.propietario?.Nombre_propietario ?? ""} ${
       i.propietario?.Apellido_propietario ?? ""
-    }`,
-    Cedula: i.propietario?.Cedula_propietario ?? "",
-    Rol: i.propietario?.rol?.Rol ?? "",
-    Vehículo: i.vehiculo?.Placa_vehiculo ?? "",
+    }`),
+    Cedula: sanitizeNumber(i.propietario?.Cedula_propietario) ?? "",
+    Rol: sanitizeText(i.propietario?.rol?.Rol) ?? "",
+    Vehículo: sanitizeText(i.vehiculo?.Placa_vehiculo) ?? "",
     Fecha: i.fecha_ingreso ?? "",
     Hora: i.hora_ingreso ?? "",
     FechaSalida: i.salidas?.fecha_salida ?? "--/--/--",

@@ -17,6 +17,7 @@ import Loader from "../../components/Loader";
 import Swal from "sweetalert2";
 import { useRegistro } from "../../context/RegistroContext";
 import { useAuth } from "../../context/AuthContext";
+import { sanitizeText, sanitizeNumber } from "../../utils/sanitize";
 function Vehiculos() {
   // Estados para vehículos y cargado
   const [vehiculos, setVehiculos] = useState([]);
@@ -59,13 +60,13 @@ function Vehiculos() {
   // Definir columnas y datos para la tabla
   const columnas = ["Tipo", "Marca", "Placa", "Modelo", "Acciones"];
 
-  // Mapear datos de vehículos para la tabla
+  // Mapear datos de vehículos para la tabla (ISO 27001 A.14.2.5 - Sanitización XSS)
   const datos = vehiculos.map((i) => ({
     idVehiculo: i.idVehiculo,
-    Tipo: i.tipo_vehiculo.Tipo_vehiculo,
-    Marca: i.marca_vehiculo.Marca_vehiculo,
-    Placa: i.Placa_vehiculo,
-    Modelo: i.Modelo_vehiculo,
+    Tipo: sanitizeText(i.tipo_vehiculo.Tipo_vehiculo),
+    Marca: sanitizeText(i.marca_vehiculo.Marca_vehiculo),
+    Placa: sanitizeText(i.Placa_vehiculo),
+    Modelo: sanitizeText(i.Modelo_vehiculo),
     Acciones: isAdmin() ? (
       <>
         <button
@@ -374,10 +375,10 @@ function Vehiculos() {
             titulo=""
             mostrarControles={false}
             datos={propietariosFiltrados.map((p) => ({
-              Cédula: p.Cedula_propietario,
-              Nombre: `${p.Nombre_propietario} ${p.Apellido_propietario}`,
-              Teléfono: p.Telefono_propietario,
-              Rol: p.rol?.Rol || "—",
+              Cédula: sanitizeNumber(p.Cedula_propietario),
+              Nombre: sanitizeText(`${p.Nombre_propietario} ${p.Apellido_propietario}`),
+              Teléfono: sanitizeNumber(p.Telefono_propietario),
+              Rol: sanitizeText(p.rol?.Rol) || "—",
               Acción: (
                 <button
                   onClick={() => {
@@ -433,10 +434,10 @@ function Vehiculos() {
           <TablaPequeña
             columnas={["Cédula", "Nombre", "Apellido", "Teléfono"]}
             datos={propietariosVehiculo.map((p) => ({
-              Cédula: p.Cedula_propietario,
-              Nombre: p.Nombre_propietario,
-              Apellido: p.Apellido_propietario,
-              Teléfono: p.Telefono_propietario,
+              Cédula: sanitizeNumber(p.Cedula_propietario),
+              Nombre: sanitizeText(p.Nombre_propietario),
+              Apellido: sanitizeText(p.Apellido_propietario),
+              Teléfono: sanitizeNumber(p.Telefono_propietario),
             }))}
             porPagina={6}
           />
